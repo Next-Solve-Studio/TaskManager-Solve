@@ -1,15 +1,59 @@
 @import "tailwindcss";
 
+@theme {
+  /* ─── VERDE (Brand) ─────────────────────────────────── */
+  --color-brand-50:  #f0fdf6;
+  --color-brand-100: #dcfce9;
+  --color-brand-200: #bbf7d4;
+  --color-brand-300: #86efad;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #19CA68;   /* ← sua cor primária */
+  --color-brand-600: #1AD76F;   /* ← sua brand-light  */
+  --color-brand-700: #15a356;
+  --color-brand-800: #166534;
+  --color-brand-900: #14532d;
+
+  /* Superfícies com transparência verde */
+  --color-surface-green-dark: #1AD76F10;
+  --color-surface-green-alt:  #1AD76F20;
+  --color-surface-green-md:   #1AD76F30;
+
+  /* ─── AZUL / CYAN (Accent) ──────────────────────────── */
+  --color-cyan-50:  #ecfeff;
+  --color-cyan-100: #cffafe;
+  --color-cyan-200: #a5f3fc;
+  --color-cyan-300: #67e8f9;
+  --color-cyan-400: #22d3ee;  
+  --color-cyan-500: #06b6d4;
+  --color-cyan-600: #0891b2;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #155e75;
+  --color-cyan-900: #164e63;
+
+  /* Superfícies com transparência cyan */
+  --color-surface-cyan-dark: #22d3ee10;
+  --color-surface-cyan-alt:  #22d3ee20;
+  --color-surface-cyan-md:   #22d3ee30;
+ 
+
+    /* ─── FUNDO / DARK THEME ────────────────────────────── */
+    --color-bg-pure:  #0C0C0C;
+    --color-bg-card:  #121212;
+    --color-bg-navy:  #171C23;
+   --color-bg-hover:#2D2D2D;
+    /* ─── ALIASES SEMÂNTICOS ────────────────────────────── */
+  --color-primary: var(--color-brand-500);
+  --color-accent:  var(--color-cyan-400);
+
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error:   #ef4444;
+  --color-info:    var(--color-cyan-500);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +64,26 @@
 }
 
 body {
+  min-height: 100vh;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+.scroll-hidden,body,html {
+  scrollbar-width: none;       
+  -ms-overflow-style: none;   
+}
+
+::-webkit-scrollbar {
+  height: 0;              
+}
+
+ ::-webkit-scrollbar{
+  scrollbar-width: thin;               /* Firefox */
+  scrollbar-color:  transparent;
+}
+
+/* Chrome / Safari */
+::-webkit-scrollbar {
+  height: 12px;                         /* MAIS EM CIMA (mais fino) */
 }

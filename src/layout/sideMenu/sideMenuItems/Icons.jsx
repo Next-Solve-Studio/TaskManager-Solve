@@ -1,6 +1,10 @@
+'use client'
+
 import { FiGrid, FiUsers, FiFolder, FiLayers, FiCheckSquare, FiSettings  } from "react-icons/fi";
 
-const menuItems = [
+
+export const menuItems = [
+  
     {
         icon:FiUsers,
         label:'Usuários',
@@ -24,7 +28,7 @@ const menuItems = [
     },
     {
         icon:FiCheckSquare,
-        label:'Gerenciamento de Tasks',
+        label:'Tasks',
         href: "/"
     },
     {

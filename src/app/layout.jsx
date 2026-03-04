@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SideMenu from "@/layout/sideMenu/SideMenu";
 
 
 export const metadata = {
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
             <body
                 className={`antialiased`}
             >
+                <SideMenu/>
                 {children}
             </body>
         </html>
