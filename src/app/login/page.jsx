@@ -1,11 +1,8 @@
 // Página de Login
 
-import LoginForm from "@/components/login/LoginForm";
+import LoginMain from "@/components/login/LoginMain";
 
 export default function LoginPage() {
-    return (
-        <main>
-            <LoginForm/>
-        </main>
-    )
+    return <LoginMain/>
+    
 }
