@@ -84,11 +84,11 @@ body {
 }
 
  ::-webkit-scrollbar{
-  scrollbar-width: thin;               /* Firefox */
+  scrollbar-width: thin;             
   scrollbar-color:  transparent;
 }
 
 /* Chrome / Safari */
 ::-webkit-scrollbar {
-  height: 12px;                         /* MAIS EM CIMA (mais fino) */
+  height: 12px;                         
 }

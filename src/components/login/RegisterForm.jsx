@@ -10,7 +10,7 @@ import { AiOutlineUser } from "react-icons/ai";
 import { MdOutlineEmail } from "react-icons/md"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-export default function RegisterForm() {
+export default function RegisterForm({setHaveAccount}) {
     const [email, setEmail] = useState("")
     const [password, setPassword] =  useState("")
     const [name, setName] = useState("")
@@ -128,7 +128,7 @@ export default function RegisterForm() {
                     />
                     <button type="button" className="absolute right-2" onClick={handlePassword}>{seePassword ? <FaEyeSlash size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/> : <FaEye size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/>}</button>
                 </div>
-                <p className="text-bg-hover2 cursor-pointer hover:text-brand-700">Já tem conta criada? clique aqui</p>
+                <p className="text-bg-hover2 cursor-pointer hover:text-brand-700" onClick={()=> setHaveAccount(true)}>Já tem conta criada? clique aqui</p>
             </div>
             <button
                 type="submit"
@@ -147,52 +147,7 @@ export default function RegisterForm() {
             >
                 {loading ?<CircularProgress size={24} color="inherit" /> : "Criar conta"}
             </button>
-            {/* <div className="absolute bottom-0 left-0 w-full">
-                
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    xmlnsXlink="http://www.w3.org/1999/xlink"
-                    viewBox="0 0 1600 900"
-                    style={{
-                        width: "100%",
-                        height: "100vh",
-                        transform: "scaleY(0.35) scaleX(2.25)",
-                        transformOrigin: "bottom",
-                        display: "block",
-                        pointerEvents: "none",
-                    }}
-                >
-                    <defs>
-                        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.5" />
-                            <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.7" />
-                        </linearGradient>
-                        <path
-                            id="wave"
-                            fill="url(#bgGradient)"
-                            d="M-363.852,502.589c0,0,236.988-41.997,505.475,0
-                            s371.981,38.998,575.971,0s293.985-39.278,505.474,5.859s493.475,48.368,716.963-4.995v560.106H-363.852V502.589z"
-                        />
-                    </defs>
-                    <g>
-                        <use xlinkHref="#wave" opacity=".3">
-                            <animateTransform attributeName="transform" attributeType="XML" type="translate"
-                                dur="8s" calcMode="spline" values="270 230; -334 180; 270 230"
-                                keyTimes="0; .5; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite" />
-                        </use>
-                        <use xlinkHref="#wave" opacity=".5">
-                            <animateTransform attributeName="transform" attributeType="XML" type="translate"
-                                dur="6s" calcMode="spline" values="-270 230;243 220;-270 230"
-                                keyTimes="0; .6; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite" />
-                        </use>
-                        <use xlinkHref="#wave" opacity=".7">
-                            <animateTransform attributeName="transform" attributeType="XML" type="translate"
-                                dur="4s" calcMode="spline" values="0 230;-140 200;0 230"
-                                keyTimes="0; .4; 1" keySplines="0.42, 0, 0.58, 1.0;0.42, 0, 0.58, 1.0" repeatCount="indefinite" />
-                        </use>
-                    </g>
-                </svg>
-            </div> */}
+            
         </form>
     )
 }

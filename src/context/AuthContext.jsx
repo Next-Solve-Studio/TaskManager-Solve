@@ -31,17 +31,16 @@ export const AuthProvider = ({ children})  => {
             setCurrentUser(user) // atualiza o estado com a informação recebida do firebase
             setLoading(false)
         })
-        return unsubscribe() //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
+        return unsubscribe //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
     }, [])
 
     const login = async (email, password) => { // Função de login, recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        try {
+       
             await signInWithEmailAndPassword(auth, email, password)
             router.push('/')
-        } catch (error) {
-            console.error("Erro ao fazer login: ", error)
-        }
     }
+
+    const register = async (name, email, password)
 
     const logout = async () => {
         try{
