@@ -1,7 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import SideMenu from "@/layout/sideMenu/SideMenu";
-
+import { AuthProvider } from "@/context/AuthContext";
+import { Toaster } from "sonner"
 
 export const metadata = {
   title: "Task Manager Solve",
@@ -10,12 +10,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     return (
-        <html lang="pt-br">
+        <html lang="pt-BR">
             <body
                 className={`antialiased`}
             >
-                
-                {children}
+                <AuthProvider>
+                    {children}
+                    <Toaster />
+                </AuthProvider>
             </body>
         </html>
     );

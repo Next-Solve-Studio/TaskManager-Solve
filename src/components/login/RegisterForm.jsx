@@ -1,9 +1,7 @@
 "use client"
 import { toast } from "sonner"
 import { useState } from "react"
-import { createUserWithEmailAndPassword } from "firebase/auth"
-import { db, auth } from "@/lib/firebaseConfig"
-import { setDoc, doc } from "firebase/firestore"
+import { useAuth } from "@/context/AuthContext"
 import { TextField, CircularProgress, InputAdornment} from "@mui/material"
 import { IoMdLock } from "react-icons/io";
 import { AiOutlineUser } from "react-icons/ai";
@@ -11,6 +9,7 @@ import { MdOutlineEmail } from "react-icons/md"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function RegisterForm({setHaveAccount}) {
+    const { register } = useAuth()
     const [email, setEmail] = useState("")
     const [password, setPassword] =  useState("")
     const [name, setName] = useState("")
@@ -28,13 +27,8 @@ export default function RegisterForm({setHaveAccount}) {
         setLoading(true)
 
         try{
-            const create = await createUserWithEmailAndPassword(auth, email, password)
+            await register (name, email, password)
 
-            await setDoc(doc(db, "users", create.user.uid),{
-                name: name.trim(),
-                email,
-                createdAt: new Date()
-            })
             toast.success("Conta criada com sucesso!", {
                 description: "Bem-vindo! Você já está logado.",
             })
@@ -85,6 +79,7 @@ export default function RegisterForm({setHaveAccount}) {
                     value={name}
                     onChange={(e)=> setName(e.target.value)}
                     sx={fieldSx}
+                    autoComplete="off"
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
@@ -128,7 +123,7 @@ export default function RegisterForm({setHaveAccount}) {
                     />
                     <button type="button" className="absolute right-2" onClick={handlePassword}>{seePassword ? <FaEyeSlash size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/> : <FaEye size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/>}</button>
                 </div>
-                <p className="text-bg-hover2 cursor-pointer hover:text-brand-700" onClick={()=> setHaveAccount(true)}>Já tem conta criada? clique aqui</p>
+                <button type="button" className="text-bg-hover2 cursor-pointer hover:text-brand-700" onClick={()=> setHaveAccount(true)}>Já tem conta criada? clique aqui</button>
             </div>
             <button
                 type="submit"

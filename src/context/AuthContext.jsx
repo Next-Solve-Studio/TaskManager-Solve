@@ -5,12 +5,12 @@ import { createContext, useContext, useEffect, useState}  from 'react'
 import { 
     onAuthStateChanged, 
     signInWithEmailAndPassword, 
-    signInWithPopup, 
     signOut,
     createUserWithEmailAndPassword
 } from 'firebase/auth';
-import { auth, googleProvider } from '../lib/firebaseConfig'; 
+import { auth, googleProvider, db } from '../lib/firebaseConfig'; 
 import { useRouter } from 'next/navigation'
+import { setDoc, doc } from 'firebase/firestore';
 
 const AuthContext = createContext();  // Criação do contexto
 
@@ -40,7 +40,19 @@ export const AuthProvider = ({ children})  => {
             router.push('/')
     }
 
-    const register = async (name, email, password)
+    const register = async (name, email, password) => {
+        // Função de registro, cria um novo usuário no Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+
+        // Cria o documento do usuário na coleção users do firestore
+        await setDoc(doc(db, "users", userCredential.user.uid), {
+            name: name.trim(),
+            email,
+            createdAt: new Date()
+        })
+
+        router.push('/')
+    }
 
     const logout = async () => {
         try{
@@ -56,6 +68,7 @@ export const AuthProvider = ({ children})  => {
     const value = {
         currentUser,
         login,
+        register,
         logout
     }
 

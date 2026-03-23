@@ -2,13 +2,14 @@
 import { toast } from "sonner"
 import { useState } from "react"
 import { signInWithEmailAndPassword } from "firebase/auth"
-import { db, auth } from "@/lib/firebaseConfig"
+import { useAuth } from "@/context/AuthContext"
 import { TextField, CircularProgress, InputAdornment} from "@mui/material"
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineEmail } from "react-icons/md"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginForm({setHaveAccount}) {
+    const { login } =   useAuth()
     const [email, setEmail] = useState("")
     const [password, setPassword] =  useState("")
     const [loading, setLoading] = useState(false)
@@ -25,7 +26,7 @@ export default function LoginForm({setHaveAccount}) {
         setLoading(true)
 
         try {
-            await signInWithEmailAndPassword(auth, email, password)
+            await login(email, password)
 
             toast.success("Login realizado com sucesso!", {
                 description: "Bem-vindo de volta!",
@@ -109,7 +110,7 @@ export default function LoginForm({setHaveAccount}) {
                     />
                     <button type="button" className="absolute right-2" onClick={handlePassword}>{seePassword ? <FaEyeSlash size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/> : <FaEye size={20} className="cursor-pointer text-bg-hover hover:text-bg-hover2"/>}</button>
                 </div>
-                <p className="text-bg-hover2 cursor-pointer hover:text-brand-700" onClick={() => setHaveAccount(false)}>Não tem uma conta? clique aqui</p>
+                <button type="button" className="text-bg-hover2 cursor-pointer hover:text-brand-700" onClick={() => setHaveAccount(false)}>Não tem uma conta? clique aqui</button>
             </div>
             <button
                 type="submit"
@@ -126,7 +127,7 @@ export default function LoginForm({setHaveAccount}) {
                     active:scale-95 active:brightness-90 transition-all duration-150
                 "
             >
-                {loading ?<CircularProgress size={24} color="inherit" /> : "Criar conta"}
+                {loading ?<CircularProgress size={24} color="inherit" /> : "Entrar"}
             </button>
             
         </form>
