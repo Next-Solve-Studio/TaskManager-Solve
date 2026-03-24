@@ -5,9 +5,10 @@ import { googleProvider, auth, db } from "@/lib/firebaseConfig"
 import { signInWithPopup } from "firebase/auth"
 import { doc, setDoc, getDoc } from "firebase/firestore"
 import { useState } from "react"
-import { useAppRouter } from "../utils/useAppRouter"
+import { useAppRouter } from "@/utils/useAppRouter"
 import {FcGoogle} from "react-icons/fc"
 import { toast } from "sonner"
+import { serialize } from "cookie"
 
 export default function GoogleLoginBtn(){
     const [loading, setLoading] = useState(false)
@@ -19,6 +20,17 @@ export default function GoogleLoginBtn(){
         try{
             const result = await signInWithPopup(auth, googleProvider)
             const user = result.user
+            const token = await user.getIdToken()
+
+            //Define o cookie para o middleware usando a biblioteca 'cookie'
+             const cookieOptions =  {
+                maxAge: 30*24*60*60, //30 dias de duração do cookie
+                path:'/', // o cookie é válido para todo o dommínio
+                secure:process.env.NODE_ENV === 'production',
+                sameSite: 'lax'
+            }
+            // biome-ignore lint/suspicious/noDocumentCookie: <>
+            document.cookie = serialize('__session', token, cookieOptions)
 
             //verificar se o user já existe
             const userRef = doc(db, "users", user.uid)

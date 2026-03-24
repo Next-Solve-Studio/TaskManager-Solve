@@ -1,16 +1,17 @@
 // AuthContext.jsx
 'use client'
 
-import { createContext, useContext, useEffect, useState}  from 'react'
+import { createContext, useCallback, useContext, useEffect, useState}  from 'react'
 import { 
     onAuthStateChanged, 
     signInWithEmailAndPassword, 
     signOut,
     createUserWithEmailAndPassword
 } from 'firebase/auth';
-import { auth, googleProvider, db } from '../lib/firebaseConfig'; 
-import { useRouter } from 'next/navigation'
+import { auth, db } from '../lib/firebaseConfig'; 
+import { useAppRouter } from "@/utils/useAppRouter"
 import { setDoc, doc } from 'firebase/firestore';
+import { serialize } from 'cookie';
 
 const AuthContext = createContext();  // Criação do contexto
 
@@ -24,25 +25,46 @@ export const AuthProvider = ({ children})  => {
     // Componente Provedor, vai "abraçar" toda a aplicação
     const [currentUser, setCurrentUser] = useState(null); // estado de usuário atual
     const [loading, setLoading] = useState(true) 
-    const router = useRouter() // Inicia o hook de roteamento para que possamos usá-lo para redirecionar o usuário
+    const router = useAppRouter() // Inicia o hook de roteamento para que possamos usá-lo para redirecionar o usuário
+
+    const setSessionCookie = useCallback((token) => {
+        const cookieOptions =  {
+            maxAge: 30*24*60*60, //30 dias de duração do cookie
+            path:'/', // o cookie é válido para todo o dommínio
+            secure:process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
+        }
+        // biome-ignore lint/suspicious/noDocumentCookie: <>
+        document.cookie = serialize('__session', token || '', token ?  cookieOptions : {...
+            cookieOptions, maxAge: -1})
+    }, [])
 
     useEffect(()=>{// Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
-        const unsubscribe = onAuthStateChanged(auth, (user) => { // o OnAuth... fica observando o estado de autenticação, retorna uma função unsubscribe
+        const unsubscribe = onAuthStateChanged(auth, async (user) => { // o OnAuth... fica observando o estado de autenticação, retorna uma função unsubscribe
+            if (user) {
+                const token = await user.getIdToken()
+                setSessionCookie(token)
+            } else{
+                setSessionCookie(null)
+            }
             setCurrentUser(user) // atualiza o estado com a informação recebida do firebase
             setLoading(false)
         })
         return unsubscribe //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
-    }, [])
+    }, [setSessionCookie])
 
     const login = async (email, password) => { // Função de login, recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
        
-            await signInWithEmailAndPassword(auth, email, password)
-            router.push('/')
+            const userCredential = await signInWithEmailAndPassword(auth, email, password)
+            const token = await userCredential.user.getIdToken()
+            setSessionCookie(token)
+            router.goHome()
     }
 
     const register = async (name, email, password) => {
         // Função de registro, cria um novo usuário no Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        const token = await userCredential.user.getIdToken()
 
         // Cria o documento do usuário na coleção users do firestore
         await setDoc(doc(db, "users", userCredential.user.uid), {
@@ -50,14 +72,15 @@ export const AuthProvider = ({ children})  => {
             email,
             createdAt: new Date()
         })
-
-        router.push('/')
+        setSessionCookie(token)
+        router.goHome()
     }
 
     const logout = async () => {
         try{
             await signOut(auth)
-            router.push('/login')
+            setSessionCookie(null)
+            router.goLogin()
         } catch (error) {
             console.error("Erro ao fazer logout: ", error)
 

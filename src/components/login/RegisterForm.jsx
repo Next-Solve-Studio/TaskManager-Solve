@@ -8,27 +8,38 @@ import { AiOutlineUser } from "react-icons/ai";
 import { MdOutlineEmail } from "react-icons/md"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import GoogleLoginBtn from "./GoogleLoginBtn"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+
+// Schema de validação com Yup
+const schema = yup.object({
+    name:yup.string().min(3, "O nome deve ter pelo menos 3 caracteres").required("O  nome é obrigatório"),
+    email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
+    password: yup.string().min(6, "A senha deve ter pelo 6 caracteres").required("A senha é obrigatória"),
+}).required()
+
 
 export default function RegisterForm({setHaveAccount}) {
-    const { register } = useAuth()
-    const [email, setEmail] = useState("")
-    const [password, setPassword] =  useState("")
-    const [name, setName] = useState("")
+    const { register: registerUser } = useAuth()
     const [loading, setLoading] = useState(false)
     const [seePassword, setSeePassword] = useState(false)
 
-    async function handleRegister(e) {
-        e.preventDefault()
+    //Configuração do React hook form
+    const { register, handleSubmit, formState: {errors}} = useForm({
+        resolver:yupResolver(schema)
+    })
 
-        if (!name || !email || !password) {
+    async function onSubmit(data) {
+
+        if (!data.name || !data.email || !data.password) {
             toast.warning("Preencha todos os campos !")
             return
         }
-
         setLoading(true)
 
         try{
-            await register (name, email, password)
+            await registerUser (data.name, data.email, data.password)
 
             toast.success("Conta criada com sucesso!", {
                 description: "Bem-vindo! Você já está logado.",
@@ -72,13 +83,14 @@ export default function RegisterForm({setHaveAccount}) {
     }
 
     return (
-        <form onSubmit={handleRegister} className="relative flex flex-col gap-8 overflow-hidden rounded-2xl mx-auto w-full max-w-120 p-8 pb-32">
+        <form onSubmit={handleSubmit(onSubmit)} className="relative flex flex-col gap-8 overflow-hidden rounded-2xl mx-auto w-full max-w-120 p-8 pb-32">
             <div className="flex flex-col gap-5">
                 <TextField
+                    {...register("name")}
                     label="Nome"
                     variant="outlined"
-                    value={name}
-                    onChange={(e)=> setName(e.target.value)}
+                    error={!!errors.name}
+                    helperText={errors.name?.message}
                     sx={fieldSx}
                     autoComplete="off"
                     InputProps={{
@@ -90,11 +102,12 @@ export default function RegisterForm({setHaveAccount}) {
                     }}
                 />
                 <TextField
+                    {...register("email")}
                     label="E-mail"
                     variant="outlined"
                     type="email"
-                    value={email}
-                    onChange={(e)=> setEmail(e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
                     sx={fieldSx}
                     InputProps={{
                         startAdornment: (
@@ -106,11 +119,12 @@ export default function RegisterForm({setHaveAccount}) {
                 />
                 <div className="flex w-full relative items-center">
                     <TextField
+                        {...register("password")}
                         label="Senha"
                         variant="outlined"
                         type={seePassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e)=> setPassword(e.target.value)}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
                         sx={fieldSx}
                         InputProps={{
                             startAdornment: (

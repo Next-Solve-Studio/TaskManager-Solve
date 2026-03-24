@@ -1,37 +1,46 @@
 "use client"
 import { toast } from "sonner"
 import { useState } from "react"
-import { signInWithEmailAndPassword } from "firebase/auth"
 import { useAuth } from "@/context/AuthContext"
 import { TextField, CircularProgress, InputAdornment} from "@mui/material"
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineEmail } from "react-icons/md"
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import GoogleLoginBtn from "./GoogleLoginBtn"
+import { useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import * as yup from "yup"
+
+//Schema de validação com Yup
+const schema = yup.object({
+    email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
+    password: yup.string().min(6, "A senha deve ter pelo 6 caracteres").required("A senha é obrigatória"),
+}).required()
 
 export default function LoginForm({setHaveAccount}) {
     const { login } =   useAuth()
-    const [email, setEmail] = useState("")
-    const [password, setPassword] =  useState("")
     const [loading, setLoading] = useState(false)
     const [seePassword, setSeePassword] = useState(false)
 
-    async function handleLogin(e) {
-        e.preventDefault()
+    // Configuração do React Hook Form
+    const { register, handleSubmit, formState: {errors}} = useForm({
+        resolver: yupResolver(schema)
+    })
 
-        if (!email || !password) {
+    async function onSubmit(data) {
+        if (!data.email || !data.password) {
             toast.warning("Preencha todos os campos !")
             return
         }
-
         setLoading(true)
 
         try {
-            await login(email, password)
+            await login(data.email, data.password)
 
             toast.success("Login realizado com sucesso!", {
                 description: "Bem-vindo de volta!",
             })
+            
         } catch (error) {
             const messages = {
                 "auth/user-not-found": "Nenhuma conta encontrada com este e-mail.",
@@ -73,15 +82,16 @@ export default function LoginForm({setHaveAccount}) {
     }
 
     return (
-        <form onSubmit={handleLogin} className="relative flex flex-col gap-10 overflow-hidden rounded-2xl mx-auto w-full max-w-120 p-8 pb-32">
+        <form onSubmit={handleSubmit(onSubmit)} className="relative flex flex-col gap-10 overflow-hidden rounded-2xl mx-auto w-full max-w-120 p-8 pb-32">
             <div className="flex flex-col gap-5">
                
                 <TextField
+                    {...register("email")}
                     label="E-mail"
                     variant="outlined"
                     type="email"
-                    value={email}
-                    onChange={(e)=> setEmail(e.target.value)}
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
                     sx={fieldSx}
                     InputProps={{
                         startAdornment: (
@@ -93,11 +103,12 @@ export default function LoginForm({setHaveAccount}) {
                 />
                 <div className="flex w-full relative items-center">
                     <TextField
+                        {...register("password")}
                         label="Senha"
                         variant="outlined"
                         type={seePassword ? "text" : "password"}
-                        value={password}
-                        onChange={(e)=> setPassword(e.target.value)}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
                         sx={fieldSx}
                         InputProps={{
                             startAdornment: (

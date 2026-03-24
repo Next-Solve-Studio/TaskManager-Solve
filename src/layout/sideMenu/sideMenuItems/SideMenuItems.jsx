@@ -2,25 +2,47 @@
 import { useState } from 'react'
 import Link from "next/link"
 import { menuItems } from "./Icons"
-import { BurgerButton } from './BurgerBtn';
 import { useEffect } from 'react';
-import { auth } from '@/lib/firebaseConfig';
+import { auth, db } from '@/lib/firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
+import { getDoc, doc } from 'firebase/firestore';
 import Image from 'next/image';
 
 export default function SideMenuItems() {
     const [isOpen, setIsOpen] = useState(false)
     const [user, setUser] = useState(null)
+    const [displayName, setDisplayName] = useState('')
+
     
     useEffect(()=>{
-        const unsub = onAuthStateChanged(auth,(firebaseUser) => {
+        const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser)
+
+            if (!firebaseUser) {
+                setDisplayName('')
+                return
+            }
+
+            // Se for login pelo google
+            if (firebaseUser.displayName) {
+                setDisplayName(firebaseUser.displayName)
+                return
+            }
             
+            // Se for email e senha, busca o nome da coleção users
+            const snap = await getDoc(doc(db, 'users', firebaseUser.uid))
+            if (snap.exists()){
+                setDisplayName(snap.data().name)
+            }
         })
         return () => unsub()
     }, [])
+    
+    const initial = displayName ? displayName.charAt(0).toUpperCase() :  ''
+    
 
     return (
+        // biome-ignore lint/a11y/noStaticElementInteractions: <>
         <div
             className={`overflow-hidden h-full fixed top-0 left-0 bg-linear-to-br from-bg-pure via-[#0a0a0a] to-bg-pure flex flex-col gap-3 py-10 transition-all duration-300 ease-in-out ${isOpen ? 'w-58 items-start' : 'w-20 items-center'} shadow-xl z-50`}
             onMouseEnter={() => setIsOpen(true)}
@@ -40,7 +62,7 @@ export default function SideMenuItems() {
                             />
                         ) : (
                             <span className="text-white text-lg font-bold">
-                                {user?.displayName ? user.displayName.charAt(0).toUpperCase() : 'U'}
+                                {initial}
                             </span>
                         )}
                     </div>
@@ -48,7 +70,7 @@ export default function SideMenuItems() {
                 {/* Nome do Usuário: Aparece suavemente sem empurrar a foto */}
                 <div className={`ml-2 transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? 'opacity-100 w-32' : 'opacity-0 w-0'}`}>
                     <p className="text-white text-sm font-bold whitespace-nowrap truncate">
-                        {user?.displayName || 'Usuário'}
+                        {displayName}
                     </p>
                 </div>
             </div>
