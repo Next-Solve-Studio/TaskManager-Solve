@@ -1,6 +1,7 @@
 'use client'
 
 import { FiGrid, FiUsers, FiFolder, FiLayers, FiCheckSquare, FiSettings  } from "react-icons/fi";
+import {ROLES, ROLE_LABELS} from '@/lib/roles'
 
 
 export const menuItems = [
@@ -8,32 +9,38 @@ export const menuItems = [
     {
         icon:FiUsers,
         label:'Usuários',
-        href: "/"
+        href: "/",
+        roles: [ADMIN]
 
     },
     {
         icon:FiGrid,
         label:'Visão Geral',
-        href: "/"
+        href: "/",
+        roles: [ADMIN, PROJECT_LEAD]
     },
     {
         icon:FiLayers ,
         label:'Lista de Projetos',
-        href: "/"
+        href: "/",
+        roles: [ADMIN, PROJECT_LEAD]
     },
     {
         icon: FiFolder,
         label:'Meus Projetos',
-        href: "/"
+        href: "/",
+        roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     },
     {
         icon:FiCheckSquare,
         label:'Tasks',
-        href: "/"
+        href: "/",
+        roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     },
     {
         icon:FiSettings,
         label:"Configurações",
-        href: "/"
+        href: "/",
+        roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     }
 ]

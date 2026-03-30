@@ -10,7 +10,7 @@ import {
 } from 'firebase/auth';
 import { auth, db } from '../lib/firebaseConfig'; 
 import { useAppRouter } from "@/utils/useAppRouter"
-import { setDoc, doc } from 'firebase/firestore';
+import { setDoc, doc, getDoc } from 'firebase/firestore';
 import { serialize } from 'cookie';
 
 const AuthContext = createContext();  // Criação do contexto
@@ -44,10 +44,17 @@ export const AuthProvider = ({ children})  => {
             if (user) {
                 const token = await user.getIdToken()
                 setSessionCookie(token)
+
+                // Busca dados do usuários
+                const userDoc = await getDoc(doc(db,"users", user.uid))
+                const userData = userDoc.exists() ? userDoc.data() : {}
+
+                setCurrentUser({...user, ...userData}) // atualiza o estado com a informação recebida do firebase
             } else{
                 setSessionCookie(null)
+                setCurrentUser(null)
             }
-            setCurrentUser(user) // atualiza o estado com a informação recebida do firebase
+            
             setLoading(false)
         })
         return unsubscribe //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
@@ -66,10 +73,15 @@ export const AuthProvider = ({ children})  => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         const token = await userCredential.user.getIdToken()
 
+        //Verifica se é o primeiro usuário
+        const usersSnapshot = await getDocs(collection(db, "users"))
+        const isFirstUser = usersSnapshot.empty
+
         // Cria o documento do usuário na coleção users do firestore
         await setDoc(doc(db, "users", userCredential.user.uid), {
             name: name.trim(),
             email,
+            role: isFirstUser ? "administrador" : "desenvolvedor",
             createdAt: new Date()
         })
         setSessionCookie(token)

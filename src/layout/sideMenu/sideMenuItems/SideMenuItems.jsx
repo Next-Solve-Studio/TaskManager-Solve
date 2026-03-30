@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from "next/link"
-import { menuItems } from "./Icons"
+import { menuItems } from "./MenuItems"
 import { BurgerButton } from './BurgerBtn';
 import { useEffect } from 'react';
 import { auth, db } from '@/lib/firebaseConfig';
@@ -54,7 +54,7 @@ export default function SideMenuItems() {
                 {isMobile && (<BurgerButton  isOpen={isOpen} onClick={() => setIsOpen(prev => !prev)}/>)}
             </div>
             <div className="mb-6 flex items-center min-h-10 w-full">
-                {/* Container da Foto: Largura fixa de 80px (mesma do menu fechado) para centralizar sempre */}
+
                 <div className="w-20 flex justify-center shrink-0">
                     <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-800 shadow-inner bg-gray-900 flex items-center justify-center">
                         {user?.photoURL ? (
