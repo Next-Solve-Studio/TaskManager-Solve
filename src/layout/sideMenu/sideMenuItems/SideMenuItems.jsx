@@ -5,12 +5,13 @@ import { menuItems } from "./MenuItems"
 import { BurgerButton } from './BurgerBtn';
 import { useEffect } from 'react';
 import { auth, db } from '@/lib/firebaseConfig';
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import Image from 'next/image';
 import useIsMobile from '@/responsive/useIsMobile';
 import { useRole } from '@/hooks/useRole';
 import RoleBadge from '@/components/auth/RoleBadge';
+import { useAppRouter } from '@/utils/useAppRouter';
 
 export default function SideMenuItems() {
     const [isOpen, setIsOpen] = useState(false)
@@ -18,11 +19,17 @@ export default function SideMenuItems() {
     const [displayName, setDisplayName] = useState('')
     const isMobile = useIsMobile()
     const {role} = useRole()
+    const router = useAppRouter()
 
     //filtrar os itens com base no cargo do usuário
     const visibleItems = menuItems.filter(item  =>
         !item.roles ||  item.roles.includes(role)
     )
+
+    async function handleLogout(){
+        await signOut(auth)
+        router.goLogin()
+    }
     
     useEffect(()=>{
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -84,6 +91,9 @@ export default function SideMenuItems() {
                     <p className="text-white text-sm font-bold whitespace-nowrap truncate">
                         {displayName}
                     </p>
+                    <div className="mt-1">
+                        <RoleBadge />
+                    </div>
                 </div>
             </div>
 
@@ -120,6 +130,9 @@ export default function SideMenuItems() {
                     </Link>
                 ))}
             </nav>
+            <button onClick={handleLogout}>
+                Sair
+            </button>
         </div>
         
     )
