@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { toast } from 'sonner'
-import { MdAdd, MdSearch, MdClose, MdFilterList, MdOutlineRocketLaunch } from 'react-icons/md'
+import { MdAdd, MdSearch, MdFilterList, MdOutlineRocketLaunch } from 'react-icons/md'
+import { AiOutlineClear } from "react-icons/ai";
 import { CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { useProjects } from '@/context/ProjectsContext'
 import { muiDark2, menuPaper2 } from '@/utils/Projects/StyleInputs'
@@ -10,6 +11,7 @@ import { STATUS_MAP, PRIORITY_MAP } from '@/components/projects/ProjectsConfig'
 import ProjectCard from '@/components/projects/ProjectCard'
 import ProjectForm from '@/components/projects/ProjectForm'
 import ModalDelete from '@/components/projects/ModalDelete'
+import CanDo from '@/components/auth/CanDo';
 
 export default function ProjectsMain() {
   const { projects, users, usersMap, loadingProjects, createProject, updateProject, deleteProject } = useProjects()
@@ -27,7 +29,6 @@ export default function ProjectsMain() {
   const [submitting, setSubmitting] = useState(false)
   const [deleting, setDeleting]     = useState(false)
 
-  // ── Filtered ────────────────────────────────────────────────────────────────
   const filtered = useMemo(() => {
     return projects.filter((p) => {
       if (filterStatus !== 'all' && p.status !== filterStatus) return false
@@ -47,7 +48,6 @@ export default function ProjectsMain() {
     })
   }, [projects, filterStatus, filterPriority, filterDev, search, usersMap])
 
-  // ── Stats ───────────────────────────────────────────────────────────────────
   const stats = useMemo(() => ({
     total:       projects.length,
     em_andamento: projects.filter((p) => p.status === 'em_andamento').length,
@@ -56,7 +56,6 @@ export default function ProjectsMain() {
     suporte: projects.filter((p)=> p.status === 'suporte').length,
   }), [projects])
 
-  // ── Handlers ────────────────────────────────────────────────────────────────
   const handleOpenCreate = () => { setEditingProject(null); setDialogOpen(true) }
   const handleOpenEdit   = useCallback((p) => { setEditingProject(p); setDialogOpen(true) }, [])
   const handleOpenDelete = useCallback((p) => { setDeletingProject(p); setDeleteDialogOpen(true) }, [])
@@ -98,11 +97,9 @@ export default function ProjectsMain() {
   const clearFilters = () => { setFilterStatus('all'); setFilterPriority('all'); setFilterDev('all'); setSearch('') }
   const hasFilters = filterStatus !== 'all' || filterPriority !== 'all' || filterDev !== 'all' || search
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
 
-      {/* HEADER */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16 }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
@@ -116,23 +113,31 @@ export default function ProjectsMain() {
             {projects.length} projeto{projects.length !== 1 ? 's' : ''} cadastrado{projects.length !== 1 ? 's' : ''}
           </p>
         </div>
+        <CanDo permission="canCreateProjects">
+            <button
+                onClick={handleOpenCreate}
+                type="button"
+                className="
+                    relative inline-flex items-center gap-1.5
+                    px-4.5 h-9.5 rounded-[7px]
+                    text-[13px] font-bold tracking-tight text-black
+                    bg-linear-to-br from-brand-500 to-brand-600
+                    overflow-hidden cursor-pointer
+                    transition-all duration-150
+                    hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(25,202,104,0.42)]
+                    active:scale-[0.97]
+                    shadow-[0_2px_10px_rgba(25,202,104,0.25)]
+                "
+            >
+                <span className="pointer-events-none absolute inset-0 rounded-[10px] bg-linear-to-b from-white/18 to-transparent" />
 
-        <button onClick={handleOpenCreate} type='button'
-          style={{
-            display: 'flex', alignItems: 'center', gap: 7,
-            background: 'linear-gradient(135deg, #19CA68, #1AD76F)', border: 'none', borderRadius: 10, color: '#000',
-            padding: '10px 20px', cursor: 'pointer', fontSize: 13, fontWeight: 700,
-            boxShadow: '0 4px 14px rgba(25,202,104,0.3)', transition: 'transform 0.15s, box-shadow 0.15s',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(25,202,104,0.45)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(25,202,104,0.3)' }}
-        >
-          <MdAdd size={18} /> Novo Projeto
-        </button>
+
+                <span className="relative z-10">Novo Projeto</span>
+            </button>
+        </CanDo>
       </div>
 
-      {/* STAT PILLS */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, userSelect:'none' }}>
         {[
           { label: 'Total', value: stats.total,        color: '#a78bfa', bg: 'rgba(167,139,250,0.1)', border: 'rgba(167,139,250,0.2)' },
           { label: 'Em Andamento', value: stats.em_andamento, color: 'var(--color-cyan-400)', bg: 'var(--color-surface-cyan-alt)',  border: 'var(--color-surface-cyan-md)'  },
@@ -220,8 +225,8 @@ export default function ProjectsMain() {
         ))} */}
 
         {hasFilters && (
-          <button onClick={clearFilters} type='button' style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, color: '#ef4444', padding: '6px 12px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-            <MdClose size={13} /> Limpar
+          <button onClick={clearFilters} type='button' style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, color: '#ef4444', padding: ' 8px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+            <AiOutlineClear className='text-xl'/>
           </button>
         )}
       </div>
