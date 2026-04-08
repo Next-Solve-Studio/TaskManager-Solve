@@ -22,7 +22,7 @@ export const menuItems = [
     {
         icon:FiLayers ,
         label:'Lista de Projetos',
-        href: "/",
+        href: "/projects",
         roles: [ADMIN, PROJECT_LEAD]
     },
     {
