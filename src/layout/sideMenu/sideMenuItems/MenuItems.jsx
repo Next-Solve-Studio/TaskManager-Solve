@@ -23,7 +23,7 @@ export const menuItems = [
         icon:FiLayers ,
         label:'Lista de Projetos',
         href: "/projects",
-        roles: [ADMIN, PROJECT_LEAD]
+        roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     },
     {
         icon: FiFolder,
