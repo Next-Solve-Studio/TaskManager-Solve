@@ -9,7 +9,7 @@ import {
 import { MdOutlineRocketLaunch, MdClose, MdPerson, MdCode, MdComputer } from 'react-icons/md'
 import { RiGitBranchLine } from 'react-icons/ri'
 import { STATUS_MAP, PRIORITY_MAP, projectSchema } from '@/components/projects/ProjectsConfig'
-import { Avatar } from "./ProjectBadges"
+import { Avatar } from "../ProjectBadges"
 import { muiDark } from "@/utils/Projects/StyleInputs"
 import { formatDateInput } from "@/utils/Projects/FormatDateProjects"
 
@@ -202,4 +202,3 @@ export default function ProjectForm({ open, onClose, project, users, onSubmit, l
         </Dialog>
     )
 }
-//EXPLIQUE CADA LINHA DETALHADAMENTE COMO SE FOSSE PARA UMA PESSOA INICIANTE

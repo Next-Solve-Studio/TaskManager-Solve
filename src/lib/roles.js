@@ -22,7 +22,7 @@ export const ROLE_COLORS = {
  */
 
 export const PERMISSIONS = {
-  // Usuários
+  // Usuárioscan Assign TaskscanEditProjects
   canManageUsers:    [ROLES.ADMIN],
   canViewUsers:      [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
@@ -35,6 +35,7 @@ export const PERMISSIONS = {
 
   // Projetos
   canCreateProjects: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+  canEditProjects:   [ROLES.ADMIN, ROLES.PROJECT_LEAD],
   canDeleteProjects: [ROLES.ADMIN],
   canViewReports:    [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 }

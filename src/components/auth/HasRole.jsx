@@ -22,5 +22,5 @@ import { useRole } from "@/hooks/useRole"
 export default function HasRole({ role, fallback = null, children }) {
     const { hasRole } = useRole()
     const roles = Array.isArray(role) ? role : [role]
-    return hasRole(...roles) ? children : fallback
+    return hasRole(...roles) ? children : fallback // so mostra o children se tiver o cargo na lista de roles criada acima
 }

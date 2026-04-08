@@ -10,3 +10,16 @@ export const formatDateInput = (date) => {
 
   return d.toISOString().split('T')[0] // yyyy-MM-dd
 }
+
+export const parseDate = (date) => {
+  if (!date) return null
+
+  if (typeof date.toDate === 'function') return date.toDate()
+
+  if (date instanceof Date) {
+    return Number.isNaN(date.getTime()) ? null : date
+  }
+
+  const parsed = new Date(date)
+  return Number.isNaN(parsed.getTime()) ? null : parsed
+}

@@ -8,9 +8,9 @@ import { CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mu
 import { useProjects } from '@/context/ProjectsContext'
 import { muiDark2, menuPaper2 } from '@/utils/Projects/StyleInputs'
 import { STATUS_MAP, PRIORITY_MAP } from '@/components/projects/ProjectsConfig'
-import ProjectCard from '@/components/projects/ProjectCard'
-import ProjectForm from '@/components/projects/ProjectForm'
-import ModalDelete from '@/components/projects/ModalDelete'
+import ProjectCard from '@/components/projects/card/ProjectCard'
+import ProjectForm from '@/components/projects/modals/ProjectForm'
+import ModalDelete from '@/components/projects/modals/ModalDelete'
 import CanDo from '@/components/auth/CanDo';
 
 export default function ProjectsMain() {
@@ -209,20 +209,6 @@ export default function ProjectsMain() {
                 ))}
             </Select>
         </FormControl>
-        {/* {[
-          { value: filterStatus,   onChange: setFilterStatus,   options: [['all', 'Todos status'], ...Object.entries(STATUS_MAP).map(([v, c]) => [v, c.label])] },
-          { value: filterPriority, onChange: setFilterPriority, options: [['all', 'Todas prioridades'], ...Object.entries(PRIORITY_MAP).map(([v, c]) => [v, c.label])] },
-          { value: filterDev,      onChange: setFilterDev,      options: [['all', 'Todos devs'], ...users.map((u) => [u.id, u.name])] },
-        ].map((f, i) => (
-          // biome-ignore lint/suspicious/noArrayIndexKey: <>
-          <select key={i} value={f.value} onChange={(e) => f.onChange(e.target.value)}
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#9ca3af', padding: '7px 12px', fontSize: 12, cursor: 'pointer', outline: 'none' }}>
-            {f.options.map(([val, label]) => (
-              <option key={val} value={val}>{label}</option>
-            ))}
-          </select>
-          
-        ))} */}
 
         {hasFilters && (
           <button onClick={clearFilters} type='button' style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, color: '#ef4444', padding: ' 8px', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>

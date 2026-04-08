@@ -61,19 +61,17 @@ export const AuthProvider = ({ children})  => {
     }, [setSessionCookie])
 
     const login = async (email, password) => { // Função de login, recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-       
-            const userCredential = await signInWithEmailAndPassword(auth, email, password)
-            const token = await userCredential.user.getIdToken()
-            setSessionCookie(token)
-            router.goHome()
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+        const token = await userCredential.user.getIdToken()
+        setSessionCookie(token)
+        router.goHome()
     }
 
     const register = async (name, email, password) => {
         // Função de registro, cria um novo usuário no Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         const token = await userCredential.user.getIdToken()
-
-        //Verifica se é o primeiro usuário
+0
         const usersSnapshot = await getDocs(collection(db, "users"))
         const isFirstUser = usersSnapshot.empty
 

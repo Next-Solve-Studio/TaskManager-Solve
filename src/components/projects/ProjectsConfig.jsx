@@ -86,16 +86,3 @@ export function avatarColor(uid = '') {
   for (const c of uid) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
 }
-
-export const parseDate = (date) => {
-  if (!date) return null
-
-  if (typeof date.toDate === 'function') return date.toDate()
-
-  if (date instanceof Date) {
-    return Number.isNaN(date.getTime()) ? null : date
-  }
-
-  const parsed = new Date(date)
-  return Number.isNaN(parsed.getTime()) ? null : parsed
-}
