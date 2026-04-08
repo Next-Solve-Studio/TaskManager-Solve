@@ -9,7 +9,7 @@ export const menuItems = [
     {
         icon:FiUsers,
         label:'Usuários',
-        href: "/",
+        href: "/users",
         roles: [ADMIN]
 
     },

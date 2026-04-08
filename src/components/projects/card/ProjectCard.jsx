@@ -72,9 +72,9 @@ export default function ProjectCard({project, usersMap, onEdit, onDelete}){
         
     return (
         <div
-        className="bg-bg-card border border-white/5 rounded-xl p-4 flex flex-col gap-3
+            className="bg-bg-card border border-white/5 rounded-xl p-4 flex flex-col gap-3
                 transition-all duration-200
-                hover:border-green-400/20 hover:-translate-y-0.5"
+                hover:border-green-400/20 hover:-translate-y-0.5 select-none"
         >
 
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
@@ -113,7 +113,7 @@ export default function ProjectCard({project, usersMap, onEdit, onDelete}){
                         gap: '8px',
                         transition: 'all 0.2s ease',
                         '&:hover': {
-                            backgroundColor: 'var(--color-bg-hover)', // Fundo claro ao passar o mouse
+                            backgroundColor: 'var(--color-bg-hover)', 
                         }
                     }}
                 >
@@ -127,7 +127,7 @@ export default function ProjectCard({project, usersMap, onEdit, onDelete}){
                         gap: '8px',
                         transition: 'all 0.2s ease',
                         '&:hover': {
-                            backgroundColor: 'var(--color-bg-hover)', // Fundo claro ao passar o mouse
+                            backgroundColor: 'var(--color-bg-hover)',
                         }
                     }}
                 >
