@@ -1,10 +1,11 @@
+//Layout do Grupo de Rotas
 'use client'
 
 import SideMenu from "@/layout/sideMenu/SideMenu";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { ProjectsProvider } from "@/context/ProjectsContext";
+import AppProviders from "@/context/AppProviders";
 
 export default function MainLayout ({ children }) {
     const {currentUser, loading} = useAuth()
@@ -22,13 +23,13 @@ export default function MainLayout ({ children }) {
     }
 
     return (
-        <ProjectsProvider>
+        <AppProviders>
             <div className="flex min-h-screen pr-10">
                 <SideMenu/>
                 <main className="w-full">
                     {children}
                 </main>
             </div>
-        </ProjectsProvider>
+        </AppProviders>
     )
 }

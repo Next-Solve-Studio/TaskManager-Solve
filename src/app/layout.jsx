@@ -1,3 +1,4 @@
+//Root Layout
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "sonner"
