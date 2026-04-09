@@ -1,8 +1,10 @@
 import UsersMain from "@/components/users/UsersMain";
-
+import ProtectedRoutes from "@/components/auth/ProtectedRoutes";
 
 export default function usersPage() {
     return (
-        <UsersMain/>
+        <ProtectedRoutes permission="canViewUsers">
+            <UsersMain/>
+        </ProtectedRoutes>
     )
 }
