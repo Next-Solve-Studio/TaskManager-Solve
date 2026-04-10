@@ -1,48 +1,20 @@
 'use client'
 
-import { useEffect, useState, useMemo, useCallback } from 'react'
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'
-import { db } from '@/lib/firebaseConfig'
+import { useState, useMemo, useCallback } from 'react'
 import { MdSearch, MdPeople, MdAdminPanelSettings, MdCode, MdSupervisorAccount, MdEdit, MdDelete } from 'react-icons/md'
 import { AiOutlineClear } from 'react-icons/ai'
 import RoleBadge from '@/components/auth/RoleBadge'
 import { ROLES, ROLE_LABELS } from '@/lib/roles'
 import { CircularProgress } from '@mui/material'
-import { toast } from 'sonner'
 import CanDo from '@/components/auth/CanDo'
 import UserEditModal from '@/components/users/modals/UserEditModal'
 import UserDeleteModal from '@/components/users/modals/UserDeleteModal'
+import { useUsers } from '@/context/UsersContext'
+import { Avatar } from '@/components/projects/ProjectBadges'
 
-// ── Avatar ──────────────────────────────────────────────────────────────────
-function UserAvatar({ name, size = 40 }) {
-    const initials = name
-        ?.split(' ')
-        .slice(0, 2)
-        .map((w) => w[0])
-        .join('')
-        .toUpperCase() ?? '?'
-
-    const colors = [
-        { bg: 'rgba(25,202,104,0.15)',  text: '#19CA68', border: 'rgba(25,202,104,0.3)'  },
-        { bg: 'rgba(34,211,238,0.15)',  text: '#22d3ee', border: 'rgba(34,211,238,0.3)'  },
-        { bg: 'rgba(168,85,247,0.15)',  text: '#a855f7', border: 'rgba(168,85,247,0.3)'  },
-        { bg: 'rgba(245,158,11,0.15)',  text: '#f59e0b', border: 'rgba(245,158,11,0.3)'  },
-        { bg: 'rgba(239,68,68,0.15)',   text: '#ef4444', border: 'rgba(239,68,68,0.3)'   },
-    ]
-    const color = colors[(name?.charCodeAt(0) ?? 0) % colors.length]
-
-    return (
-        <div style={{
-            width: size, height: size, borderRadius: '50%',
-            background: color.bg, border: `1.5px solid ${color.border}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: size * 0.36, fontWeight: 700, color: color.text,
-            flexShrink: 0, letterSpacing: '0.03em',
-        }}>
-            {initials}
-        </div>
-    )
-}
+// ── Constantes de layout da tabela ───────────────────────────────────────────
+const COL = '48px 1fr 160px 100px 100px 72px'
+const GAP = 16
 
 // ── Stat Pill ────────────────────────────────────────────────────────────────
 function StatPill({ icon: Icon, label, value, color, bg, border }) {
@@ -60,10 +32,10 @@ function StatPill({ icon: Icon, label, value, color, bg, border }) {
     )
 }
 
-// ── User Card ────────────────────────────────────────────────────────────────
-function UserCard({ user, onEdit, onDelete }) {
+// ── User Row ─────────────────────────────────────────────────────────────────
+function UserRow({ user, onEdit, onDelete }) {
     const formattedDate = useMemo(() => {
-        if (!user.createdAt) return null
+        if (!user.createdAt) return '—'
         const date = user.createdAt?.toDate?.() ?? new Date(user.createdAt)
         return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
     }, [user.createdAt])
@@ -74,17 +46,17 @@ function UserCard({ user, onEdit, onDelete }) {
 
     return (
         // biome-ignore lint/a11y/noStaticElementInteractions: <>
-<div
+        <div
             style={{
+                display: 'grid',
+                gridTemplateColumns: COL,
+                gap: GAP,
+                alignItems: 'center',
+                padding: '12px 20px',
                 background: '#121212',
                 border: '1px solid rgba(255,255,255,0.05)',
-                borderRadius: 14,
-                padding: '16px 20px',
-                display: 'grid',
-                gridTemplateColumns: '44px 1fr 140px 90px 90px auto',
-                gap: 16,
-                alignItems: 'center',
-                transition: 'border-color 0.2s, transform 0.2s',
+                borderRadius: 12,
+                transition: 'border-color 0.2s, transform 0.15s',
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = 'rgba(25,202,104,0.2)'
@@ -96,13 +68,15 @@ function UserCard({ user, onEdit, onDelete }) {
             }}
         >
             {/* Avatar */}
-            <UserAvatar name={user.name} size={44} />
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Avatar name={user.name} uid={user.id} size={36} />
+            </div>
 
             {/* Nome + Email */}
             <div style={{ minWidth: 0 }}>
                 <p style={{
                     color: '#f1f5f9', fontWeight: 700, fontSize: 14,
-                    margin: 0, marginBottom: 3,
+                    margin: 0, marginBottom: 2,
                     overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
                     {user.name}
@@ -116,30 +90,32 @@ function UserCard({ user, onEdit, onDelete }) {
             </div>
 
             {/* Cargo */}
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <RoleBadge role={user.role} />
             </div>
 
             {/* Auth method */}
-            <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                padding: '3px 10px', borderRadius: 6,
-                background: authBg, fontSize: 11, fontWeight: 600,
-                color: authColor,
-            }}>
-                {authLabel}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{
+                    display: 'inline-flex', alignItems: 'center',
+                    padding: '3px 10px', borderRadius: 6,
+                    background: authBg, fontSize: 11, fontWeight: 600,
+                    color: authColor, whiteSpace: 'nowrap',
+                }}>
+                    {authLabel}
+                </span>
             </div>
 
             {/* Data de entrada */}
-            {formattedDate && (
-                <p style={{ fontSize: 11, color: '#4b4b4b', margin: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span style={{ fontSize: 11, color: '#4b5563', whiteSpace: 'nowrap' }}>
                     {formattedDate}
-                </p>
-            )}
+                </span>
+            </div>
 
             {/* Ações */}
             <CanDo permission="canManageUsers">
-                <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+                <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end' }}>
                     <button
                         type="button"
                         onClick={() => onEdit(user)}
@@ -150,7 +126,7 @@ function UserCard({ user, onEdit, onDelete }) {
                             border: '1px solid rgba(34,211,238,0.15)',
                             color: '#22d3ee', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'all 0.15s',
+                            transition: 'all 0.15s', flexShrink: 0,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(34,211,238,0.15)'
@@ -173,7 +149,7 @@ function UserCard({ user, onEdit, onDelete }) {
                             border: '1px solid rgba(239,68,68,0.15)',
                             color: '#ef4444', cursor: 'pointer',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            transition: 'all 0.15s',
+                            transition: 'all 0.15s', flexShrink: 0,
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(239,68,68,0.15)'
@@ -194,55 +170,15 @@ function UserCard({ user, onEdit, onDelete }) {
 
 // ── Main ─────────────────────────────────────────────────────────────────────
 export default function UsersMain() {
-    const [users, setUsers]     = useState([])
-    const [loading, setLoading] = useState(true)
-    const [search, setSearch]   = useState('')
+    const { users, loading } = useUsers()
+
+    const [search,     setSearch]     = useState('')
     const [filterRole, setFilterRole] = useState('all')
+    const [editingUser,  setEditingUser]  = useState(null)
+    const [deletingUser, setDeletingUser] = useState(null)
 
-    // Modais
-    const [editingUser, setEditingUser]     = useState(null)
-    const [deletingUser, setDeletingUser]   = useState(null)
-    const [deleting, setDeleting]           = useState(false)
-
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                const snapshot = await getDocs(collection(db, 'users'))
-                const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }))
-                setUsers(data)
-            } catch (err) {
-                console.error('Erro ao buscar usuários:', err)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchUsers()
-    }, [])
-
-    const handleOpenEdit   = useCallback((user) => setEditingUser(user), [])
+    const handleOpenEdit   = useCallback((user) => setEditingUser(user),  [])
     const handleOpenDelete = useCallback((user) => setDeletingUser(user), [])
-
-    // Atualiza cargo localmente após salvar
-    const handleUserUpdated = useCallback((userId, newRole) => {
-        setUsers((prev) => prev.map((u) => u.id === userId ? { ...u, role: newRole } : u))
-    }, [])
-
-    // Exclui usuário do Firestore e do estado local
-    const handleConfirmDelete = async () => {
-        if (!deletingUser) return
-        setDeleting(true)
-        try {
-            await deleteDoc(doc(db, 'users', deletingUser.id))
-            setUsers((prev) => prev.filter((u) => u.id !== deletingUser.id))
-            toast.success('Usuário excluído!')
-            setDeletingUser(null)
-        } catch (err) {
-            console.error(err)
-            toast.error('Erro ao excluir usuário')
-        } finally {
-            setDeleting(false)
-        }
-    }
 
     const filtered = useMemo(() => {
         return users.filter((u) => {
@@ -291,7 +227,7 @@ export default function UsersMain() {
                         <MdPeople style={{ color: '#19CA68', fontSize: 18 }} />
                         <span style={{
                             fontSize: 11, fontWeight: 700,
-                            textTransform: 'uppercase', letterSpacing: '0.12em', color: '#4b4b4b',
+                            textTransform: 'uppercase', letterSpacing: '0.12em', color: '#4b5563',
                         }}>
                             Gestão de Usuários
                         </span>
@@ -305,10 +241,10 @@ export default function UsersMain() {
 
             {/* ── Stats ── */}
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-                <StatPill icon={MdPeople}            label="Total"    value={stats.total}  color="#a78bfa" bg="rgba(167,139,250,0.1)"           border="rgba(167,139,250,0.2)" />
-                <StatPill icon={MdAdminPanelSettings} label="Admins"  value={stats.admins} color="var(--color-brand-500)" bg="var(--color-surface-green-alt)" border="var(--color-surface-green-md)" />
-                <StatPill icon={MdSupervisorAccount}  label="Líderes" value={stats.leads}  color="var(--color-cyan-400)"  bg="var(--color-surface-cyan-alt)"  border="var(--color-surface-cyan-md)" />
-                <StatPill icon={MdCode}               label="Devs"    value={stats.devs}   color="#6b7280" bg="rgba(75,75,75,0.15)"              border="rgba(75,75,75,0.3)" />
+                <StatPill icon={MdPeople}             label="Total"    value={stats.total}  color="#a78bfa" bg="rgba(167,139,250,0.1)"           border="rgba(167,139,250,0.2)" />
+                <StatPill icon={MdAdminPanelSettings} label="Admins"   value={stats.admins} color="var(--color-brand-500)" bg="var(--color-surface-green-alt)" border="var(--color-surface-green-md)" />
+                <StatPill icon={MdSupervisorAccount}  label="Líderes"  value={stats.leads}  color="var(--color-cyan-400)"  bg="var(--color-surface-cyan-alt)"  border="var(--color-surface-cyan-md)" />
+                <StatPill icon={MdCode}               label="Devs"     value={stats.devs}   color="#6b7280" bg="rgba(75,75,75,0.15)"              border="rgba(75,75,75,0.3)" />
             </div>
 
             {/* ── Filters ── */}
@@ -319,7 +255,6 @@ export default function UsersMain() {
                 border: '1px solid rgba(255,255,255,0.06)',
                 borderRadius: 14, alignItems: 'center',
             }}>
-                {/* Busca */}
                 <div style={{ position: 'relative', flex: '1 1 200px', minWidth: 180 }}>
                     <MdSearch size={16} style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
                     <input
@@ -335,7 +270,6 @@ export default function UsersMain() {
                     />
                 </div>
 
-                {/* Filtro de cargo */}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {roleFilters.map((rf) => {
                         const active = filterRole === rf.value
@@ -359,7 +293,6 @@ export default function UsersMain() {
                     })}
                 </div>
 
-                {/* Limpar */}
                 {hasFilters && (
                     <button
                         onClick={clearFilters}
@@ -389,20 +322,21 @@ export default function UsersMain() {
                     border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16,
                 }}>
                     <MdPeople style={{ fontSize: 44, color: '#2D2D2D' }} />
-                    <p style={{ color: '#4b4b4b', fontSize: 14, fontWeight: 600 }}>
+                    <p style={{ color: '#4b5563', fontSize: 14, fontWeight: 600 }}>
                         {users.length === 0 ? 'Nenhum usuário cadastrado ainda' : 'Nenhum usuário encontrado'}
                     </p>
                 </div>
             ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {/* Cabeçalho */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: '44px 1fr 140px 90px 90px auto',
-                        gap: 16, padding: '6px 20px',
+                        gridTemplateColumns: COL,
+                        gap: GAP,
+                        padding: '6px 20px',
                         fontSize: 11, fontWeight: 700,
                         textTransform: 'uppercase', letterSpacing: '0.08em',
-                        color: '#4b4b4b', userSelect: 'none',
+                        color: '#4b5563', userSelect: 'none',
                     }}>
                         <span />
                         <span>Usuário</span>
@@ -413,7 +347,7 @@ export default function UsersMain() {
                     </div>
 
                     {filtered.map((user) => (
-                        <UserCard
+                        <UserRow
                             key={user.id}
                             user={user}
                             onEdit={handleOpenEdit}
@@ -424,20 +358,17 @@ export default function UsersMain() {
             )}
 
             {/* ── Modais ── */}
-            {/* <UserEditModal
+            <UserEditModal
                 open={Boolean(editingUser)}
                 onClose={() => setEditingUser(null)}
                 user={editingUser}
-                onUpdated={handleUserUpdated}
             />
 
             <UserDeleteModal
                 open={Boolean(deletingUser)}
                 onClose={() => setDeletingUser(null)}
                 user={deletingUser}
-                onConfirm={handleConfirmDelete}
-                loading={deleting}
-            /> */}
+            />
         </div>
     )
 }
