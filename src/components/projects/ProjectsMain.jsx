@@ -6,7 +6,7 @@ import { MdAdd, MdSearch, MdFilterList, MdOutlineRocketLaunch } from 'react-icon
 import { AiOutlineClear } from "react-icons/ai";
 import { CircularProgress, FormControl, InputLabel, Select, MenuItem } from '@mui/material'
 import { useProjects } from '@/context/ProjectsContext'
-import { muiDark2, menuPaper2 } from '@/utils/Projects/StyleInputs'
+import { muiDark2, menuPaper2 } from '@/utils/StyleInputs'
 import { STATUS_MAP, PRIORITY_MAP } from '@/components/projects/ProjectsConfig'
 import ProjectCard from '@/components/projects/card/ProjectCard'
 import ProjectForm from '@/components/projects/modals/ProjectForm'

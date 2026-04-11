@@ -5,7 +5,7 @@ import { MdClose, MdEdit } from 'react-icons/md'
 import { ROLE_LABELS, ROLES_STYLES } from '@/lib/roles'
 import { useUsers } from '@/context/UsersContext'
 import { Avatar } from '@/components/projects/ProjectBadges'
-import { menuPaper, muiDark2 } from '@/utils/Projects/StyleInputs'
+import { menuPaper, muiDark2 } from '@/utils/StyleInputs'
 import { toast } from 'sonner'
 
 

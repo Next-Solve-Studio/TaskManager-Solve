@@ -8,7 +8,7 @@ import {
 import { RiGitBranchLine } from 'react-icons/ri'
 import { Menu, MenuItem, Tooltip } from '@mui/material'
 import { Avatar, StatusBadge, PriorityBadge } from "../ProjectBadges";
-import { parseDate } from "@/utils/Projects/FormatDateProjects";
+import { parseDate } from "@/utils/FormatDateProjects";
 import CanDo from "@/components/auth/CanDo";
 export default function ProjectCard({project, usersMap, onEdit, onDelete}){
     //guarda o elemento HTML que servirá de “âncora” para o menu (que começa fechado)

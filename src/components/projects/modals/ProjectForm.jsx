@@ -10,8 +10,8 @@ import { MdOutlineRocketLaunch, MdClose, MdPerson, MdCode, MdComputer } from 're
 import { RiGitBranchLine } from 'react-icons/ri'
 import { STATUS_MAP, PRIORITY_MAP, projectSchema } from '@/components/projects/ProjectsConfig'
 import { Avatar } from "../ProjectBadges"
-import { muiDark } from "@/utils/Projects/StyleInputs"
-import { formatDateInput } from "@/utils/Projects/FormatDateProjects"
+import { muiDark } from "@/utils/StyleInputs"
+import { formatDateInput } from "@/utils/FormatDateProjects"
 
 
 const menuPaper = {
