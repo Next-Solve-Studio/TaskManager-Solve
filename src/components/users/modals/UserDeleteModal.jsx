@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { useState } from 'react'
 
 export default function UserDeleteModal({ open, onClose, user }) {
-    const {deleteUser} = useUsers()
+    const {deleteUser} = useUsers() // função para excluir user
     const [loading, setLoading] = useState(false)
 
     const handleClose = () => { if(!loading) onClose()}
@@ -17,12 +17,12 @@ export default function UserDeleteModal({ open, onClose, user }) {
         setLoading(true)
 
         try {
-            await deleteUser(user.id)
+            await deleteUser(user.id) // Chama a função do contexto deletar o user
             toast.success(`${user.name} foi removido!`)
             onClose()
         }catch (err) {
             console.error(err)
-            toast.error('Erro ao excluir usuário')
+            toast.error('Erro ao excluir usuário: ', err)
         } finally {
             setLoading(false)
         }

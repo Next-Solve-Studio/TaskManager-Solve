@@ -5,16 +5,17 @@ import { MdClose, MdEdit } from 'react-icons/md'
 import { ROLE_LABELS, ROLES_STYLES } from '@/lib/roles'
 import { useUsers } from '@/context/UsersContext'
 import { Avatar } from '@/components/projects/ProjectBadges'
-import { muiDark, menuPaper, muiDark2 } from '@/utils/Projects/StyleInputs'
+import { menuPaper, muiDark2 } from '@/utils/Projects/StyleInputs'
 import { toast } from 'sonner'
 
 
 export default function UserEditModal({ open, onClose, user }) {
-    const { updateUser } = useUsers()
-    const [selectedRole, setSelectedRole] = useState('')
+    const { updateUser } = useUsers() // função para editar user
+    const [selectedRole, setSelectedRole] = useState('') 
     const [loading, setLoading] = useState(false)
  
     useEffect(() => {
+        //se o pop up abrir e tiver um user logado, pega o cargo atual dele
         if (open && user) setSelectedRole(user.role || '')
     }, [open, user])
  
@@ -24,19 +25,19 @@ export default function UserEditModal({ open, onClose, user }) {
         if (!user || selectedRole === user.role) { onClose(); return }
         setLoading(true)
         try {
-            await updateUser(user.id, selectedRole)
+            await updateUser(user.id, selectedRole) // Chama a função do contexto para atualizar o cargo no servidor
             toast.success(`Cargo de ${user.name} atualizado!`)
             onClose()
         } catch (err) {
             console.error(err)
-            toast.error('Erro ao atualizar cargo')
+            toast.error('Erro ao atualizar cargo: ', err)
         } finally {
             setLoading(false)
         }
     }
  
-    const meta = ROLES_STYLES[selectedRole]
-    const changed = selectedRole !== user?.role
+    const meta = ROLES_STYLES[selectedRole] // Pega do objeto ROLES_STYLES as informações dele
+    const changed = selectedRole !== user?.role // Verifica se o cargo selecionado é diferente do cargo original do usuário
  
     return (
         <Dialog

@@ -25,7 +25,7 @@ export const muiDark2 = {
   },
   '& .MuiInputLabel-root': {
     color: '#9ca3af',
-    '&.Mui-focused ': { Color: '#9ca3af' },
+    '&.Mui-focused ': { color: '#9ca3af' },
 
   
   },
