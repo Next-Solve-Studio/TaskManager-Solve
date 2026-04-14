@@ -1,6 +1,3 @@
 {
-    "recommendations": [
-        "google.geminicodeassist",
-        "github.copilot-chat"
-    ]
+  "recommendations": ["google.geminicodeassist", "github.copilot-chat"]
 }

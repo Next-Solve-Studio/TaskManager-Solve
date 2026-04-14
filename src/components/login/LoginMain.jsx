@@ -1,26 +1,27 @@
-'use client'
+"use client";
 import { useState } from "react";
-import RegisterForm from "./RegisterForm";
 import LoginForm from "./LoginForm";
-
-
+import RegisterForm from "./RegisterForm";
 
 export default function LoginMain() {
-    const [haveAccount, setHaveAccount] = useState(true)
-    return (
-        <main className="flex flex-col md:flex-row min-h-screen items-center justify-between w-full ">
-            
-                <div className="z-10  flex flex-col gap-6 items-center justify-center overflow-hidden flex-1 h-screen max-w-180 min-w-90 lg:min-w-110">
-                    {haveAccount ?
-                        <LoginForm setHaveAccount={setHaveAccount} haveAccount={haveAccount}/>
-                    :
-                        <RegisterForm setHaveAccount={setHaveAccount} haveAccount={haveAccount}/>
-                    }
-                </div>
-            
-            
-            <div className="absolute inset-0 md:relative md:inset-auto bg-geometric bg-cover bg-no-repeat h-screen w-full md:w-[80%] md:min-w-50 bg-linear-to-br from-neutral-500 to-neutral-900">
-            </div>
-        </main>
-    )
+  const [haveAccount, setHaveAccount] = useState(true);
+  return (
+    <main className="flex flex-col md:flex-row min-h-screen items-center justify-between w-full ">
+      <div className="z-10  flex flex-col gap-6 items-center justify-center overflow-hidden flex-1 h-screen max-w-180 min-w-90 lg:min-w-110">
+        {haveAccount ? (
+          <LoginForm
+            setHaveAccount={setHaveAccount}
+            haveAccount={haveAccount}
+          />
+        ) : (
+          <RegisterForm
+            setHaveAccount={setHaveAccount}
+            haveAccount={haveAccount}
+          />
+        )}
+      </div>
+
+      <div className="absolute inset-0 md:relative md:inset-auto bg-geometric bg-cover bg-no-repeat h-screen w-full md:w-[80%] md:min-w-50 bg-linear-to-br from-neutral-500 to-neutral-900"></div>
+    </main>
+  );
 }

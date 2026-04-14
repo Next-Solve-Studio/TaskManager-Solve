@@ -1,7 +1,7 @@
 //Root Layout
 import "./globals.css";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
-import { Toaster } from "sonner"
 
 export const metadata = {
   title: "Task Manager Solve",
@@ -9,16 +9,14 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
-    return (
-        <html lang="pt-BR">
-            <body
-                className={`antialiased`}
-            >
-                <AuthProvider>
-                    {children}
-                    <Toaster />
-                </AuthProvider>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="pt-BR">
+      <body className={`antialiased`}>
+        <AuthProvider>
+          {children}
+          <Toaster />
+        </AuthProvider>
+      </body>
+    </html>
+  );
 }

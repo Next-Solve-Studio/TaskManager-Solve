@@ -1,139 +1,175 @@
-"use client"
-import { toast } from "sonner"
-import { useState } from "react"
-import { useAuth } from "@/context/AuthContext"
-import { TextField, CircularProgress, InputAdornment} from "@mui/material"
-import { IoMdLock } from "react-icons/io";
-import { MdOutlineEmail } from "react-icons/md"
+"use client";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { CircularProgress, InputAdornment, TextField } from "@mui/material";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import GoogleLoginBtn from "./GoogleLoginBtn"
-import { useForm } from "react-hook-form"
-import { yupResolver } from "@hookform/resolvers/yup"
-import * as yup from "yup"
+import { IoMdLock } from "react-icons/io";
+import { MdOutlineEmail } from "react-icons/md";
+import { toast } from "sonner";
+import * as yup from "yup";
+import { useAuth } from "@/context/AuthContext";
+import GoogleLoginBtn from "./GoogleLoginBtn";
 
 //Schema de validação com Yup
-const schema = yup.object({
-    email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
-    password: yup.string().min(6, "A senha deve ter pelo 6 caracteres").required("A senha é obrigatória"),
-}).required()
+const schema = yup
+  .object({
+    email: yup
+      .string()
+      .email("E-mail inválido")
+      .required("O e-mail é obrigatório"),
+    password: yup
+      .string()
+      .min(6, "A senha deve ter pelo 6 caracteres")
+      .required("A senha é obrigatória"),
+  })
+  .required();
 
-export default function LoginForm({setHaveAccount}) {
-    const { login } =   useAuth()
-    const [loading, setLoading] = useState(false)
-    const [seePassword, setSeePassword] = useState(false)
+export default function LoginForm({ setHaveAccount }) {
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [seePassword, setSeePassword] = useState(false);
 
-    // Configuração do React Hook Form
-    const { register, handleSubmit, formState: {errors}} = useForm({
-        resolver: yupResolver(schema)
-    })
+  // Configuração do React Hook Form
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-    async function onSubmit(data) {
-        if (!data.email || !data.password) {
-            toast.warning("Preencha todos os campos !")
-            return
-        }
-        setLoading(true)
-
-        try {
-            await login(data.email, data.password)
-
-            toast.success("Login realizado com sucesso!", {
-                description: "Bem-vindo de volta!",
-            })
-            
-        } catch (error) {
-            const messages = {
-                "auth/user-not-found": "Nenhuma conta encontrada com este e-mail.",
-                "auth/wrong-password": "Senha incorreta.",
-                "auth/invalid-email": "E-mail inválido.",
-                "auth/invalid-credential": "E-mail ou senha incorretos.",
-                "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde.",
-            }
-
-            toast.error("Erro ao fazer login", {
-                description: messages[error.code] ?? "Tente novamente mais tarde.",
-            })
-        } finally {
-            setLoading(false)
-        }
+  async function onSubmit(data) {
+    if (!data.email || !data.password) {
+      toast.warning("Preencha todos os campos !");
+      return;
     }
+    setLoading(true);
 
-    const fieldSx = {
-        "& .MuiOutlinedInput-root": {
+    try {
+      await login(data.email, data.password);
 
-            borderRadius: "10px",
-            color: "white",
-            "& fieldset": { borderColor: "var(--color-bg-hover)" },
-            "&:hover fieldset": { borderColor: "var(--color-bg-hover2)" },
-            "&.Mui-focused fieldset": { borderColor: "var(--color-primary)", borderWidth: "1.5px" },
-        },
-        "& .MuiInputLabel-root": { color: "#666" },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-primary)" },
+      toast.success("Login realizado com sucesso!", {
+        description: "Bem-vindo de volta!",
+      });
+    } catch (error) {
+      const messages = {
+        "auth/user-not-found": "Nenhuma conta encontrada com este e-mail.",
+        "auth/wrong-password": "Senha incorreta.",
+        "auth/invalid-email": "E-mail inválido.",
+        "auth/invalid-credential": "E-mail ou senha incorretos.",
+        "auth/too-many-requests":
+          "Muitas tentativas. Tente novamente mais tarde.",
+      };
 
-        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active": {
-            transition: "background-color 50000s ease-in-out 0s",
-            WebkitTextFillColor: "white !important",
-            caretColor: "white",
-        },
+      toast.error("Erro ao fazer login", {
+        description: messages[error.code] ?? "Tente novamente mais tarde.",
+      });
+    } finally {
+      setLoading(false);
     }
+  }
 
-    function handlePassword(){
-        setSeePassword(!seePassword)
-    }
+  const fieldSx = {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "10px",
+      color: "white",
+      "& fieldset": { borderColor: "var(--color-bg-hover)" },
+      "&:hover fieldset": { borderColor: "var(--color-bg-hover2)" },
+      "&.Mui-focused fieldset": {
+        borderColor: "var(--color-primary)",
+        borderWidth: "1.5px",
+      },
+    },
+    "& .MuiInputLabel-root": { color: "#666" },
+    "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-primary)" },
 
-    return (
-        <form onSubmit={handleSubmit(onSubmit)} className="bg-white/10 backdrop-blur-xl md:bg-transparent md:border-0 md:backdrop-blur-none border border-white/20 
-                shadow-2xl absolute top-10 md:top-0 md:relative flex flex-col gap-10 overflow-hidden rounded-2xl mx-auto w-[90%] sm:w-full max-w-120 p-8 pb-20">
-            <h2 className="flex items-center justify-center w-full max-w-100 text-4xl font-bold text-center ">Acesse sua Conta</h2>
-            <div className="flex flex-col gap-5">
-               
-                <TextField
-                    {...register("email")}
-                    label="E-mail"
-                    variant="outlined"
-                    type="email"
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                    sx={fieldSx}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <MdOutlineEmail color="var(--color-primary)" size={20} />
-                            </InputAdornment>
-                        )
-                    }}
-                />
-                <div className="flex w-full relative items-center">
-                    <TextField
-                        {...register("password")}
-                        label="Senha"
-                        variant="outlined"
-                        type={seePassword ? "text" : "password"}
-                        error={!!errors.password}
-                        helperText={errors.password?.message}
-                        sx={fieldSx}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <IoMdLock color="var(--color-primary)" size={20} />
-                                </InputAdornment>
-                            )
-                        }}
-                        className="w-full"
-                    
-                    />
-                    <button type="button" className="absolute right-2" onClick={handlePassword}>{seePassword ?
-                        <FaEyeSlash size={20} className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"/>
-                        :
-                        <FaEye size={20} className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"/>}
-                    </button>
-                </div>
-                <button type="button" className="text-white md:text-bg-hover2 cursor-pointer md:hover:text-brand-700" onClick={() => setHaveAccount(false)}>Não tem uma conta? clique aqui</button>
-            </div>
-            <button
-                type="submit"
-                disabled={loading}
-                className="
+    "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
+      {
+        transition: "background-color 50000s ease-in-out 0s",
+        WebkitTextFillColor: "white !important",
+        caretColor: "white",
+      },
+  };
+
+  function handlePassword() {
+    setSeePassword(!seePassword);
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="bg-white/10 backdrop-blur-xl md:bg-transparent md:border-0 md:backdrop-blur-none border border-white/20 
+                shadow-2xl absolute top-10 md:top-0 md:relative flex flex-col gap-10 overflow-hidden rounded-2xl mx-auto w-[90%] sm:w-full max-w-120 p-8 pb-20"
+    >
+      <h2 className="flex items-center justify-center w-full max-w-100 text-4xl font-bold text-center ">
+        Acesse sua Conta
+      </h2>
+      <div className="flex flex-col gap-5">
+        <TextField
+          {...register("email")}
+          label="E-mail"
+          variant="outlined"
+          type="email"
+          error={!!errors.email}
+          helperText={errors.email?.message}
+          sx={fieldSx}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <MdOutlineEmail color="var(--color-primary)" size={20} />
+              </InputAdornment>
+            ),
+          }}
+        />
+        <div className="flex w-full relative items-center">
+          <TextField
+            {...register("password")}
+            label="Senha"
+            variant="outlined"
+            type={seePassword ? "text" : "password"}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            sx={fieldSx}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <IoMdLock color="var(--color-primary)" size={20} />
+                </InputAdornment>
+              ),
+            }}
+            className="w-full"
+          />
+          <button
+            type="button"
+            className="absolute right-2"
+            onClick={handlePassword}
+          >
+            {seePassword ? (
+              <FaEyeSlash
+                size={20}
+                className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"
+              />
+            ) : (
+              <FaEye
+                size={20}
+                className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"
+              />
+            )}
+          </button>
+        </div>
+        <button
+          type="button"
+          className="text-white md:text-bg-hover2 cursor-pointer md:hover:text-brand-700"
+          onClick={() => setHaveAccount(false)}
+        >
+          Não tem uma conta? clique aqui
+        </button>
+      </div>
+      <button
+        type="submit"
+        disabled={loading}
+        className="
                     mt-1 h-12 w-full max-w-100 mx-auto rounded-lg
                     font-semibold text-xl tracking-wide
                     bg-brand-600 sm:hover:bg-brand-700
@@ -144,10 +180,10 @@ export default function LoginForm({setHaveAccount}) {
                     disabled:opacity-50 disabled:cursor-not-allowed
                     active:scale-95 active:brightness-90 transition-all duration-150
                 "
-            >
-                {loading ?<CircularProgress size={24} color="inherit" /> : "Entrar"}
-            </button>
-            <GoogleLoginBtn/>
-        </form>
-    )
+      >
+        {loading ? <CircularProgress size={24} color="inherit" /> : "Entrar"}
+      </button>
+      <GoogleLoginBtn />
+    </form>
+  );
 }
