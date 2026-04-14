@@ -27,13 +27,13 @@ export const menuItems = [
     },
     {
         icon: FiFolder,
-        label:'Meus Projetos',
+        label:'Minha Agenda',
         href: "/",
         roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     },
     {
         icon:FiCheckSquare,
-        label:'Tasks',
+        label:'Clientes',
         href: "/",
         roles: [ADMIN, PROJECT_LEAD, DEVELOPER]
     },
