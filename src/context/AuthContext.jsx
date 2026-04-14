@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }) => {
     router.goHome();
   };
 
-  const logout = async () => {
+   const logout = async () => {
     try {
       await signOut(auth);
       setSessionCookie(null);
