@@ -213,7 +213,7 @@ export default function ProjectCard({ project, usersMap, onEdit, onDelete }) {
           style={{ color: "#6b7280", fontSize: 12, lineHeight: 1.6, margin: 0 }}
         >
           {project.description.length > 100
-            ? project.description.slice(0, 100) + "…"
+            ? `${project.description.slice(0, 100)}…`
             : project.description}
         </p>
       )}

@@ -3,8 +3,6 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { MdPerson, MdSecurity, MdSettings } from "react-icons/md";
-import { useAuth } from "@/context/AuthContext";
-import { useSettings } from "@/context/SettingsContext";
 import { useRole } from "@/hooks/useRole";
 import ProfileSettings from "./ProfileSettings";
 import SecuritySettings from "./SecuritySettings";
@@ -14,7 +12,7 @@ export default function SettingsMain() {
   const [activeTab, setActiveTab] = useState(0);
   const { can } = useRole();
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (_event, newValue) => {
     setActiveTab(newValue);
   };
 

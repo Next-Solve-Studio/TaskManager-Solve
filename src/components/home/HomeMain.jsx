@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  differenceInDays,
-  endOfMonth,
-  format,
-  isToday,
-  startOfMonth,
-} from "date-fns";
+import { differenceInDays, format, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useMemo } from "react";
 import {
@@ -30,9 +24,6 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,

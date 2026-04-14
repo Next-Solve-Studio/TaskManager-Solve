@@ -1,7 +1,7 @@
 "use client";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Alert, Box, Button, TextField } from "@mui/material";
+import { Box, Button, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { MdInfoOutline, MdLock } from "react-icons/md";
 import * as yup from "yup";
@@ -37,7 +37,7 @@ export default function SecuritySettings() {
     try {
       await changePassword(data.currentPassword, data.newPassword);
       reset();
-    } catch (err) {
+    } catch (_err) {
       // Erro já tratado no contexto (toast)
     }
   };

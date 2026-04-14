@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, FormControlLabel, Switch, Typography } from "@mui/material";
+import { Box, Switch } from "@mui/material";
 import { MdWarningAmber } from "react-icons/md";
 import { useSettings } from "@/context/SettingsContext";
 

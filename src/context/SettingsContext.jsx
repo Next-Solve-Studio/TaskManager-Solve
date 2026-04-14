@@ -4,7 +4,7 @@ import {
   reauthenticateWithCredential,
   updatePassword,
 } from "firebase/auth";
-import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import {
   createContext,
   useCallback,
@@ -22,7 +22,7 @@ export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
   const { currentUser } = useAuth();
-  const [userSettings, setUserSettings] = useState(null);
+  const [userSettings, _setUserSettings] = useState(null);
   const [systemSettings, setSystemSettings] = useState(null);
   const [loading, setLoading] = useState(true);
 
