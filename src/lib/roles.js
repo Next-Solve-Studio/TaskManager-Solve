@@ -68,7 +68,7 @@ export const PERMISSIONS = {
 
     // Clientes
     canManageClients: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canViewClients: [ROLES.ADMIN, ROLES.PROJECT_LEAD, ROLES.DEVELOPER],
+    canViewClients: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Configurações
     canManageSystemSettings: [ROLES.ADMIN],

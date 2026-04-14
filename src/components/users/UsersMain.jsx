@@ -16,12 +16,15 @@ import UserEditModal from "@/components/users/modals/UserEditModal";
 import { useUsers } from "@/context/UsersContext";
 import { StatPill } from "../ui/StatPill";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
+import UsersCards from "./usersCards/UsersCards";
+import useIsMobile from "@/responsive/useIsMobile";
 
 export default function UsersMain() {
     const { users, loading } = useUsers();
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
+    const isMobile = useIsMobile(768)
     const [deletingUser, setDeletingUser] = useState(null);
 
     const handleOpenEdit = useCallback((user) => setEditingUser(user), []);
@@ -307,6 +310,12 @@ export default function UsersMain() {
                             : "Nenhum usuário encontrado"}
                     </p>
                 </div>
+            ) : isMobile ? (
+                <UsersCards
+                    users={filtered}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleOpenDelete}
+                />
             ) : (
                 <div
                     style={{ display: "flex", flexDirection: "column", gap: 6 }}
