@@ -24,7 +24,7 @@ export default function UsersMain() {
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
-    const isMobile = useIsMobile(768)
+    const isMobile = useIsMobile()
     const [deletingUser, setDeletingUser] = useState(null);
 
     const handleOpenEdit = useCallback((user) => setEditingUser(user), []);
@@ -68,7 +68,7 @@ export default function UsersMain() {
     ];
 
     return (
-        <main
+        <div
             style={{
                 minHeight: "100vh",
                 background: "var(--color-background-page)",
@@ -368,6 +368,6 @@ export default function UsersMain() {
                 onClose={() => setDeletingUser(null)}
                 user={deletingUser}
             />
-        </main>
+        </div>
     );
 }

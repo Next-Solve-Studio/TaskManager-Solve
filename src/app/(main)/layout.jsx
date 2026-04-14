@@ -11,7 +11,7 @@ import useIsMobile from "@/responsive/useIsMobile";
 
 export default function MainLayout({ children }) {
     const { currentUser, loading } = useAuth();
-    const isMobile = useIsMobile(680);
+    const isMobile = useIsMobile();
     const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
     const router = useRouter();
 
@@ -32,13 +32,13 @@ export default function MainLayout({ children }) {
         <AppProviders>
             <div className="flex flex-col min-h-screen">
                 <Header onMenuClick={toggleSidebar} isMobile={isMobile}/>
-                <div className="flex pr-10">
+                <div className="flex">
                     <SideMenu 
                         isOpen={isSidebarOpen} 
                         onToggle={toggleSidebar} 
                         isMobile={isMobile} 
                     />
-                    <main className="w-full">{children}</main>
+                    <main className="w-full px-10">{children}</main>
                 </div>
             </div>
         </AppProviders>

@@ -120,6 +120,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         <Link
                             key={item.label}
                             href={item.href}
+                            onClick={isMobile ? onToggle : undefined}
                             className="h-12 flex items-center text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a] rounded-lg transition-colors duration-200 group"
                         >
                             <div className="w-12 flex justify-center shrink-0">
