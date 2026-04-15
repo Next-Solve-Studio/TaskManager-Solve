@@ -59,6 +59,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     ? `fixed top-0 right-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out
        bg-gradient-to-br from-black  via-background-page to-black shadow-xl
        ${isOpen ? "translate-x-0" : "translate-x-full"}`
+       
     : `fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-in-out
        bg-gradient-to-br from-bg-pure via-background-page to-bg-pure shadow-xl
        ${effectiveOpen ? "w-58 items-start" : "w-20 items-center"}`;

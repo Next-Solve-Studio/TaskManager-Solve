@@ -282,37 +282,13 @@ export default function UsersMain() {
                 >
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
                     <span style={{ color: "#6b7280", fontSize: 14 }}>
-                        Carregando usuários...
-                    </span>
-                </div>
-            ) : filtered.length === 0 ? (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "60px 0",
-                        gap: 12,
-                        background: "#121212",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        borderRadius: 16,
-                    }}
-                >
-                    <MdPeople style={{ fontSize: 44, color: "#2D2D2D" }} />
-                    <p
-                        style={{
-                            color: "#4b5563",
-                            fontSize: 14,
-                            fontWeight: 600,
-                        }}
-                    >
+                        Carregando usuários... <br/>
                         {users.length === 0
                             ? "Nenhum usuário cadastrado ainda"
                             : "Nenhum usuário encontrado"}
-                    </p>
+                    </span>
                 </div>
-            ) : isMobile ? (
+            )  : isMobile ? (
                 <UsersCards
                     users={filtered}
                     onEdit={handleOpenEdit}

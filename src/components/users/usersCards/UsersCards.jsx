@@ -19,15 +19,20 @@ export default function UsersCards({ users, onEdit, onDelete }) {
     if (!users || users.length === 0) return null
     
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {users.map((user) => (
-                <UserCard
-                    key={user.id}
-                    user={user}
-                    onEdit={onEdit}
-                    onDelete={onDelete}
-                />
-            ))}
-        </div> 
+        <>
+            {!loading && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {users.map((user) => (
+                        <UserCard
+                            key={user.id}
+                            user={user}
+                            onEdit={onEdit}
+                            onDelete={onDelete}
+                        />
+                    ))}
+                </div> 
+            )}
+        </>
+        
     )
 }

@@ -12,7 +12,10 @@ import useIsMobile from "@/responsive/useIsMobile";
 export default function MainLayout({ children }) {
     const { currentUser, loading } = useAuth();
     const isMobile = useIsMobile();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(!isMobile);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+        if (typeof window === "undefined") return false;
+        return window.innerWidth > 680;
+    });
     const router = useRouter();
 
     const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
