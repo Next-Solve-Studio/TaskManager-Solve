@@ -14,16 +14,16 @@ const { ADMIN, PROJECT_LEAD, DEVELOPER } = ROLES;
 
 export const menuItems = [
     {
-        icon: FiUsers,
-        label: "Usuários",
-        href: "/users",
-        roles: [ADMIN],
-    },
-    {
         icon: FiGrid,
         label: "Visão Geral",
         href: "/",
         roles: [ADMIN, PROJECT_LEAD],
+    },
+    {
+        icon: FiUsers,
+        label: "Usuários",
+        href: "/users",
+        roles: [ADMIN],
     },
     {
         icon: FiLayers,
@@ -34,7 +34,7 @@ export const menuItems = [
     {
         icon: FiCalendar,
         label: "Minha Agenda",
-        href: "/",
+        href: "/mySchedule",
         roles: [ADMIN, PROJECT_LEAD, DEVELOPER],
     },
     {

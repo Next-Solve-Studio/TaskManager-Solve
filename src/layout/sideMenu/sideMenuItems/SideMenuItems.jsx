@@ -11,6 +11,7 @@ import { auth, db } from "@/lib/firebaseConfig";
 import { BurgerButton } from "./BurgerBtn";
 import { menuItems } from "./MenuItems";
 import { useAuth } from "@/context/AuthContext";
+import { usePathname } from "next/navigation";
 
 export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [displayName, setDisplayName] = useState("");
     const { role } = useRole();
     const { logout } = useAuth();
+    const pathname = usePathname()
 
     const handleMouseEnter = !isMobile ? () => setHoverOpen(true) : undefined;
     const handleMouseLeave = !isMobile ? () => setHoverOpen(false) : undefined;
@@ -52,6 +54,11 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
         });
         return () => unsub();
     }, []);
+
+    const isActive = (href) => {
+        if (href === '/') return pathname === "/"
+        return pathname.startsWith(href)
+    }
 
     const initial = displayName ? displayName.charAt(0).toUpperCase() : "";
 
@@ -117,26 +124,35 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                     }}
                 />
                 <nav className="flex flex-col items-center gap-2 w-full sm:px-4">
-                    {visibleItems.map((item) => (
-                        <Link
-                            key={item.label}
-                            href={item.href}
-                            onClick={isMobile ? onToggle : undefined}
-                            className="h-12 flex items-center text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a] rounded-lg transition-colors duration-200 group"
-                        >
-                            <div className="w-12 flex justify-center shrink-0">
-                                <item.icon className="text-xl transition-transform duration-200 sm:group-hover:scale-110" />
-                            </div>
-
-                            <div
-                                className={`sm:ml-1 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-40" : "opacity-0 w-0"}`}
+                    {visibleItems.map((item) => {
+                        const active = isActive(item.href)
+                        return (
+                            <Link
+                                key={item.label}
+                                href={item.href}
+                                onClick={isMobile ? onToggle : undefined}
+                                className={`h-12 flex items-center text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a] rounded-lg transition-colors duration-200 group
+                                    ${active
+                                            ? "text-white bg-[#1a1a1a]"
+                                            : "text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a]"
+                                        }`}
                             >
-                                <span className="text-sm font-medium whitespace-nowrap tracking-wide">
-                                    {item.label}
-                                </span>
-                            </div>
-                        </Link>
-                    ))}
+                                <div className="w-12 flex justify-center shrink-0">
+                                    <item.icon className={`text-xl transition-transform duration-200 sm:group-hover:scale-110
+                                        ${active ? "text-primary" : ""}`}
+                                    />
+                                </div>
+
+                                <div
+                                    className={`sm:ml-1 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-40" : "opacity-0 w-0"}`}
+                                >
+                                    <span className="text-sm font-medium whitespace-nowrap tracking-wide">
+                                        {item.label}
+                                    </span>
+                                </div>
+                            </Link>
+                        )
+                    })}
                 </nav>
                 <div className="mt-auto flex flex-col items-center gap-2 w-full sm:px-4">
                     <button

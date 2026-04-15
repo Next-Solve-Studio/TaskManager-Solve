@@ -475,7 +475,7 @@ export default function ProjectsMain() {
                     style={{
                         display: "grid",
                         gridTemplateColumns:
-                            "repeat(auto-fill, minmax(320px, 1fr))",
+                            "repeat(auto-fill, minmax(240px, 1fr))",
                         gap: 14,
                     }}
                 >
