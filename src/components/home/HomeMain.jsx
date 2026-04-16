@@ -329,7 +329,7 @@ function StatCard({ icon: Icon, label, value, trend, color, bg, border }) {
                 <p className="text-3xl font-bold text-white tabular-nums">
                     {value}
                 </p>
-                <p className="text-sm text-[#6b7280] mt-0.5">{label}</p>
+                <p className="text-sm text-font-gray2 mt-0.5">{label}</p>
             </div>
         </div>
     );

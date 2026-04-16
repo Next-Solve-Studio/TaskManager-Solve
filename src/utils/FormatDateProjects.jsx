@@ -13,7 +13,7 @@ export const formatDateInput = (date) => {
 export const parseDate = (date) => {
     if (!date) return null;
 
-    if (typeof date.toDate === "function") return date.toDate();
+    if (typeof date.toDate === "function") return date.toDate(); // Firebase Timestamp
 
     if (date instanceof Date) {
         return Number.isNaN(date.getTime()) ? null : date;

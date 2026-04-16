@@ -161,7 +161,7 @@ export default function ProjectsMain() {
             {loadingProjects ? (
                 <div className="flex items-center justify-center px-0 py-15 gap-3">
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    <span className="text-[#6b7280] text-sm">
+                    <span className="text-font-gray2 text-sm">
                         Carregando projetos...
                     </span>
                 </div>

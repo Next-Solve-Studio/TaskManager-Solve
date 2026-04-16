@@ -35,19 +35,12 @@ export function StatusBadge({ status }) {
     const Icon = s.icon;
     return (
         <span
-            style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 4,
-                padding: "3px 10px",
-                borderRadius: 20,
-                fontSize: 11,
-                fontWeight: 600,
+             style={{
                 color: s.color,
-                background: s.bg,
-                border: `1px solid ${s.border}`,
-                whiteSpace: "nowrap",
+                backgroundColor: s.bg,
+                borderColor: s.border,
             }}
+            className={`inline-flex items-center gap-1 rounded-[20px] text-[11px] font-semibold whitespace-nowrap border py-0.75 px-2.5`}
         >
             <Icon size={11} />
             {s.label}

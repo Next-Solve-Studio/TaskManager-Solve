@@ -32,16 +32,16 @@ export const STATUS_MAP = {
     },
     arquivado: {
         label: "Arquivado",
-        color: "#6b7280",
-        bg: "rgba(107,114,128,0.12)",
-        border: "rgba(107,114,128,0.25)",
+        color: "var(--color-font-gray2)",
+        bg: "rgba(var(--color-font-gray2-rgb), 0.12) ",
+        border: "rgba(var(--color-font-gray2-rgb), 0.25)",
         icon: MdArchive,
     },
     suporte: {
         label: "Suporte",
-        color: "var(--color-purple-400)", // Roxo (Tailwind purple-500)
-        bg: "rgba(168, 85, 247, 0.12)",
-        border: "rgba(168, 85, 247, 0.25)",
+        color: "var(--color-purple-500)",
+        bg: "var(--color-surface-purple-alt)",
+        border: "var(--color-surface-purple-md)",
         icon: MdOutlineSupportAgent,
     },
 };
