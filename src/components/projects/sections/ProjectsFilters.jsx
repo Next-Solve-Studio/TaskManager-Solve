@@ -25,7 +25,7 @@ export default function ProjectsFilters({
         <div className="flex flex-wrap gap-4 md:gap-2.5 py-3.5 px-4 bg-bg-card border border-white/10 rounded-[14px] items-center">
             {/* Campo de busca */}
             <div className="relative min-w-45 flex-[1_1_200px]">
-                <MdSearch className="absolute left-2.5 top-[50%] -translate-y-1/2 text-[#6b7280]" size={16} />
+                <MdSearch className="absolute left-2.5 top-[50%] -translate-y-1/2 text-font-gray2" size={16} />
                 <input
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}

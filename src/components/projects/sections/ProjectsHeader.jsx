@@ -14,7 +14,7 @@ export default function ProjectsHeader({projectsCount, onCreate}) {
                 <h1 className="text-[26px] font-extrabold text-white m-0">
                     Projetos
                 </h1>
-                <p className="text-[13px] text-[#6b7280] mt-1">
+                <p className="text-[13px] text-font-gray2 mt-1">
                     {projectsCount} projeto{projectsCount !== 1 ? "s" : ""} cadastrado
                     {projectsCount !== 1 ? "s" : ""}
                 </p>
@@ -30,7 +30,7 @@ export default function ProjectsHeader({projectsCount, onCreate}) {
                         bg-linear-to-br from-brand-500 to-brand-600
                         overflow-hidden cursor-pointer
                         transition-all duration-150
-                        hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(25,202,104,0.42)]
+                        hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(25, 202, 104, 0.42)]
                         active:scale-[0.97]
                         shadow-[0_2px_10px_rgba(25,202,104,0.25)]
                     "
