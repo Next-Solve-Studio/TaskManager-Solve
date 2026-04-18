@@ -34,7 +34,7 @@ export const menuItems = [
     {
         icon: FiCalendar,
         label: "Minha Agenda",
-        href: "/mySchedule",
+        href: "/schedule",
         roles: [ADMIN, PROJECT_LEAD, DEVELOPER],
     },
     {

@@ -6,6 +6,7 @@ import {
     orderBy,
     query,
     setDoc,
+    updateDoc,
     where,
 } from "firebase/firestore";
 import {
@@ -25,7 +26,6 @@ import {
     addWeeks,
     format,
 } from "date-fns";
-import { ptBR } from "date-fns/locale";
 
 const ScheduleContext = createContext() // contexto da agenda criado
 
@@ -37,8 +37,8 @@ export const getWeekKey = (date) => {
     const d = new Date(date)
     // Segunda-feira é o primeiro dia da semana (weekStartsOn: 1).
     const startMonday = startOfWeek(d, {weekStartsOn: 1})
-    // esse ww pega a semana do ano com a biblioteca data-fns
-    return format(startMonday, "yyyy-'W'ww", {locale: ptBR}) 
+
+    return format(startMonday,"yyyy-MM-dd") 
     
 }
 
@@ -86,7 +86,7 @@ export const ScheduleProvider = ({children}) => {
             q = query(
                 collection(db, "schedules"),
                 where("weekKey", "==", weekKey),
-                orderBy("userName", "asc")
+                orderBy("userName", "asc"),
             )
         } else {
             // Se o filtro for "me", usa o UID do usuário logado. Caso contrário, usa o UID digitado (ou undefined se for "all").
@@ -126,26 +126,30 @@ export const ScheduleProvider = ({children}) => {
             // ID único do documento (ex: abc123_2026-W25)
             const docId = `${uid}_${weekKey}`
 
+            const docRef = doc(db, "schedules", docId);
+
             try {
                 // cria o doc se não existir, ou atualiza os campos fornecidos
                 await setDoc(
-                    doc(db, "schedules", docId),
+                    docRef,
                     {
                         userId: uid,
-                        userName: currentUser.name || currentUser.displayName || "Usuário sem nome",
+                        userName:
+                            currentUser.name ||
+                            currentUser.displayName ||
+                            "Usuário",
                         weekKey,
                         weekStart: weekStart,
-                        days: {
-                            // atualiza apenas o dia específico
-                            [`days.${dayKey}`]: {
-                                description,
-                                updatedAt: new Date(),
-                            },
-                        },
                     },
-                    // combina com os dias já existentes
-                    { merge: true},
-                )
+                    { merge: true },
+                );
+
+                // Depois atualiza apenas o campo do dia usando dot notation
+                // Isso preserva todos os outros dias intactos
+                await updateDoc(docRef, {
+                    [`days.${dayKey}.description`]: description,
+                    [`days.${dayKey}.updatedAt`]: new Date(),
+                });
             } catch (err) {
                 console.error(err)
                 toast.error(`Erro ao salvar o dia: ${err.message}`)

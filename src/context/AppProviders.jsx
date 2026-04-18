@@ -1,6 +1,7 @@
 "use client";
 import { ClientsProvider } from "./ClientsContext";
 import { ProjectsProvider } from "./ProjectsContext";
+import { ScheduleProvider } from "./ScheduleContext";
 import { SettingsProvider } from "./SettingsContext";
 import { UsersProvider } from "./UsersContext";
 
@@ -10,8 +11,10 @@ export default function AppProviders({ children }) {
             <ProjectsProvider>
                 <ClientsProvider>
                     <SettingsProvider>
-                        {/* se houver mais, continue aninhando */}
-                        {children}
+                        <ScheduleProvider>
+                            {/* se houver mais, continue aninhando */}
+                            {children}
+                        </ScheduleProvider>
                     </SettingsProvider>
                 </ClientsProvider>
             </ProjectsProvider>
