@@ -20,26 +20,26 @@ export default function UsersFilter({ users, isViewingAll,isViewingMe, filterUse
                 }}
             >
                 <MdPerson size={15} />
-                Minha
+                Minha Agenda
             </button>
-
-            {/* Botão: Todos */}
-            <button
-                type="button"
-                onClick={() => setFilterUserId("all")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
-                style={{
-                    background: isViewingAll ? "rgba(34,211,238,0.12)" : "rgba(255,255,255,0.04)",
-                    border: isViewingAll ? "1px solid rgba(34,211,238,0.35)" : "1px solid rgba(255,255,255,0.08)",
-                    color: isViewingAll ? "#22d3ee" : "#9ca3af",
-                }}
-            >
-                <MdGroup size={15} />
-                Todos
-            </button>
-
-            {/* Chips de usuários individualmente */}
             <CanDo permission="canViewAllUsersSchedule">
+                {/* Botão: Todos */}
+                <button
+                    type="button"
+                    onClick={() => setFilterUserId("all")}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
+                    style={{
+                        background: isViewingAll ? "rgba(34,211,238,0.12)" : "rgba(255,255,255,0.04)",
+                        border: isViewingAll ? "1px solid rgba(34,211,238,0.35)" : "1px solid rgba(255,255,255,0.08)",
+                        color: isViewingAll ? "#22d3ee" : "#9ca3af",
+                    }}
+                >
+                    <MdGroup size={15} />
+                    Todos
+                </button>
+
+                {/* Chips de usuários individualmente */}
+            
                 {!loadingUsers && users
                     .filter((u) => u.id !== currentUser?.uid)
                     .map((u) => {
