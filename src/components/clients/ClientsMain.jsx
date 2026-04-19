@@ -48,7 +48,7 @@ export default function ClientsMain() {
                     can("canManageClients") ? () => handleOpenModal() : null
                 }
             />
-            
+
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <TextField
                     placeholder="Buscar parceiros ou clientes..."
@@ -84,7 +84,10 @@ export default function ClientsMain() {
 
             {loading ? (
                 <div className="flex items-center justify-center py-16 gap-3">
-                    <CircularProgress size={24} style={{ color: "var(--color-brand-500)" }} />
+                    <CircularProgress
+                        size={24}
+                        style={{ color: "var(--color-brand-500)" }}
+                    />
                     <span className="text-font-gray2 text-sm">
                         Carregando clientes...
                     </span>
@@ -92,9 +95,11 @@ export default function ClientsMain() {
             ) : isTablet ? (
                 <div className="flex flex-col gap-3">
                     {filteredClients.length === 0 ? (
-                         <div className="py-20 text-center text-font-gray2 text-sm bg-white/2">
-                            {searchTerm ? "Nenhum cliente encontrado para sua busca" : "Nenhum cliente cadastrado ainda"}
-                         </div>
+                        <div className="py-20 text-center text-font-gray2 text-sm bg-white/2">
+                            {searchTerm
+                                ? "Nenhum cliente encontrado para sua busca"
+                                : "Nenhum cliente cadastrado ainda"}
+                        </div>
                     ) : (
                         filteredClients.map((client) => (
                             <ClientCard

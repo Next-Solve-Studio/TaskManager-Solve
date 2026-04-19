@@ -3,25 +3,25 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CiLogout } from "react-icons/ci";
 import RoleBadge from "@/components/auth/RoleBadge";
+import { useAuth } from "@/context/AuthContext";
 import { useRole } from "@/hooks/useRole";
 import { auth, db } from "@/lib/firebaseConfig";
 import { BurgerButton } from "./BurgerBtn";
 import { menuItems } from "./MenuItems";
-import { useAuth } from "@/context/AuthContext";
-import { usePathname } from "next/navigation";
 
 export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
     // No desktop, o menu abre com hover (ou se isOpen for true, mas isOpen só é usado no mobile)
-    const effectiveOpen = isMobile ? isOpen : hoverOpen 
+    const effectiveOpen = isMobile ? isOpen : hoverOpen;
     const [user, setUser] = useState(null);
     const [displayName, setDisplayName] = useState("");
     const { role } = useRole();
     const { logout } = useAuth();
-    const pathname = usePathname()
+    const pathname = usePathname();
 
     const handleMouseEnter = !isMobile ? () => setHoverOpen(true) : undefined;
     const handleMouseLeave = !isMobile ? () => setHoverOpen(false) : undefined;
@@ -56,18 +56,17 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     }, []);
 
     const isActive = (href) => {
-        if (href === '/') return pathname === "/"
-        return pathname.startsWith(href)
-    }
+        if (href === "/") return pathname === "/";
+        return pathname.startsWith(href);
+    };
 
     const initial = displayName ? displayName.charAt(0).toUpperCase() : "";
 
     const containerClasses = isMobile
-    ? `fixed top-0 right-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out
+        ? `fixed top-0 right-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out
        bg-gradient-to-br from-black  via-background-page to-black shadow-xl
        ${isOpen ? "translate-x-0" : "translate-x-full"}`
-       
-    : `fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-in-out
+        : `fixed top-0 left-0 h-full z-50 transition-all duration-300 ease-in-out
        bg-gradient-to-br from-bg-pure via-background-page to-bg-pure shadow-xl
        ${effectiveOpen ? "w-58 items-start" : "w-20 items-center"}`;
 
@@ -78,9 +77,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            <div
-                className={` max-h-screen flex flex-col gap-3 py-10 `}
-            >
+            <div className={` max-h-screen flex flex-col gap-3 py-10 `}>
                 {isMobile && isOpen && (
                     <div className="flex justify-end mb-5 w-full pr-4">
                         <BurgerButton isOpen={isOpen} onClick={onToggle} />
@@ -104,7 +101,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         </div>
                     </div>
                     <div
-                        className={`ml-2 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen  ? "opacity-100 w-32" : "opacity-0 w-0"}`}
+                        className={`ml-2 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-32" : "opacity-0 w-0"}`}
                     >
                         <p className="text-white text-sm font-bold whitespace-nowrap truncate">
                             {displayName}
@@ -125,20 +122,22 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                 />
                 <nav className="flex flex-col items-center gap-2 w-full sm:px-4">
                     {visibleItems.map((item) => {
-                        const active = isActive(item.href)
+                        const active = isActive(item.href);
                         return (
                             <Link
                                 key={item.label}
                                 href={item.href}
                                 onClick={isMobile ? onToggle : undefined}
                                 className={`h-12 flex items-center text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a] rounded-lg transition-colors duration-200 group
-                                    ${active
+                                    ${
+                                        active
                                             ? "text-white bg-[#1a1a1a]"
                                             : "text-[#6d6d6d] sm:hover:text-white sm:hover:bg-[#1a1a1a]"
-                                        }`}
+                                    }`}
                             >
                                 <div className="w-12 flex justify-center shrink-0">
-                                    <item.icon className={`text-xl transition-transform duration-200 sm:group-hover:scale-110
+                                    <item.icon
+                                        className={`text-xl transition-transform duration-200 sm:group-hover:scale-110
                                         ${active ? "text-primary" : ""}`}
                                     />
                                 </div>
@@ -151,7 +150,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                                     </span>
                                 </div>
                             </Link>
-                        )
+                        );
                     })}
                 </nav>
                 <div className="mt-auto flex flex-col items-center gap-2 w-full sm:px-4">

@@ -1,16 +1,16 @@
-'use client'
+"use client";
 import { useMemo } from "react";
 import { FiCalendar } from "react-icons/fi";
 
-
-export default function ScheduleHeader({isViewingAll, activeScheduleDoc}) {
-
+export default function ScheduleHeader({ isViewingAll, activeScheduleDoc }) {
     const filledDays = useMemo(() => {
         const doc = isViewingAll ? null : activeScheduleDoc;
         if (!doc) return 0;
-        return Object.values(doc.days || {}).filter((d) => d?.description?.trim()).length;
+        return Object.values(doc.days || {}).filter((d) =>
+            d?.description?.trim(),
+        ).length;
     }, [activeScheduleDoc, isViewingAll]);
-    
+
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -38,7 +38,9 @@ export default function ScheduleHeader({isViewingAll, activeScheduleDoc}) {
                     }}
                 >
                     <div className="text-center">
-                        <p className="text-xl font-bold text-brand-500">{filledDays}</p>
+                        <p className="text-xl font-bold text-brand-500">
+                            {filledDays}
+                        </p>
                         <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
                             Preenchidos
                         </p>
@@ -64,5 +66,5 @@ export default function ScheduleHeader({isViewingAll, activeScheduleDoc}) {
                 </div>
             )}
         </div>
-    )
+    );
 }

@@ -1,7 +1,4 @@
-
-
-export default function CreatedModifiedBy({usersMap, project}) {
-
+export default function CreatedModifiedBy({ usersMap, project }) {
     const createdBy = usersMap[project.createdBy]; // pega o objeto do usuário que criou o projeto (usando o createdBy que veio do Firebase)
     const lastModifiedBy = usersMap[project.lastModifiedBy]; // agora pega quem editou pela última vez
 
@@ -32,5 +29,5 @@ export default function CreatedModifiedBy({usersMap, project}) {
                 </span>
             )}
         </div>
-    )
+    );
 }

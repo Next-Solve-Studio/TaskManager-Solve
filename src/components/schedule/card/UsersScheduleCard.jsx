@@ -1,10 +1,6 @@
-import { Avatar } from "@/utils/AvatarBadge"
+import { addDays, isToday } from "date-fns";
 import { WEEK_DAYS } from "@/context/ScheduleContext";
-import {
-    addDays,
-    isToday,
-
-} from "date-fns";
+import { Avatar } from "@/utils/AvatarBadge";
 
 // Card de um usuário no modo "todos"
 export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
@@ -25,11 +21,15 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
             <div className="flex items-center gap-3 mb-4">
                 <Avatar name={user.name} uid={user.id} />
                 <div>
-                    <p className="text-white font-semibold text-sm">{user.name}</p>
+                    <p className="text-white font-semibold text-sm">
+                        {user.name}
+                    </p>
                     <p className="text-font-gray2 text-xs">
-                        {Object.values(scheduleDoc?.days || {}).filter(
-                            (d) => d?.description?.trim(),
-                        ).length}{" "}
+                        {
+                            Object.values(scheduleDoc?.days || {}).filter((d) =>
+                                d?.description?.trim(),
+                            ).length
+                        }{" "}
                         / 7 dias preenchidos
                     </p>
                 </div>
@@ -51,7 +51,9 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                         >
                             <span
                                 className="text-[10px] font-bold uppercase tracking-wide text-center"
-                                style={{ color: todayDay ? "#19CA68" : "#4b5563" }}
+                                style={{
+                                    color: todayDay ? "#19CA68" : "#4b5563",
+                                }}
                             >
                                 {label.slice(0, 3)}
                             </span>
@@ -66,13 +68,17 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                                     border: todayDay
                                         ? "1px solid rgba(25,202,104,0.25)"
                                         : hasContent
-                                            ? "1px solid rgba(255,255,255,0.08)"
-                                            : "1px dashed rgba(255,255,255,0.05)",
+                                          ? "1px solid rgba(255,255,255,0.08)"
+                                          : "1px dashed rgba(255,255,255,0.05)",
                                     minHeight: "60px",
                                 }}
                             >
                                 <p className="text-[10px] text-font-gray leading-tight line-clamp-3 text-left">
-                                    {desc || <span className="text-[#374151]">—</span>}
+                                    {desc || (
+                                        <span className="text-[#374151]">
+                                            —
+                                        </span>
+                                    )}
                                 </p>
                             </div>
                         </div>

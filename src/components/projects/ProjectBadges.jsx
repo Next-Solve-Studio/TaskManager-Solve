@@ -1,9 +1,4 @@
-import {
-    PRIORITY_MAP,
-    STATUS_MAP,
-} from "@/components/projects/ProjectsConfig";
-
-
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/projects/ProjectsConfig";
 
 export function StatusBadge({ status }) {
     const s = STATUS_MAP[status];
@@ -11,7 +6,7 @@ export function StatusBadge({ status }) {
     const Icon = s.icon;
     return (
         <span
-             style={{
+            style={{
                 color: s.color,
                 backgroundColor: s.bg,
                 borderColor: s.border,

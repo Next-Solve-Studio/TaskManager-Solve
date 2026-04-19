@@ -1,9 +1,9 @@
 "use client";
 import { useMemo } from "react";
+import { MdDelete, MdEdit } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
-import { Avatar } from "@/utils/AvatarBadge"
-import { MdDelete, MdEdit } from "react-icons/md";
+import { Avatar } from "@/utils/AvatarBadge";
 
 export default function UserRow({ user, onEdit, onDelete }) {
     const formattedDate = useMemo(() => {
@@ -17,7 +17,8 @@ export default function UserRow({ user, onEdit, onDelete }) {
     }, [user.createdAt]);
 
     const authLabel = user.authMethod === "google" ? "Google" : "E-mail";
-    const authColor = user.authMethod === "google" ? "#ea4335" : "var(--color-cyan-400)";
+    const authColor =
+        user.authMethod === "google" ? "#ea4335" : "var(--color-cyan-400)";
     const authBg =
         user.authMethod === "google"
             ? "rgba(234,67,53,0.1)"
@@ -31,7 +32,8 @@ export default function UserRow({ user, onEdit, onDelete }) {
             rounded-xl border border-[rgba(255,255,255,0.05)] 
             transition-[border-color_0.2s,transform_0.15s]"
             onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--color-surface-green-md)";
+                e.currentTarget.style.borderColor =
+                    "var(--color-surface-green-md)";
                 e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {

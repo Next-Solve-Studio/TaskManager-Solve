@@ -11,7 +11,9 @@ export default function EmptyState({ weekLabel }) {
         >
             <FiCalendar size={40} style={{ color: "#374151" }} />
             <div className="text-center">
-                <p className="text-white font-semibold">Nenhuma agenda registrada</p>
+                <p className="text-white font-semibold">
+                    Nenhuma agenda registrada
+                </p>
                 <p className="text-font-gray2 text-sm mt-1">
                     Nenhum dev preencheu a semana {weekLabel} ainda.
                 </p>

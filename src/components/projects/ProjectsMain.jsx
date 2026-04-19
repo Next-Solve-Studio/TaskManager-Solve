@@ -1,19 +1,17 @@
 "use client";
 
-import {
-    CircularProgress,
-} from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import ProjectCard from "@/components/projects/card/ProjectCard";
 import ModalDelete from "@/components/projects/modals/ModalDelete";
 import ProjectForm from "@/components/projects/modals/ProjectForm";
 import { useProjects } from "@/context/ProjectsContext";
-import ProjectsFilters from "./sections/ProjectsFilters";
-import ProjectsStats from "./sections/ProjectsStats";
 import { useDebounce } from "@/hooks/UseDebounce";
 import ProjectsEmptyState from "./sections/ProjectsEmptyState";
+import ProjectsFilters from "./sections/ProjectsFilters";
 import ProjectsHeader from "./sections/ProjectsHeader";
+import ProjectsStats from "./sections/ProjectsStats";
 
 export default function ProjectsMain() {
     const {
@@ -37,10 +35,12 @@ export default function ProjectsMain() {
     const [submitting, setSubmitting] = useState(false);
     const [deleting, setDeleting] = useState(false);
 
-    const debouncedSearch = useDebounce(searchInput, 300)
+    const debouncedSearch = useDebounce(searchInput, 300);
 
-    const filtered = useMemo(() => { // Só recalcula a lista quando as dependências mudarem, evita processamento desnecessário.
-        return projects.filter((p) => { // percorre todos os projetos e mantém apenas os que passam nas validações
+    const filtered = useMemo(() => {
+        // Só recalcula a lista quando as dependências mudarem, evita processamento desnecessário.
+        return projects.filter((p) => {
+            // percorre todos os projetos e mantém apenas os que passam nas validações
             if (filterStatus !== "all" && p.status !== filterStatus)
                 return false;
             if (filterPriority !== "all" && p.priority !== filterPriority)
@@ -66,9 +66,17 @@ export default function ProjectsMain() {
             }
             return true;
         });
-    }, [projects, filterStatus, filterPriority, filterDev, debouncedSearch, usersMap]);
+    }, [
+        projects,
+        filterStatus,
+        filterPriority,
+        filterDev,
+        debouncedSearch,
+        usersMap,
+    ]);
 
-    const stats = useMemo( // Conta quantos projetos existem em cada status
+    const stats = useMemo(
+        // Conta quantos projetos existem em cada status
         () => ({
             total: projects.length,
             em_andamento: projects.filter((p) => p.status === "em_andamento")
@@ -81,15 +89,18 @@ export default function ProjectsMain() {
         [projects],
     );
 
-    const handleOpenCreate = () => { // abre modal de criação
+    const handleOpenCreate = () => {
+        // abre modal de criação
         setEditingProject(null);
         setDialogOpen(true);
     };
-    const handleOpenEdit = useCallback((p) => { // Abre o modal de edição, recebendo o projeto p e guardando em editingProject
+    const handleOpenEdit = useCallback((p) => {
+        // Abre o modal de edição, recebendo o projeto p e guardando em editingProject
         setEditingProject(p);
         setDialogOpen(true);
     }, []);
-    const handleOpenDelete = useCallback((p) => { // Abre o modal de exclusão
+    const handleOpenDelete = useCallback((p) => {
+        // Abre o modal de exclusão
         setDeletingProject(p);
         setDeleteDialogOpen(true);
     }, []);
@@ -114,7 +125,7 @@ export default function ProjectsMain() {
     };
 
     const handleConfirmDelete = async () => {
-        setDeleting(true); 
+        setDeleting(true);
         try {
             await deleteProject(deletingProject.id); // exclui o projeto baseado no id dele
             toast.success("Projeto excluído!");
@@ -128,7 +139,8 @@ export default function ProjectsMain() {
         }
     };
 
-    const clearFilters = () => { // função para limpar filtros
+    const clearFilters = () => {
+        // função para limpar filtros
         setFilterStatus("all");
         setFilterPriority("all");
         setFilterDev("all");
@@ -142,8 +154,11 @@ export default function ProjectsMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-            <ProjectsHeader projectsCount={projects.length} onCreate={handleOpenCreate}/>
-            <ProjectsStats stats={stats}/>
+            <ProjectsHeader
+                projectsCount={projects.length}
+                onCreate={handleOpenCreate}
+            />
+            <ProjectsStats stats={stats} />
             <ProjectsFilters
                 search={searchInput}
                 onSearchChange={setSearchInput}
@@ -166,9 +181,12 @@ export default function ProjectsMain() {
                     </span>
                 </div>
             ) : filtered.length === 0 ? (
-                <ProjectsEmptyState projectsLength={projects.length} onCreate={handleOpenCreate}/>
+                <ProjectsEmptyState
+                    projectsLength={projects.length}
+                    onCreate={handleOpenCreate}
+                />
             ) : (
-                <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]" >
+                <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
                     {filtered.map((project) => (
                         <ProjectCard
                             key={project.id}

@@ -1,23 +1,20 @@
 // Célula editável de um dia
-'use client'
-import { useState, useEffect, useRef } from "react";
-import {
-    format,
-    isToday,
-    isWeekend,
-} from "date-fns";
-import { ptBR } from "date-fns/locale";
-import {
-
-    MdEdit,
-    MdCheck,
-    MdClose,
-
-} from "react-icons/md";
+"use client";
 import { CircularProgress } from "@mui/material";
+import { format, isToday, isWeekend } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useEffect, useRef, useState } from "react";
+import { MdCheck, MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 
-export default function CardScheduleEdit({ dayKey, dayLabel, date, scheduleDoc, canEdit, onSave }) {
+export default function CardScheduleEdit({
+    dayKey,
+    dayLabel,
+    date,
+    scheduleDoc,
+    canEdit,
+    onSave,
+}) {
     const description = scheduleDoc?.days?.[dayKey]?.description || "";
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
@@ -67,8 +64,8 @@ export default function CardScheduleEdit({ dayKey, dayLabel, date, scheduleDoc, 
                 background: todayDay
                     ? "rgba(25,202,104,0.06)"
                     : weekend
-                        ? "rgba(255,255,255,0.015)"
-                        : "rgba(255,255,255,0.025)",
+                      ? "rgba(255,255,255,0.015)"
+                      : "rgba(255,255,255,0.025)",
                 border: todayDay
                     ? "1px solid rgba(25,202,104,0.3)"
                     : "1px solid rgba(255,255,255,0.06)",
@@ -81,13 +78,24 @@ export default function CardScheduleEdit({ dayKey, dayLabel, date, scheduleDoc, 
                     <div className="flex items-center gap-2">
                         <span
                             className="text-xs font-bold uppercase tracking-widest"
-                            style={{ color: todayDay ? "#19CA68" : weekend ? "#4b5563" : "#6b7280" }}
+                            style={{
+                                color: todayDay
+                                    ? "#19CA68"
+                                    : weekend
+                                      ? "#4b5563"
+                                      : "#6b7280",
+                            }}
                         >
                             {dayLabel}
                         </span>
                         {todayDay && (
-                            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
-                                style={{ background: "rgba(25,202,104,0.15)", color: "#19CA68" }}>
+                            <span
+                                className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
+                                style={{
+                                    background: "rgba(25,202,104,0.15)",
+                                    color: "#19CA68",
+                                }}
+                            >
                                 Hoje
                             </span>
                         )}
@@ -143,7 +151,10 @@ export default function CardScheduleEdit({ dayKey, dayLabel, date, scheduleDoc, 
                                 }}
                             >
                                 {saving ? (
-                                    <CircularProgress size={10} style={{ color: "#19CA68" }} />
+                                    <CircularProgress
+                                        size={10}
+                                        style={{ color: "#19CA68" }}
+                                    />
                                 ) : (
                                     <MdCheck size={13} />
                                 )}
@@ -169,7 +180,8 @@ export default function CardScheduleEdit({ dayKey, dayLabel, date, scheduleDoc, 
                         className={`text-sm leading-relaxed ${description ? "text-[#d1d5db]" : "text-[#374151]"} ${canEdit && !description ? "italic" : ""}`}
                         style={{ whiteSpace: "pre-wrap" }}
                     >
-                        {description || (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
+                        {description ||
+                            (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
                     </div>
                 )}
             </div>

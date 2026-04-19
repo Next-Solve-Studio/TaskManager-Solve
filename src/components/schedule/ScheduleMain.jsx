@@ -1,22 +1,19 @@
 "use client";
 
-import { useMemo, useCallback } from "react";
-import {
-    addDays,
-    format,
-} from "date-fns";
-import { ptBR } from "date-fns/locale";
-import EmptyState from "./sections/EmptyState";
 import { CircularProgress } from "@mui/material";
+import { addDays, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { useCallback, useMemo } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 import { useSchedule, WEEK_DAYS } from "@/context/ScheduleContext";
 import { useUsers } from "@/context/UsersContext";
-import { useAuth } from "@/context/AuthContext";
-import UserScheduleCard from "./card/UsersScheduleCard";
-import { Avatar } from "@/utils/AvatarBadge"
+import { Avatar } from "@/utils/AvatarBadge";
 import CardScheduleEdit from "./card/CardScheduleEdit";
-import UsersFilter from "./sections/UsersFilter";
+import UserScheduleCard from "./card/UsersScheduleCard";
+import EmptyState from "./sections/EmptyState";
 import ScheduleHeader from "./sections/ScheduleHeader";
+import UsersFilter from "./sections/UsersFilter";
 import WeekNavigation from "./sections/WeekNavigation";
 
 export default function ScheduleMain() {
@@ -70,11 +67,12 @@ export default function ScheduleMain() {
         return `${start} – ${end}`;
     }, [weekStart, weekEnd]);
 
-    
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-
-            <ScheduleHeader isViewingAll={isViewingAll} activeScheduleDoc={activeScheduleDoc}/>
+            <ScheduleHeader
+                isViewingAll={isViewingAll}
+                activeScheduleDoc={activeScheduleDoc}
+            />
 
             {/* ── NAVEGAÇÃO DE SEMANA + FILTROS ── */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -94,7 +92,7 @@ export default function ScheduleMain() {
                     isViewingMe={isViewingMe}
                     setFilterUserId={setFilterUserId}
                     filterUserId={filterUserId}
-                    loadingUsers ={loadingUsers}
+                    loadingUsers={loadingUsers}
                     currentUser={currentUser}
                 />
             </div>
@@ -135,12 +133,16 @@ export default function ScheduleMain() {
                             }}
                         >
                             {(() => {
-                                const u = users.find((u) => u.id === filterUserId);
+                                const u = users.find(
+                                    (u) => u.id === filterUserId,
+                                );
                                 return u ? (
                                     <>
                                         <Avatar name={u.name} uid={u.id} />
                                         <div>
-                                            <p className="text-white font-semibold">{u.name}</p>
+                                            <p className="text-white font-semibold">
+                                                {u.name}
+                                            </p>
                                             <p className="text-font-gray2 text-xs">
                                                 Visualizando agenda
                                             </p>

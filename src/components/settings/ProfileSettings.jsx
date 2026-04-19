@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Button, TextField } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MdEdit } from "react-icons/md";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { useAuth } from "@/context/AuthContext";
@@ -29,7 +29,7 @@ export default function ProfileSettings() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!name.trim()) {
             setError("O nome é obrigatório");
             return;
@@ -53,14 +53,13 @@ export default function ProfileSettings() {
     const isDirty = name.trim() !== baseName;
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            className="space-y-8"
-        >
+        <Box component="form" onSubmit={handleSubmit} className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-white/30">
+                    <label
+                        htmlFor="CargoAtual"
+                        className="text-xs font-bold uppercase tracking-wider text-white/30"
+                    >
                         Cargo Atual
                     </label>
                     <div className="pt-1">
@@ -72,7 +71,10 @@ export default function ProfileSettings() {
                 </div>
 
                 <div className="space-y-1">
-                    <label className="text-xs font-bold uppercase tracking-wider text-white/30">
+                    <label
+                        htmlFor="InfosAccountUser"
+                        className="text-xs font-bold uppercase tracking-wider text-white/30"
+                    >
                         E-mail da Conta
                     </label>
                     <div className="flex flex-col pt-1">
@@ -91,7 +93,10 @@ export default function ProfileSettings() {
             <div className="h-px bg-white/5 w-full" />
 
             <div className="max-w-md space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/30">
+                <label
+                    htmlFor="UserName"
+                    className="text-xs font-bold uppercase tracking-wider text-white/30"
+                >
                     Nome de Exibição
                 </label>
                 <TextField

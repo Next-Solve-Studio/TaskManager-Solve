@@ -1,23 +1,20 @@
 "use client";
-import { useMemo, useState, memo } from "react";
-import {
-    MdPerson,
-} from "react-icons/md";
-
+import { memo, useMemo, useState } from "react";
+import { MdPerson } from "react-icons/md";
+import CardDevs from "./CardDevs";
+import CardFooter from "./CardFooter";
 import CardHeader from "./CardHeader";
 import CreatedModifiedBy from "./CreatedModifiedBy";
-import CardFooter from "./CardFooter";
-import CardDevs from "./CardDevs";
 
 function ProjectCard({ project, usersMap, onEdit, onDelete }) {
     //guarda o elemento HTML que servirá de “âncora” para o menu (que começa fechado)
     const [anchorEl, setAnchorEl] = useState(null);
 
-    const techStack = useMemo(()=>
-        Array.isArray(project.techStack) ? project.techStack : [], // Verifica se techkStack é um array, se for, usa ele.
-        [project.techStack] 
+    const techStack = useMemo(
+        () => (Array.isArray(project.techStack) ? project.techStack : []), // Verifica se techkStack é um array, se for, usa ele.
+        [project.techStack],
         // evita renderizamentos desnecessários com useMemo, agora so renderiza se as dependencias mudarem
-    )
+    );
 
     return (
         <div
@@ -25,14 +22,17 @@ function ProjectCard({ project, usersMap, onEdit, onDelete }) {
                 transition-all duration-200
                 hover:border-green-400/20 hover:-translate-y-0.5 select-none"
         >
-            <CardHeader project={project} anchorEl={anchorEl} setAnchorEl={setAnchorEl} onEdit={onEdit} onDelete={onDelete}/>
+            <CardHeader
+                project={project}
+                anchorEl={anchorEl}
+                setAnchorEl={setAnchorEl}
+                onEdit={onEdit}
+                onDelete={onDelete}
+            />
 
             {project.client && (
                 <div className="flex items-center gap-1.5">
-                    <MdPerson
-                        size={13}
-                        className="text-font-gray2 shrink-0"
-                    />
+                    <MdPerson size={13} className="text-font-gray2 shrink-0" />
                     <span className="text-font-gray text-[12px]">
                         {project.client}
                     </span>
@@ -53,18 +53,19 @@ function ProjectCard({ project, usersMap, onEdit, onDelete }) {
                         <span
                             key={tech}
                             className="text-[10px] font-semibold rounded-sm tracking-[0.03em] py-0.5 px-2 border text-cyan-400
-                                bg-cyan-400/8 border-cyan-400/15">
+                                bg-cyan-400/8 border-cyan-400/15"
+                        >
                             {tech}
                         </span>
                     ))}
                 </div>
             )}
 
-            <CardDevs project={project} usersMap={usersMap}/>
+            <CardDevs project={project} usersMap={usersMap} />
 
-            <CardFooter project={project}/>
+            <CardFooter project={project} />
 
-            <CreatedModifiedBy usersMap={usersMap} project={project}/>
+            <CreatedModifiedBy usersMap={usersMap} project={project} />
         </div>
     );
 }

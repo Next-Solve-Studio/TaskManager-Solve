@@ -10,21 +10,21 @@ import {
     MdSearch,
     MdSupervisorAccount,
 } from "react-icons/md";
-import UserRow from "./UserRow";
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
 import { useUsers } from "@/context/UsersContext";
-import { StatPill } from "../ui/StatPill";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
-import UsersCards from "./usersCards/UsersCards";
 import useIsMobile from "@/responsive/useIsMobile";
+import { StatPill } from "../ui/StatPill";
+import UserRow from "./UserRow";
+import UsersCards from "./usersCards/UsersCards";
 
 export default function UsersMain() {
     const { users, loading } = useUsers();
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
-    const isMobile = useIsMobile()
+    const isMobile = useIsMobile();
     const [deletingUser, setDeletingUser] = useState(null);
 
     const handleOpenEdit = useCallback((user) => setEditingUser(user), []);
@@ -118,7 +118,6 @@ export default function UsersMain() {
                             fontSize: 26,
                             fontWeight: 800,
                             color: "#fff",
-
                         }}
                         className="mt-2"
                     >
@@ -282,13 +281,13 @@ export default function UsersMain() {
                 >
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
                     <span style={{ color: "#6b7280", fontSize: 14 }}>
-                        Carregando usuários... <br/>
+                        Carregando usuários... <br />
                         {users.length === 0
                             ? "Nenhum usuário cadastrado ainda"
                             : "Nenhum usuário encontrado"}
                     </span>
                 </div>
-            )  : isMobile ? (
+            ) : isMobile ? (
                 <UsersCards
                     users={filtered}
                     onEdit={handleOpenEdit}
@@ -299,7 +298,7 @@ export default function UsersMain() {
                     style={{ display: "flex", flexDirection: "column", gap: 6 }}
                 >
                     {/* Cabeçalho */}
-                    <div         
+                    <div
                         className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4
                         px-5 py-1.5 text-[11px] font-bold
                         text-[#4b5563] select-none uppercase tracking-[0.08em]"

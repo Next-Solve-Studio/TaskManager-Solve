@@ -1,10 +1,15 @@
+import { Menu, MenuItem } from "@mui/material";
+import { MdDelete, MdEdit, MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import { PriorityBadge, StatusBadge } from "../ProjectBadges";
-import { MdDelete, MdEdit, MdMoreVert } from "react-icons/md";
-import { Menu, MenuItem } from "@mui/material";
 
-
-export default function CardHeader({project, onEdit, setAnchorEl, anchorEl, onDelete }) {
+export default function CardHeader({
+    project,
+    onEdit,
+    setAnchorEl,
+    anchorEl,
+    onDelete,
+}) {
     return (
         <div
             style={{
@@ -38,7 +43,7 @@ export default function CardHeader({project, onEdit, setAnchorEl, anchorEl, onDe
                     type="button"
                     className="bg-none border-none cursor-pointer p-1 flex shrink-0 rounded-md text-font-gray2 "
                 >
-                    <MdMoreVert size={18} className="sm:hover:text-[#e5e7eb]"/>
+                    <MdMoreVert size={18} className="sm:hover:text-[#e5e7eb]" />
                 </button>
             </CanDo>
 
@@ -92,5 +97,5 @@ export default function CardHeader({project, onEdit, setAnchorEl, anchorEl, onDe
                 </MenuItem>
             </Menu>
         </div>
-    )
+    );
 }

@@ -27,11 +27,15 @@ function SettingsHeader({ title, description, icon: Icon }) {
                         Configurações
                     </span>
                 </div>
-                <h1 className={`${isMobile ? "text-xl" : "text-[26px]"} font-extrabold text-white m-0`}>
+                <h1
+                    className={`${isMobile ? "text-xl" : "text-[26px]"} font-extrabold text-white m-0`}
+                >
                     {title}
                 </h1>
                 {description && (
-                    <p className={`${isMobile ? "text-xs" : "text-[13px]"} text-font-gray2 mt-1`}>
+                    <p
+                        className={`${isMobile ? "text-xs" : "text-[13px]"} text-font-gray2 mt-1`}
+                    >
                         {description}
                     </p>
                 )}
@@ -57,7 +61,7 @@ export default function SettingsMain() {
                     description="Gerencie suas preferências pessoais e seguranças"
                     icon={FiSettings}
                 />
-                
+
                 <div className="bg-bg-card border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
                     <Tabs
                         value={activeTab}

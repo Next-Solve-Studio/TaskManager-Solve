@@ -193,7 +193,9 @@ export default function ClientDeleteModal({ open, onClose, client }) {
                             lineHeight: 1.55,
                         }}
                     >
-                        Esta ação é <strong>irreversível</strong>. Todos os dados da parceria com este cliente serão removidos permanentemente do sistema.
+                        Esta ação é <strong>irreversível</strong>. Todos os
+                        dados da parceria com este cliente serão removidos
+                        permanentemente do sistema.
                     </p>
                 </div>
             </DialogContent>

@@ -30,7 +30,7 @@
     --color-cyan-800: #155e75;
     --color-cyan-900: #164e63;
 
-     /* Superfícies com transparência cyan */
+    /* Superfícies com transparência cyan */
     --color-surface-cyan-dark: #22d3ee10;
     --color-surface-cyan-alt: #22d3ee20;
     --color-surface-cyan-md: #22d3ee30;
@@ -52,8 +52,6 @@
     --color-surface-purple-alt: #a855f720;
     --color-surface-purple-md: #a855f730;
 
-   
-
     /* ─── FUNDO / DARK THEME ────────────────────────────── */
     --color-background-page: #0a0a0a;
     --color-bg-pure: #000000b6;
@@ -73,9 +71,9 @@
     --color-warning: #f59e0b;
     --color-error: #ef4444;
     --color-info: var(--color-cyan-500);
-        --color: var(--color-font-gray2);
-        --bg: var(--color-font-gray2/12);
-        --border: var(--color-font-gray2/25);
+    --color: var(--color-font-gray2);
+    --bg: var(--color-font-gray2 / 12);
+    --border: var(--color-font-gray2 / 25);
 
     --background-image-geometric: url("../../public/img/ondas.jpg");
 }

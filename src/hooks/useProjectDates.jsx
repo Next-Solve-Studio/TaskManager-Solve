@@ -1,14 +1,14 @@
-'use client'
-import { useMemo } from "react"
+"use client";
 import { differenceInDays, format } from "date-fns";
+import { useMemo } from "react";
 import { parseDate } from "@/utils/FormatDateProjects";
 
 export function useProjectsDates(project) {
     const startDateInfo = useMemo(() => {
-        const start = parseDate(project.startDate)
-        if (!start) return null
-        return { formatted: format(start, "dd/MM/yyyy")}
-    }, [project.startDate])
+        const start = parseDate(project.startDate);
+        if (!start) return null;
+        return { formatted: format(start, "dd/MM/yyyy") };
+    }, [project.startDate]);
 
     // executa essa função apenas quando project.expectedDeliveryDate mudar. Se não mudar, reutiliza o valor antigo
     const expectedInfo = useMemo(() => {

@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 import { MdClose, MdDelete, MdWarning } from "react-icons/md";
 import { toast } from "sonner";
-import { Avatar } from "@/utils/AvatarBadge"
 import { useUsers } from "@/context/UsersContext";
+import { Avatar } from "@/utils/AvatarBadge";
 
 export default function UserDeleteModal({ open, onClose, user }) {
     const { deleteUser } = useUsers(); // função para excluir user

@@ -47,9 +47,15 @@ export default function SecuritySettings() {
 
     if (currentUser?.authMethod === "google") {
         return (
-            <div className={`bg-cyan-500/5 border border-cyan-500/20 rounded-2xl ${isMobile ? 'p-4 flex-col text-center' : 'p-6'} flex items-center gap-4`}>
-                <MdInfoOutline className={`text-cyan-400 ${isMobile ? 'text-2xl' : 'text-3xl'} shrink-0`} />
-                <div className={`space-y-1 ${isMobile ? 'text-center' : 'text-left'}`}>
+            <div
+                className={`bg-cyan-500/5 border border-cyan-500/20 rounded-2xl ${isMobile ? "p-4 flex-col text-center" : "p-6"} flex items-center gap-4`}
+            >
+                <MdInfoOutline
+                    className={`text-cyan-400 ${isMobile ? "text-2xl" : "text-3xl"} shrink-0`}
+                />
+                <div
+                    className={`space-y-1 ${isMobile ? "text-center" : "text-left"}`}
+                >
                     <h3 className="text-cyan-400 font-bold text-sm uppercase tracking-wider">
                         Autenticação Social Ativa
                     </h3>
@@ -67,10 +73,13 @@ export default function SecuritySettings() {
         <Box
             component="form"
             onSubmit={handleSubmit(onSubmit)}
-            className={`space-y-6 ${isMobile ? 'w-full' : 'max-w-md'}`}
+            className={`space-y-6 ${isMobile ? "w-full" : "max-w-md"}`}
         >
             <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1">
+                <label
+                    htmlFor="currentPassword"
+                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                >
                     Senha Atual
                 </label>
                 <TextField
@@ -85,7 +94,10 @@ export default function SecuritySettings() {
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1">
+                <label
+                    htmlFor="newPassword"
+                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                >
                     Nova Senha
                 </label>
                 <TextField
@@ -100,7 +112,10 @@ export default function SecuritySettings() {
             </div>
 
             <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1">
+                <label
+                    htmlFor="confirmPassword"
+                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                >
                     Confirmar Nova Senha
                 </label>
                 <TextField

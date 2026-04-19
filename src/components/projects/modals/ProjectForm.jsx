@@ -31,9 +31,9 @@ import {
     projectSchema,
     STATUS_MAP,
 } from "@/components/projects/ProjectsConfig";
+import { Avatar } from "@/utils/AvatarBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { muiDark } from "@/utils/StyleInputs";
-import { Avatar } from "@/utils/AvatarBadge"
 
 const menuPaper = {
     PaperProps: {

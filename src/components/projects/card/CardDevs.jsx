@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import { useMemo } from "react"
-import { Avatar } from "@/utils/AvatarBadge"
-import { MdGroup } from "react-icons/md"
-import { Tooltip } from "@mui/material"
-export default function CardDevs({project, usersMap}) {
-
+import { Tooltip } from "@mui/material";
+import { useMemo } from "react";
+import { MdGroup } from "react-icons/md";
+import { Avatar } from "@/utils/AvatarBadge";
+export default function CardDevs({ project, usersMap }) {
     // busca o objeto do usuário correspondendo pelo usersMap
-    const developers = useMemo(() =>
-        (project.developers || [])
-            .map((uid) => usersMap[uid])
-            .filter(Boolean), //remove os itens que são undefined ou falsos, fica só os users que existem no banco
-            [project.developers, usersMap] 
-            // evita renderizamentos desnecessários com useMemo, agora so renderiza se as dependencias mudarem
-    )
+    const developers = useMemo(
+        () =>
+            (project.developers || [])
+                .map((uid) => usersMap[uid])
+                .filter(Boolean), //remove os itens que são undefined ou falsos, fica só os users que existem no banco
+        [project.developers, usersMap],
+        // evita renderizamentos desnecessários com useMemo, agora so renderiza se as dependencias mudarem
+    );
     return (
         <>
             {developers.length > 0 && (
@@ -40,8 +40,10 @@ export default function CardDevs({project, usersMap}) {
                             </Tooltip>
                         ))}
                         {developers.length > 4 && (
-                            <span className="-ml-2 w-6.5 h-6.5  rounded-[50%] flex items-center justify-center text-[9px] font-bold
-                                    text-font-gray border-2 border-bg-card bg-[#FFFFFF14]">
+                            <span
+                                className="-ml-2 w-6.5 h-6.5  rounded-[50%] flex items-center justify-center text-[9px] font-bold
+                                    text-font-gray border-2 border-bg-card bg-[#FFFFFF14]"
+                            >
                                 +{developers.length - 4}
                             </span>
                         )}
@@ -53,6 +55,5 @@ export default function CardDevs({project, usersMap}) {
                 </div>
             )}
         </>
-        
-    )
+    );
 }

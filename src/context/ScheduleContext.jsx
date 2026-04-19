@@ -1,4 +1,5 @@
-'use client' 
+"use client";
+import { addWeeks, endOfWeek, format, startOfWeek } from "date-fns";
 import {
     collection,
     doc,
@@ -18,66 +19,59 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { db } from "@/lib/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
-import {
-    startOfWeek,
-    endOfWeek,
-    addWeeks,
-    format,
-} from "date-fns";
+import { db } from "@/lib/firebaseConfig";
 
-const ScheduleContext = createContext() // contexto da agenda criado
+const ScheduleContext = createContext(); // contexto da agenda criado
 
-export const useSchedule = () => useContext(ScheduleContext)
+export const useSchedule = () => useContext(ScheduleContext);
 //hook personalizado, para usar useSchedule, ao inves de escrever useContext(ScheduleContext)
 
 // Recebe uma data e retorna uma string no formato "2026-W24" (ano + num. da semana)
 export const getWeekKey = (date) => {
-    const d = new Date(date)
+    const d = new Date(date);
     // Segunda-feira é o primeiro dia da semana (weekStartsOn: 1).
-    const startMonday = startOfWeek(d, {weekStartsOn: 1})
+    const startMonday = startOfWeek(d, { weekStartsOn: 1 });
 
-    return format(startMonday,"yyyy-MM-dd") 
-    
-}
+    return format(startMonday, "yyyy-MM-dd");
+};
 
 export const WEEK_DAYS = [
     { key: "segunda", label: "Segunda" },
-    { key: "terca",   label: "Terça" },
-    { key: "quarta",  label: "Quarta" },
-    { key: "quinta",  label: "Quinta" },
-    { key: "sexta",   label: "Sexta" },
-    { key: "sabado",  label: "Sábado" },
+    { key: "terca", label: "Terça" },
+    { key: "quarta", label: "Quarta" },
+    { key: "quinta", label: "Quinta" },
+    { key: "sexta", label: "Sexta" },
+    { key: "sabado", label: "Sábado" },
     { key: "domingo", label: "Domingo" },
 ];
 
-export const ScheduleProvider = ({children}) => {
+export const ScheduleProvider = ({ children }) => {
     // provedor do contexto de auth
-    const {currentUser} = useAuth()
+    const { currentUser } = useAuth();
 
     // Semana exibida (offset em relação à semana atual, 0 = atual)
-    const [weekOffset, setWeekOffset] = useState(0)
+    const [weekOffset, setWeekOffset] = useState(0);
     // controla se mostra minha agenda ("me"), agenda de outro usuário (UID) ou todos ("all").
-    const [filterUserId, setFilterUserId] = useState("me")
+    const [filterUserId, setFilterUserId] = useState("me");
     // array com os documentos baixados do Firestore
-    const [schedules, setSchedules] = useState([])
-    const [loadingSchedules, setLoadingSchedules] = useState(true)
+    const [schedules, setSchedules] = useState([]);
+    const [loadingSchedules, setLoadingSchedules] = useState(true);
 
     // addWeeks soma ou subtrai semanas da data atual
-    const weekStart = startOfWeek(addWeeks(new Date(), weekOffset),{
+    const weekStart = startOfWeek(addWeeks(new Date(), weekOffset), {
         weekStartsOn: 1,
-    })
+    });
     // obtém o domingo da mesma semana, ja que weekStart comeca segunda
-    const weekEnd = endOfWeek(weekStart, {weekStartsOn: 1})
+    const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
     // gera a chave única da semana (ex: "2025-W16").
-    const weekKey = getWeekKey(weekStart)
+    const weekKey = getWeekKey(weekStart);
 
-    useEffect(()=> {
+    useEffect(() => {
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.uid) return;
 
-        setLoadingSchedules(true)
+        setLoadingSchedules(true);
 
         let q;
 
@@ -87,44 +81,47 @@ export const ScheduleProvider = ({children}) => {
                 collection(db, "schedules"),
                 where("weekKey", "==", weekKey),
                 orderBy("userName", "asc"),
-            )
+            );
         } else {
             // Se o filtro for "me", usa o UID do usuário logado. Caso contrário, usa o UID digitado (ou undefined se for "all").
-            const effectiveUserId = filterUserId === "me" ? currentUser.uid : filterUserId
+            const effectiveUserId =
+                filterUserId === "me" ? currentUser.uid : filterUserId;
 
             // consulta apenas o doc do user específico, com filtro por weekKey e userId
             q = query(
                 collection(db, "schedules"),
-                where("weekKey","==", weekKey),
+                where("weekKey", "==", weekKey),
                 where("userId", "==", effectiveUserId),
-            )
+            );
         }
 
         // escuta mudanças em tempo real. Toda vez que algum documento bater com a consulta, a função de callback é executada com o novo snapshot
         const unsubscribe = onSnapshot(
             q,
             (snapshot) => {
-                setSchedules(snapshot.docs.map((d) => ({ id: d.id, ...d.data()})))
-                setLoadingSchedules(false)
+                setSchedules(
+                    snapshot.docs.map((d) => ({ id: d.id, ...d.data() })),
+                );
+                setLoadingSchedules(false);
             },
             (error) => {
-                console.error(error)
-                toast.error(`Erro ao carregar agenda: ${error.message}`)
-                setLoadingSchedules(false)
-            }
-        )
-        return unsubscribe
-    }, [currentUser?.uid, weekKey, filterUserId])
+                console.error(error);
+                toast.error(`Erro ao carregar agenda: ${error.message}`);
+                setLoadingSchedules(false);
+            },
+        );
+        return unsubscribe;
+    }, [currentUser?.uid, weekKey, filterUserId]);
 
     // callback para memorizar a função para que não seja recriada em toda renderização
-    const saveDay = useCallback( 
+    const saveDay = useCallback(
         async (dayKey, description, targetUserId) => {
             if (!currentUser?.uid) return;
 
             // se for passado targetUserId (ex: um admin editando agenda de outro), usa ele; senão usa o próprio
-            const uid = targetUserId || currentUser.uid
+            const uid = targetUserId || currentUser.uid;
             // ID único do documento (ex: abc123_2026-W25)
-            const docId = `${uid}_${weekKey}`
+            const docId = `${uid}_${weekKey}`;
 
             const docRef = doc(db, "schedules", docId);
 
@@ -151,49 +148,61 @@ export const ScheduleProvider = ({children}) => {
                     [`days.${dayKey}.updatedAt`]: new Date(),
                 });
             } catch (err) {
-                console.error(err)
-                toast.error(`Erro ao salvar o dia: ${err.message}`)
-                throw err
+                console.error(err);
+                toast.error(`Erro ao salvar o dia: ${err.message}`);
+                throw err;
             }
-        }, [currentUser, weekKey, weekStart],
-    )
+        },
+        [currentUser, weekKey, weekStart],
+    );
 
+    const goToPreviousWeek = useCallback(() => setWeekOffset((o) => o - 1), []);
+    const goToNextWeek = useCallback(() => setWeekOffset((o) => o + 1), []);
+    const goToCurrentWeek = useCallback(() => setWeekOffset(0), []);
 
-    const goToPreviousWeek = useCallback(() => setWeekOffset((o) => o - 1),[])
-    const goToNextWeek = useCallback(() => setWeekOffset((o) => o + 1),[])
-    const goToCurrentWeek = useCallback(() => setWeekOffset(0),[])
+    const isCurrentWeek = weekOffset === 0;
+    const isFutureWeek = weekOffset > 0;
 
-    const isCurrentWeek = weekOffset === 0
-    const isFutureWeek = weekOffset > 0
-
-    const value = useMemo(() => ({
-        weekOffset,
-        weekStart,
-        weekEnd,
-        weekKey,
-        isCurrentWeek,
-        isFutureWeek,
-        goToPreviousWeek,
-        goToNextWeek,
-        goToCurrentWeek,
-        filterUserId,
-        setFilterUserId,
-        schedules,
-        loadingSchedules,
-        saveDay,
-    }), [
-        weekOffset, weekStart, weekEnd, weekKey,
-        isCurrentWeek, isFutureWeek,
-        goToPreviousWeek, goToNextWeek, goToCurrentWeek,
-        filterUserId, schedules, loadingSchedules, saveDay
-    ]);
+    const value = useMemo(
+        () => ({
+            weekOffset,
+            weekStart,
+            weekEnd,
+            weekKey,
+            isCurrentWeek,
+            isFutureWeek,
+            goToPreviousWeek,
+            goToNextWeek,
+            goToCurrentWeek,
+            filterUserId,
+            setFilterUserId,
+            schedules,
+            loadingSchedules,
+            saveDay,
+        }),
+        [
+            weekOffset,
+            weekStart,
+            weekEnd,
+            weekKey,
+            isCurrentWeek,
+            isFutureWeek,
+            goToPreviousWeek,
+            goToNextWeek,
+            goToCurrentWeek,
+            filterUserId,
+            schedules,
+            loadingSchedules,
+            saveDay,
+        ],
+    );
 
     return (
         <ScheduleContext.Provider value={value}>
             {children}
         </ScheduleContext.Provider>
     );
-}
+};
 
 /**
  * Firestore collection: "schedules"
