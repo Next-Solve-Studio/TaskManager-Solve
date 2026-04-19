@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { MdClose, MdDelete, MdWarning } from "react-icons/md";
 import { toast } from "sonner";
-import { Avatar } from "@/components/projects/ProjectBadges";
+import { Avatar } from "@/utils/AvatarBadge"
 import { useUsers } from "@/context/UsersContext";
 
 export default function UserDeleteModal({ open, onClose, user }) {

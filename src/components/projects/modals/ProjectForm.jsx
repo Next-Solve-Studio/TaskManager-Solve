@@ -33,7 +33,7 @@ import {
 } from "@/components/projects/ProjectsConfig";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { muiDark } from "@/utils/StyleInputs";
-import { Avatar } from "../ProjectBadges";
+import { Avatar } from "@/utils/AvatarBadge"
 
 const menuPaper = {
     PaperProps: {

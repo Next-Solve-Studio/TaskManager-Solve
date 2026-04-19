@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from "react"
-import { Avatar } from "../ProjectBadges"
+import { Avatar } from "@/utils/AvatarBadge"
 import { MdGroup } from "react-icons/md"
 import { Tooltip } from "@mui/material"
 export default function CardDevs({project, usersMap}) {

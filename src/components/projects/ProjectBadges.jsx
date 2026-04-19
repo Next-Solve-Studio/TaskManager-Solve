@@ -1,33 +1,9 @@
 import {
-    avatarColor,
-    getInitials,
     PRIORITY_MAP,
     STATUS_MAP,
 } from "@/components/projects/ProjectsConfig";
 
-export function Avatar({ name, uid, size = 32 }) {
-    const color = avatarColor(uid || name);
-    return (
-        <div
-            style={{
-                width: size,
-                height: size,
-                borderRadius: "50%",
-                background: `${color}20`,
-                border: `2px solid ${color}50`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: size * 0.36,
-                fontWeight: 700,
-                color,
-                flexShrink: 0,
-            }}
-        >
-            {getInitials(name)}
-        </div>
-    );
-}
+
 
 export function StatusBadge({ status }) {
     const s = STATUS_MAP[status];

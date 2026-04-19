@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
-import { Avatar } from "@/components/projects/ProjectBadges";
+import { Avatar } from "@/utils/AvatarBadge"
 import { MdDelete, MdEdit } from "react-icons/md";
 
 export default function UserRow({ user, onEdit, onDelete }) {
