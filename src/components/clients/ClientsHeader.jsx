@@ -1,7 +1,7 @@
 import { FiBriefcase } from "react-icons/fi";
 import useIsMobile from "@/responsive/useIsMobile";
 
-export default function ClientsHeader({ clientsCount, onCreate }) {
+export default function ClientsHeader({ onCreate }) {
     const isMobile = useIsMobile();
 
     return (
@@ -18,13 +18,13 @@ export default function ClientsHeader({ clientsCount, onCreate }) {
                 >
                     Clientes
                 </h1>
-                <p
+                {/* <p
                     className={`${isMobile ? "text-xs" : "text-[13px]"} text-font-gray2 mt-1`}
                 >
                     {clientsCount} cliente{clientsCount !== 1 ? "s" : ""}{" "}
                     cadastrado
                     {clientsCount !== 1 ? "s" : ""}
-                </p>
+                </p> */}
             </div>
             {onCreate && (
                 <button

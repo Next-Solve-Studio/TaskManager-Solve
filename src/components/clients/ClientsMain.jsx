@@ -2,11 +2,12 @@
 
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
-import { MdSearch } from "react-icons/md";
+import { MdCheckCircle, MdPeople, MdSearch } from "react-icons/md";
 import { useClients } from "@/context/ClientsContext";
 import { useRole } from "@/hooks/useRole";
 import useIsMobile from "@/responsive/useIsMobile";
 import useIsTablet from "@/responsive/useIsTablet";
+import { StatPill } from "../ui/StatPill";
 import ClientCard from "./ClientCard";
 import ClientDeleteModal from "./ClientDeleteModal";
 import ClientForm from "./ClientForm";
@@ -23,6 +24,9 @@ export default function ClientsMain() {
     const [selectedClient, setSelectedClient] = useState(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [deletingClient, setDeletingClient] = useState(null);
+
+    const totalClients = clients.length;
+    const activeClients = clients.filter((c) => c.status === "active").length;
 
     const filteredClients = clients.filter(
         (client) =>
@@ -43,11 +47,29 @@ export default function ClientsMain() {
     return (
         <div className="space-y-8">
             <ClientsHeader
-                clientsCount={clients.length}
                 onCreate={
                     can("canManageClients") ? () => handleOpenModal() : null
                 }
             />
+
+            <div className="flex flex-wrap gap-4">
+                <StatPill
+                    icon={MdPeople}
+                    label="Total de clientes"
+                    value={totalClients}
+                    color="var(--color-cyan-400)"
+                    bg="var(--color-surface-cyan-alt)"
+                    border="var(--color-surface-cyan-md)"
+                />
+                <StatPill
+                    icon={MdCheckCircle}
+                    label={`${activeClients === 1 ? "Cliente ativo" : "Clientes ativos"}`}
+                    value={activeClients}
+                    color="var(--color-brand-500)"
+                    bg="var(--color-surface-green-alt)"
+                    border="var(--color-surface-green-md)"
+                />
+            </div>
 
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 <TextField
