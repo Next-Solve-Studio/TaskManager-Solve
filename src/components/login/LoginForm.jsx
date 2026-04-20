@@ -48,10 +48,6 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
 
         try {
             await login(data.email, data.password);
-
-            toast.success("Login realizado com sucesso!", {
-                description: "Bem-vindo de volta!",
-            });
         } catch (error) {
             const messages = {
                 "auth/user-not-found":
@@ -69,6 +65,9 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
             });
         } finally {
             setLoading(false);
+            toast.success("Login realizado com sucesso!", {
+                description: "Bem-vindo de volta!",
+            });
         }
     }
 

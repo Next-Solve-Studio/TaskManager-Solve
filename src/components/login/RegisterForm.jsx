@@ -52,11 +52,7 @@ export default function RegisterForm({ setHaveAccount }) {
         setLoading(true);
 
         try {
-            await registerUser(data.name, data.email, data.password);
-
-            toast.success("Conta criada com sucesso!", {
-                description: "Bem-vindo! Você já está logado.",
-            });
+            await registerUser(data.name, data.email, data.password);    
         } catch (error) {
             const messages = {
                 "auth/email-already-in-use": "Este e-mail já está cadastrado.",
@@ -71,6 +67,9 @@ export default function RegisterForm({ setHaveAccount }) {
             });
         } finally {
             setLoading(false);
+            toast.success("Conta criada com sucesso!", {
+                description: "Bem-vindo! Você já está logado.",
+            });
         }
     }
 

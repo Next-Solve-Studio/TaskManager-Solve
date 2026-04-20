@@ -14,6 +14,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useRef,
     useState,
 } from "react";
 import { useAppRouter } from "@/utils/useAppRouter";
@@ -48,6 +49,9 @@ export const AuthProvider = ({ children }) => {
         );
     }, []);
 
+    // indica que o login acabou de acontecer nesta sessão, Usamos ref para não causar re-render e evitar loop
+    const justLoggedIn = useRef(false);
+
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -61,6 +65,12 @@ export const AuthProvider = ({ children }) => {
                 const userData = userDoc.exists() ? userDoc.data() : {};
 
                 setCurrentUser({ ...user, ...userData }); // atualiza o estado com a informação recebida do firebase
+                
+                // Isso garante que o currentUser já está populado antes do redirect,
+                if (justLoggedIn.current) {
+                    justLoggedIn.current = false;
+                    router.goHome();
+                }
             } else {
                 setSessionCookie(null);
                 setCurrentUser(null);
@@ -69,18 +79,18 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         });
         return unsubscribe; //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
-    }, [setSessionCookie]);
+    }, [setSessionCookie, router]);
 
     const login = async (email, password) => {
-        // Função de login, recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        const userCredential = await signInWithEmailAndPassword(
+        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
+        justLoggedIn.current = true;
+
+        // Recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
+        await signInWithEmailAndPassword(
             auth,
             email,
             password,
         );
-        const token = await userCredential.user.getIdToken();
-        setSessionCookie(token);
-        router.goHome();
     };
 
     const register = async (name, email, password) => {
@@ -90,8 +100,6 @@ export const AuthProvider = ({ children }) => {
             email,
             password,
         );
-        const token = await userCredential.user.getIdToken();
-        0;
         const usersSnapshot = await getDocs(collection(db, "users"));
         const isFirstUser = usersSnapshot.empty;
 
@@ -103,8 +111,8 @@ export const AuthProvider = ({ children }) => {
             createdAt: new Date(),
             authMethod: "email",
         });
-        setSessionCookie(token);
-        router.goHome();
+        // Sinaliza redirect após onAuthStateChanged popular o currentUser
+        justLoggedIn.current = true;
     };
 
     const logout = async () => {

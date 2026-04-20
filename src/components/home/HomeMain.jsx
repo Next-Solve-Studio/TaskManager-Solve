@@ -8,21 +8,12 @@ import {
     MdOutlineSupportAgent,
     MdTrendingUp,
 } from "react-icons/md";
-import {
-    Area,
-    AreaChart,
-    CartesianGrid,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
-} from "recharts";
+
 import { useProjects } from "@/context/ProjectsContext";
 import { useUsers } from "@/context/UsersContext";
-
 import { StatCard } from "./sections/StatCard";
 import { toDate, buildWeeklyData } from "../ui/DashboardUtils";
-import { LoadingState, CustomTooltip } from "./HomeSubComponents";
+import { LoadingState } from "./HomeSubComponents";
 import HomeHeader from "./sections/HomeHeader";
 import Team from "./sections/Team";
 import ProjectsWeek from "./sections/ProjectsWeek";
