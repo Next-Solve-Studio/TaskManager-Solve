@@ -25,7 +25,7 @@ const schema = yup
     })
     .required();
 
-export default function LoginForm({ setHaveAccount }) {
+export default function LoginForm({ setHaveAccount, allowRegistration }) {
     const { login } = useAuth();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
@@ -166,13 +166,15 @@ export default function LoginForm({ setHaveAccount }) {
                         )}
                     </button>
                 </div>
-                <button
-                    type="button"
-                    className="text-white md:text-bg-hover2 cursor-pointer md:hover:text-brand-700"
-                    onClick={() => setHaveAccount(false)}
-                >
-                    Não tem uma conta? clique aqui
-                </button>
+                {allowRegistration && (
+                    <button
+                        type="button"
+                        className="text-white md:text-bg-hover2 cursor-pointer md:hover:text-brand-700"
+                        onClick={() => setHaveAccount(false)}
+                    >
+                        Não tem uma conta? clique aqui
+                    </button>
+                )}
             </div>
             <button
                 type="submit"

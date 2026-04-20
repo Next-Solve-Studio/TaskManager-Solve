@@ -4,7 +4,7 @@ import {
     reauthenticateWithCredential,
     updatePassword,
 } from "firebase/auth";
-import { doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -85,12 +85,33 @@ export const SettingsProvider = ({ children }) => {
         }
     }, []);
 
+    // Atualizar configurações globais do sistema
+    const updateSystemSettings = useCallback(async (data) => {
+        try {
+            const systemDocRef = doc(db, "system_settings", "config");
+            await setDoc(
+                systemDocRef,
+                {
+                    ...data,
+                    updatedAt: new Date(),
+                },
+                { merge: true },
+            );
+            toast.success("Configurações do sistema atualizadas");
+        } catch (error) {
+            console.error("Erro ao atualizar configurações:", error);
+            toast.error("Erro ao atualizar configurações");
+            throw error;
+        }
+    }, []);
+
     const value = {
         userSettings,
         systemSettings,
         loading,
         updateProfile,
         changePassword,
+        updateSystemSettings,
     };
 
     return (
