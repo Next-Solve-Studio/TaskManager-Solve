@@ -6,6 +6,7 @@ import { ptBR } from "date-fns/locale";
 import { useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
+import useIsMobile from "@/responsive/useIsMobile";
 
 export default function CardScheduleEdit({
     dayKey,
@@ -15,6 +16,7 @@ export default function CardScheduleEdit({
     canEdit,
     onSave,
 }) {
+    const isMobile= useIsMobile()
     const description = scheduleDoc?.days?.[dayKey]?.description || "";
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
@@ -113,7 +115,7 @@ export default function CardScheduleEdit({
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-white/10"
+                        className="opacity-0 lg:group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-white/10"
                         style={{ color: "#6b7280" }}
                     >
                         <MdEdit size={15} />
@@ -121,7 +123,6 @@ export default function CardScheduleEdit({
                 )}
             </div>
 
-            {/* Corpo: texto ou textarea */}
             <div className="flex-1">
                 {editing ? (
                     <div className="flex flex-col gap-2">
@@ -138,7 +139,7 @@ export default function CardScheduleEdit({
                                 fontFamily: "inherit",
                             }}
                         />
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
                             <button
                                 type="button"
                                 onClick={handleSave}
@@ -176,13 +177,15 @@ export default function CardScheduleEdit({
                         </div>
                     </div>
                 ) : (
-                    <div
-                        className={`text-sm leading-relaxed ${description ? "text-[#d1d5db]" : "text-[#374151]"} ${canEdit && !description ? "italic" : ""}`}
+                    <button
+                        type="button"
+                        className={`text-sm ${isMobile?'h-full w-full text-start' : ''} leading-relaxed ${description ? "text-[#d1d5db]" : "text-[#374151]"} ${canEdit && !description ? "italic" : ""}`}
                         style={{ whiteSpace: "pre-wrap" }}
+                        onClick={() => setEditing(true)}
                     >
                         {description ||
                             (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
-                    </div>
+                    </button>
                 )}
             </div>
         </div>

@@ -74,7 +74,7 @@ export default function ScheduleMain() {
             />
 
             {/* ── NAVEGAÇÃO DE SEMANA + FILTROS ── */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex flex-col lg:flex-row lg:items-center sm:justify-between gap-3">
                 {/* Navegação de semana */}
                 <WeekNavigation
                     isCurrentWeek={isCurrentWeek}

@@ -31,37 +31,44 @@ export default function ScheduleHeader({ isViewingAll, activeScheduleDoc }) {
             {/* Mini stats */}
             {!isViewingAll && (
                 <div
-                    className="flex items-center gap-4 px-4 py-3 rounded-2xl shrink-0"
+                    className="flex items-center flex-wrap gap-4 px-4 py-3 rounded-2xl shrink-0"
                     style={{
                         background: "#121212",
                         border: "1px solid rgba(255,255,255,0.06)",
                     }}
                 >
                     <div className="text-center">
-                        <p className="text-xl font-bold text-brand-500">
-                            {filledDays}
-                        </p>
-                        <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
-                            Preenchidos
-                        </p>
+                        <div>
+                            <p className="text-xl font-bold text-brand-500">
+                                {filledDays}
+                            </p>
+                            <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
+                                Preenchidos
+                            </p>
+                        </div>
                     </div>
-                    <div className="w-px h-10 bg-white/5" />
-                    <div className="text-center">
-                        <p className="text-xl font-bold text-font-gray2">
-                            {7 - filledDays}
-                        </p>
-                        <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
-                            Pendentes
-                        </p>
+                    <div className="text-center flex  gap-3">
+                        <div className="w-px h-10 bg-white/5" />
+                        <div>
+                            <p className="text-xl font-bold text-font-gray2">
+                                {7 - filledDays}
+                            </p>
+                            <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
+                                Pendentes
+                            </p>
+                        </div>
                     </div>
-                    <div className="w-px h-10 bg-white/5" />
-                    <div className="text-center">
-                        <p className="text-xl font-bold text-cyan-400">
-                            {Math.round((filledDays / 7) * 100)}%
-                        </p>
-                        <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
-                            Completo
-                        </p>
+                    
+                    <div className="text-center flex  gap-3">
+                        <div className="w-px h-10 bg-white/5" />
+                        <div>
+                            <p className="text-xl font-bold text-cyan-400">
+                                {Math.round((filledDays / 7) * 100)}%
+                            </p>
+                            <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
+                                Completo
+                            </p>
+                        </div>
                     </div>
                 </div>
             )}
