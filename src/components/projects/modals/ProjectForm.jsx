@@ -402,6 +402,7 @@ export default function ProjectForm({
                                                     name={u.name}
                                                     uid={u.id}
                                                     size={22}
+                                                    src={u.photo}
                                                 />
                                                 <span
                                                     style={{ color: "#e5e7eb" }}

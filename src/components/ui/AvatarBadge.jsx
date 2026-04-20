@@ -1,3 +1,5 @@
+'use client'
+import Image from "next/image";
 export const AVATAR_COLORS = [
     "#19CA68",
     "#22d3ee",
@@ -13,21 +15,53 @@ export const AVATAR_COLORS = [
 
 export function getInitials(name = "") {
     return name
+        .trim()
         .split(" ")
         .slice(0, 2)
         .map((n) => n[0]?.toUpperCase())
         .join("");
 }
 
-export function avatarColor(uid = "") {
+export function avatarColor(seed  = "") {
     let hash = 0;
-    for (const c of uid) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+    for (const c of seed ) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-export function Avatar({ name, uid, size = 32 }) {
-    const color = avatarColor(uid || name);
-    return (
+export function Avatar({
+
+    name = "",
+    uid = "",
+    src = "",
+    size = 32,
+}) {
+    const seed = uid || name || "user";
+    const color = avatarColor(seed);
+
+    return (<>
+        {src ? (
+            <div
+                style={{
+                    width: size,
+                    height: size,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    position: "relative",
+                    flexShrink: 0,
+                }}
+            >
+                <Image
+                    src={src}
+                    alt="Foto de perfil"
+                    fill
+                    sizes={`${size}px`}
+                    className="object-cover"
+                />
+            </div>
+            
+        ) : (
+                                        
+                                    
         <div
             style={{
                 width: size,
@@ -46,5 +80,6 @@ export function Avatar({ name, uid, size = 32 }) {
         >
             {getInitials(name)}
         </div>
+        )}</>
     );
 }

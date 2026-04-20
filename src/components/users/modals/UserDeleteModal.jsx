@@ -120,7 +120,7 @@ export default function UserDeleteModal({ open, onClose, user }) {
                             border: "1px solid rgba(239,68,68,0.12)",
                         }}
                     >
-                        <Avatar name={user.name} uid={user.id} size={40} />
+                        <Avatar name={user.name} uid={user.id} size={40} src={user.photo}/>
                         <div style={{ minWidth: 0 }}>
                             <p
                                 style={{

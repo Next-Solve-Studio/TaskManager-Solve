@@ -135,7 +135,7 @@ export default function UserEditModal({ open, onClose, user }) {
                             border: "1px solid rgba(255,255,255,0.07)",
                         }}
                     >
-                        <Avatar name={user.name} uid={user.id} size={40} />
+                        <Avatar name={user.name} uid={user.id} size={40} src={user.photo}/>
                         <div style={{ minWidth: 0 }}>
                             <p
                                 style={{

@@ -35,6 +35,7 @@ export default function CardDevs({ project, usersMap }) {
                                         name={dev.name}
                                         uid={dev.id}
                                         size={26}
+                                        src={dev.photo}
                                     />
                                 </div>
                             </Tooltip>

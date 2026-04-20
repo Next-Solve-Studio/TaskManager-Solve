@@ -84,7 +84,7 @@ export default function UsersFilter({
                                         color: selected ? color : "#9ca3af",
                                     }}
                                 >
-                                    <Avatar name={u.name} uid={u.id} />
+                                    <Avatar name={u.name} uid={u.id} src={u.photo}/>
                                     <span>{u.name.split(" ")[0]}</span>
                                 </button>
                             );

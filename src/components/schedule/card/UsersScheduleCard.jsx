@@ -19,7 +19,7 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
         >
             {/* Header do card */}
             <div className="flex items-center gap-3 mb-4">
-                <Avatar name={user.name} uid={user.id} />
+                <Avatar name={user.name} uid={user.id} src={user.photo}/>
                 <div>
                     <p className="text-white font-semibold text-sm">
                         {user.name}

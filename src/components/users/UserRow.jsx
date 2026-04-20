@@ -43,7 +43,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
         >
             {/* Avatar */}
             <div style={{ display: "flex", justifyContent: "center" }}>
-                <Avatar name={user.name} uid={user.id} size={36} />
+                <Avatar name={user.name} uid={user.id} size={36} src={user.photo}/>
             </div>
 
             {/* Nome + Email */}
@@ -51,7 +51,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
                 <p
                     style={{
                         color: "#f1f5f9",
-                        fontWeight: 700,
+                        fontWeight: 500,
                         fontSize: 14,
                         margin: 0,
                         marginBottom: 2,

@@ -44,6 +44,7 @@ export default function Team({users, projects }) {
                             <Avatar
                                 name={u.name}
                                 uid={u.id}
+                                src={u.photo}
                                 size={32}
                             />
                             <div className="flex-1 min-w-0">

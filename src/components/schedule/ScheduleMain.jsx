@@ -137,7 +137,7 @@ export default function ScheduleMain() {
                                 );
                                 return u ? (
                                     <>
-                                        <Avatar name={u.name} uid={u.id} />
+                                        <Avatar name={u.name} uid={u.id} src={u.photo}/>
                                         <div>
                                             <p className="text-white font-semibold">
                                                 {u.name}

@@ -32,13 +32,13 @@ export function UserCard({ user, onEdit, onDelete }) {
         >
             {/* Top row: avatar + name/email + actions */}
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Avatar name={user.name} uid={user.id} size={44} />
+                <Avatar name={user.name} uid={user.id} size={44} src={user.photo} />
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                     <p
                         style={{
                             color: "#f1f5f9",
-                            fontWeight: 700,
+                            fontWeight: 600,
                             fontSize: 14,
                             margin: 0,
                             marginBottom: 2,
