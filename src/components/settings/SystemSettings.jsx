@@ -1,13 +1,26 @@
 "use client";
 
 import { Box, Switch } from "@mui/material";
+import { useState } from "react";
 import { MdWarningAmber } from "react-icons/md";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/responsive/useIsMobile";
 
 export default function SystemSettings() {
-    const { systemSettings } = useSettings();
+    const { systemSettings, updateSystemSettings } = useSettings();
     const isMobile = useIsMobile();
+    const [loadingField, setLoadingField] = useState(null);
+
+    const handleToggle = async (field, value) => {
+        setLoadingField(field);
+        try {
+            await updateSystemSettings({ [field]: value });
+        } catch (error) {
+            console.error(`Erro ao atualizar ${field}:`, error);
+        } finally {
+            setLoadingField(null);
+        }
+    };
 
     return (
         <Box className={`space-y-8 w-full`}>
@@ -49,8 +62,11 @@ export default function SystemSettings() {
                         </div>
                         <Switch
                             color="primary"
-                            disabled
+                            disabled={loadingField === "maintenanceMode"}
                             checked={systemSettings?.maintenanceMode || false}
+                            onChange={(e) =>
+                                handleToggle("maintenanceMode", e.target.checked)
+                            }
                             sx={{
                                 "& .MuiSwitch-switchBase.Mui-checked": {
                                     color: "var(--color-brand-500)",
@@ -75,8 +91,11 @@ export default function SystemSettings() {
                         </div>
                         <Switch
                             color="primary"
-                            disabled
-                            checked={systemSettings?.allowRegistration || true}
+                            disabled={loadingField === "allowRegistration"}
+                            checked={systemSettings?.allowRegistration ?? true}
+                            onChange={(e) =>
+                                handleToggle("allowRegistration", e.target.checked)
+                            }
                             sx={{
                                 "& .MuiSwitch-switchBase.Mui-checked": {
                                     color: "var(--color-brand-500)",

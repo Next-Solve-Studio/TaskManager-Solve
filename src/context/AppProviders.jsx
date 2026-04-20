@@ -2,7 +2,6 @@
 import { ClientsProvider } from "./ClientsContext";
 import { ProjectsProvider } from "./ProjectsContext";
 import { ScheduleProvider } from "./ScheduleContext";
-import { SettingsProvider } from "./SettingsContext";
 import { UsersProvider } from "./UsersContext";
 
 export default function AppProviders({ children }) {
@@ -10,12 +9,10 @@ export default function AppProviders({ children }) {
         <UsersProvider>
             <ProjectsProvider>
                 <ClientsProvider>
-                    <SettingsProvider>
-                        <ScheduleProvider>
-                            {/* se houver mais, continue aninhando */}
-                            {children}
-                        </ScheduleProvider>
-                    </SettingsProvider>
+                    <ScheduleProvider>
+                        {/* se houver mais, continue aninhando */}
+                        {children}
+                    </ScheduleProvider>
                 </ClientsProvider>
             </ProjectsProvider>
         </UsersProvider>
