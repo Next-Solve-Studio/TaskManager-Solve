@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { MdCalendarToday, MdDelete, MdEdit, MdEmail } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
-import { Avatar } from "@/utils/AvatarBadge";
+import { Avatar } from "@/components/ui/AvatarBadge";
 import { AuthBadge } from "../AuthBadge";
 
 export function UserCard({ user, onEdit, onDelete }) {

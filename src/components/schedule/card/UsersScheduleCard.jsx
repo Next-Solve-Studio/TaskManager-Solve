@@ -1,6 +1,6 @@
 import { addDays, isToday } from "date-fns";
+import { Avatar } from "@/components/ui/AvatarBadge";
 import { WEEK_DAYS } from "@/context/ScheduleContext";
-import { Avatar } from "@/utils/AvatarBadge";
 
 // Card de um usuário no modo "todos"
 export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {

@@ -1,4 +1,4 @@
-import { PRIORITY_MAP, STATUS_MAP } from "@/utils/StatusBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 
 export function StatusBadge({ status }) {
     const s = STATUS_MAP[status];

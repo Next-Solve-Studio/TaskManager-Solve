@@ -4,11 +4,10 @@ import { CircularProgress } from "@mui/material";
 import { addDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useCallback, useMemo } from "react";
+import { Avatar } from "@/components/ui/AvatarBadge";
 import { useAuth } from "@/context/AuthContext";
-
 import { useSchedule, WEEK_DAYS } from "@/context/ScheduleContext";
 import { useUsers } from "@/context/UsersContext";
-import { Avatar } from "@/utils/AvatarBadge";
 import CardScheduleEdit from "./card/CardScheduleEdit";
 import UserScheduleCard from "./card/UsersScheduleCard";
 import EmptyState from "./sections/EmptyState";

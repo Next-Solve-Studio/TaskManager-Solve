@@ -13,9 +13,9 @@ import {
 import { useEffect, useState } from "react";
 import { MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
+import { Avatar } from "@/components/ui/AvatarBadge";
 import { useUsers } from "@/context/UsersContext";
 import { ROLE_LABELS, ROLES_STYLES } from "@/lib/roles";
-import { Avatar } from "@/utils/AvatarBadge";
 import { menuPaper, muiDark2 } from "@/utils/StyleInputs";
 
 export default function UserEditModal({ open, onClose, user }) {

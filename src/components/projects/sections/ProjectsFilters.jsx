@@ -3,7 +3,7 @@ import { AiOutlineClear } from "react-icons/ai";
 import { MdSearch } from "react-icons/md";
 import useIsMobile from "@/responsive/useIsMobile";
 import { menuPaper2, muiDark2 } from "@/utils/StyleInputs";
-import { PRIORITY_MAP, STATUS_MAP } from "../ProjectsConfig";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 
 export default function ProjectsFilters({
     search,

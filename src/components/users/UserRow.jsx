@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
-import { Avatar } from "@/utils/AvatarBadge";
+import { Avatar } from "@/components/ui/AvatarBadge";
 
 export default function UserRow({ user, onEdit, onDelete }) {
     const formattedDate = useMemo(() => {

@@ -1,6 +1,6 @@
 import { MdFilterList, MdGroup, MdPerson } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
-import { Avatar, avatarColor } from "@/utils/AvatarBadge";
+import { Avatar, avatarColor } from "@/components/ui/AvatarBadge";
 
 export default function UsersFilter({
     users,

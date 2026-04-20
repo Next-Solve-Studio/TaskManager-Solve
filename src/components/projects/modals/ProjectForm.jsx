@@ -26,9 +26,9 @@ import {
     MdPerson,
 } from "react-icons/md";
 import { RiGitBranchLine } from "react-icons/ri";
-import { projectSchemam} from "@/components/projects/ProjectsConfig";
-import { STATUS_MAP, PRIORITY_MAP } from "@/utils/StatusBadge";
-import { Avatar } from "@/utils/AvatarBadge";
+import { projectSchema } from "@/components/projects/ProjectsConfig";
+import { Avatar } from "@/components/ui/AvatarBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { muiDark } from "@/utils/StyleInputs";
 

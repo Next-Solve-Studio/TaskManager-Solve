@@ -3,7 +3,7 @@
 import { Tooltip } from "@mui/material";
 import { useMemo } from "react";
 import { MdGroup } from "react-icons/md";
-import { Avatar } from "@/utils/AvatarBadge";
+import { Avatar } from "@/components/ui/AvatarBadge";
 export default function CardDevs({ project, usersMap }) {
     // busca o objeto do usuário correspondendo pelo usersMap
     const developers = useMemo(
