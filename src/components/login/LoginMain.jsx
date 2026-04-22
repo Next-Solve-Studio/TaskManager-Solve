@@ -2,8 +2,8 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useSettings } from "@/context/SettingsContext";
-import RegisterForm from "../RegisterForm";
-import LoginForm from "./LoginForm";
+import LoginForm from "./sections/LoginForm";
+import RegisterForm from "./sections/RegisterForm";
 
 export default function LoginMain() {
     const [haveAccount, setHaveAccount] = useState(true);

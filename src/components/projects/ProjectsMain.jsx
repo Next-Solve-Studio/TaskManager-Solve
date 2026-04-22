@@ -1,17 +1,15 @@
 "use client";
 
-import { CircularProgress } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import ProjectCard from "@/components/projects/card/ProjectCard";
 import ModalDelete from "@/components/projects/modals/ModalDelete";
 import ProjectForm from "@/components/projects/modals/ProjectForm";
 import { useProjects } from "@/context/ProjectsContext";
 import { useDebounce } from "@/hooks/UseDebounce";
-import ProjectsEmptyState from "./sections/ProjectsEmptyState";
 import ProjectsFilters from "./sections/ProjectsFilters";
 import ProjectsHeader from "./sections/ProjectsHeader";
 import ProjectsStats from "./sections/ProjectsStats";
+import ProjectsGrid from "./sections/ProjectsGrid";
 
 export default function ProjectsMain() {
     const {
@@ -75,30 +73,18 @@ export default function ProjectsMain() {
         usersMap,
     ]);
 
-    const stats = useMemo(
-        // Conta quantos projetos existem em cada status
-        () => ({
-            total: projects.length,
-            em_andamento: projects.filter((p) => p.status === "em_andamento")
-                .length,
-            concluido: projects.filter((p) => p.status === "concluido").length,
-            pausado: projects.filter((p) => p.status === "pausado").length,
-            suporte: projects.filter((p) => p.status === "suporte").length,
-            arquivado: projects.filter((p) => p.status === "arquivado").length,
-        }),
-        [projects],
-    );
-
     const handleOpenCreate = () => {
         // abre modal de criação
         setEditingProject(null);
         setDialogOpen(true);
     };
+
     const handleOpenEdit = useCallback((p) => {
         // Abre o modal de edição, recebendo o projeto p e guardando em editingProject
         setEditingProject(p);
         setDialogOpen(true);
     }, []);
+
     const handleOpenDelete = useCallback((p) => {
         // Abre o modal de exclusão
         setDeletingProject(p);
@@ -146,11 +132,6 @@ export default function ProjectsMain() {
         setFilterDev("all");
         setSearchInput("");
     };
-    const hasFilters = // se tiver ao menos um filtro ativo, mostra o botão para limpar
-        filterStatus !== "all" ||
-        filterPriority !== "all" ||
-        filterDev !== "all" ||
-        searchInput;
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
@@ -158,9 +139,10 @@ export default function ProjectsMain() {
                 projectsCount={projects.length}
                 onCreate={handleOpenCreate}
             />
-            <ProjectsStats stats={stats} />
+
+            <ProjectsStats projects={projects} />
+
             <ProjectsFilters
-                search={searchInput}
                 onSearchChange={setSearchInput}
                 filterStatus={filterStatus}
                 onStatusChange={setFilterStatus}
@@ -169,35 +151,19 @@ export default function ProjectsMain() {
                 filterDev={filterDev}
                 onDevChange={setFilterDev}
                 users={users}
-                onClearFilters={clearFilters}
-                hasFilters={hasFilters}
+                searchInput={searchInput}
+                clearFilters={clearFilters}
             />
 
-            {loadingProjects ? (
-                <div className="flex items-center justify-center px-0 py-15 gap-3">
-                    <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    <span className="text-font-gray2 text-sm">
-                        Carregando projetos...
-                    </span>
-                </div>
-            ) : filtered.length === 0 ? (
-                <ProjectsEmptyState
-                    projectsLength={projects.length}
-                    onCreate={handleOpenCreate}
-                />
-            ) : (
-                <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
-                    {filtered.map((project) => (
-                        <ProjectCard
-                            key={project.id}
-                            project={project}
-                            usersMap={usersMap}
-                            onEdit={handleOpenEdit}
-                            onDelete={handleOpenDelete}
-                        />
-                    ))}
-                </div>
-            )}
+            <ProjectsGrid
+                loadingProjects={loadingProjects}
+                projects={projects}
+                usersMap={usersMap}
+                onEdit={handleOpenEdit}
+                onDelete={handleOpenDelete}
+                filtered={filtered}
+                onCreate={handleOpenCreate}
+            />
 
             {/* Modals */}
             <ProjectForm

@@ -1,12 +1,10 @@
-import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { AiOutlineClear } from "react-icons/ai";
 import { MdSearch } from "react-icons/md";
 import useIsMobile from "@/responsive/useIsMobile";
-import { menuPaper2, muiDark2 } from "@/utils/StyleInputs";
+import FilterSelect from "@/components/ui/FilterSelect";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 
 export default function ProjectsFilters({
-    search,
     onSearchChange,
     filterStatus,
     onStatusChange,
@@ -15,10 +13,18 @@ export default function ProjectsFilters({
     filterDev,
     onDevChange,
     users,
-    onClearFilters,
-    hasFilters,
+    clearFilters,
+    searchInput,
+
 }) {
     const isMobile = useIsMobile();
+    
+    // se tiver ao menos um filtro ativo, mostra o botão para limpar(searchInput)
+    const hasFilters = 
+        filterStatus !== "all" ||
+        filterPriority !== "all" ||
+        filterDev !== "all" ||
+        searchInput;
 
     return (
         <div className="flex flex-wrap gap-4 md:gap-2.5 py-3.5 px-4 bg-bg-card border border-white/10 rounded-[14px] items-center">
@@ -29,7 +35,7 @@ export default function ProjectsFilters({
                     size={16}
                 />
                 <input
-                    value={search}
+                    value={searchInput}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Buscar projetos, clientes, tecnologias..."
                     className="w-full bg-[#FFFFFF0A] border border-[#FFFFFF1A] rounded-lg p-[7px_10px_7px_32px] outline-none text-[#e5e7eb] text-[13px]"
@@ -41,7 +47,7 @@ export default function ProjectsFilters({
                 label="Status"
                 value={filterStatus}
                 onChange={onStatusChange}
-                options={STATUS_MAP}
+                items={STATUS_MAP}
                 isMobile={isMobile}
             />
 
@@ -50,41 +56,25 @@ export default function ProjectsFilters({
                 label="Prioridade"
                 value={filterPriority}
                 onChange={onPriorityChange}
-                options={PRIORITY_MAP}
+                items={PRIORITY_MAP}
                 isMobile={isMobile}
             />
 
-            {/* Select Dev */}
-            <FormControl
-                size="small"
-                sx={{ minWidth: isMobile ? "100%" : 160, ...muiDark2 }}
-            >
-                <InputLabel>Dev</InputLabel>
-                <Select
-                    value={filterDev}
-                    label="Dev"
-                    onChange={(e) => onDevChange(e.target.value)}
-                    MenuProps={menuPaper2}
-                >
-                    <MenuItem value="all" style={{ color: "#e5e7eb" }}>
-                        Todos devs
-                    </MenuItem>
-                    {users.map((u) => (
-                        <MenuItem
-                            key={u.id}
-                            value={u.id}
-                            style={{ color: "#e5e7eb" }}
-                        >
-                            {u.name}
-                        </MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-
+            {/* Select Devs */}
+            <FilterSelect
+                label="Dev"
+                value={filterDev}
+                onChange={onDevChange}
+                items={users}
+                valueKey="id"
+                labelKey="name"
+                isMobile={isMobile}
+            />
+            
             {/* Botão limpar filtros */}
             {hasFilters && (
                 <button
-                    onClick={onClearFilters}
+                    onClick={clearFilters}
                     type="button"
                     className="flex items-center gap-1 bg-error/10 text-error cursor-pointer text-[12px] font-semibold border border-error/20 rounded-lg p-2"
                     aria-label="Limpar filtros"
@@ -96,33 +86,3 @@ export default function ProjectsFilters({
     );
 }
 
-// Componente interno para evitar repetição dos selects
-function FilterSelect({ label, value, onChange, options, isMobile }) {
-    return (
-        <FormControl
-            size="small"
-            sx={{ minWidth: isMobile ? "100%" : 160, ...muiDark2 }}
-        >
-            <InputLabel>{label}</InputLabel>
-            <Select
-                value={value}
-                label={label}
-                onChange={(e) => onChange(e.target.value)}
-                MenuProps={menuPaper2}
-            >
-                <MenuItem value="all" style={{ color: "#e5e7eb" }}>
-                    Todos {label.toLowerCase()}
-                </MenuItem>
-                {Object.entries(options).map(([val, cfg]) => (
-                    <MenuItem
-                        key={val}
-                        value={val}
-                        style={{ color: cfg.color }}
-                    >
-                        {cfg.label}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
-    );
-}

@@ -1,4 +1,7 @@
+// Estatísticas dos projetos
+'use client'
 import { StatPill } from "@/components/ui/StatPill";
+import { useMemo } from "react";
 
 const STATS_CONFIG = [
     {
@@ -38,7 +41,29 @@ const STATS_CONFIG = [
     },
 ];
 
-export default function ProjectsStats({ stats }) {
+export default function ProjectsStats({ projects }) {
+    const stats = useMemo(() => {
+        // Conta quantos projetos existem em cada status
+        const counts = {
+            total: projects.length,
+            em_andamento: 0,
+            concluido: 0,
+            pausado: 0,
+            suporte: 0,
+            arquivado: 0,
+        }
+
+        // com for, o array será percorrido apenas uma vez
+        for (const project of projects) { // percorre cada elemento do array projects
+            const status = project.status
+            if (status in counts) {
+                // adiciona os status no counts
+                counts[status]++;
+            }
+        }
+        return counts
+            
+        },[projects],);
     return (
         <div className="flex flex-wrap gap-2 select-none">
             {STATS_CONFIG.map((cfg) => (

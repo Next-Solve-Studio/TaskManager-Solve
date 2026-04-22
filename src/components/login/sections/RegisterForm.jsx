@@ -10,7 +10,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
-import GoogleLoginBtn from "./sections/GoogleLoginBtn";
+import GoogleLoginBtn from "./GoogleLoginBtn";
 
 // Schema de validação com Yup
 const schema = yup
