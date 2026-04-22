@@ -2,8 +2,6 @@
 import { STATUS_MAP, PRIORITY_MAP } from "../ui/StatusBadge";
 import * as yup from "yup";
 
-
-
 export const projectSchema = yup.object({
     // define um esquema que valida um objeto
     title: yup

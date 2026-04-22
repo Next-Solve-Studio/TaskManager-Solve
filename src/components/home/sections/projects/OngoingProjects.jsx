@@ -1,6 +1,6 @@
 import { MdOutlineTimer } from "react-icons/md";
 
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { toDate } from "@/components/ui/DashboardUtils";
 import { differenceInDays } from "date-fns";
 
@@ -46,8 +46,6 @@ export default function OngoingProjects({ongoingProjects, today }) {
                             daysLeft !== null &&
                             daysLeft >= 0 &&
                             daysLeft <= 3;
-                        const priority = PRIORITY_MAP[proj.priority];
-                        const status = STATUS_MAP[proj.status];
 
                         return (
                             <div
@@ -80,27 +78,9 @@ export default function OngoingProjects({ongoingProjects, today }) {
                                         )}
                                     </div>
                                     <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                                        <span
-                                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium"
-                                            style={{
-                                                color: status.color,
-                                                background: status.bg,
-                                                border: `1px solid ${status.border}`,
-                                            }}
-                                        >
-                                            <status.icon size={11} />
-                                            {status.label}
-                                        </span>
-                                        {priority && (
-                                            <span
-                                                className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
-                                                style={{
-                                                    color: priority.color,
-                                                    background: `${priority.color}15`,
-                                                }}
-                                            >
-                                                {priority.label}
-                                            </span>
+                                        <StatusBadge status={proj.status}/>
+                                        {proj.priority && (
+                                            <PriorityBadge priority={proj.priority}/>
                                         )}
                                         {proj.client && (
                                             <span className="text-[10px] text-bg-hover2 truncate">

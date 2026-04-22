@@ -1,7 +1,7 @@
 import { Menu, MenuItem } from "@mui/material";
 import { MdDelete, MdEdit, MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
-import { PriorityBadge, StatusBadge } from "../ProjectBadges";
+import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
 
 export default function CardHeader({
     project,
