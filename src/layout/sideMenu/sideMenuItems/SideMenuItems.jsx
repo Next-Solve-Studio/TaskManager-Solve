@@ -17,8 +17,8 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
     // No desktop, o menu abre com hover (ou se isOpen for true, mas isOpen só é usado no mobile)
     const effectiveOpen = isMobile ? isOpen : hoverOpen;
+    const [displayName, setDisplayName] = useState("")
     const [user, setUser] = useState(null);
-    const [displayName, setDisplayName] = useState("");
     const { role } = useRole();
     const { logout } = useAuth();
     const pathname = usePathname();
@@ -34,22 +34,14 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser);
-
-            if (!firebaseUser) {
-                setDisplayName("");
-                return;
-            }
-
-            // Se for login pelo google
-            if (firebaseUser.displayName) {
-                setDisplayName(firebaseUser.displayName);
-                return;
-            }
-
-            // Se for email e senha, busca o nome da coleção users
-            const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-            if (snap.exists()) {
-                setDisplayName(snap.data().name);
+            
+            try {
+                const snap = await getDoc(doc(db, "users", firebaseUser.uid));
+                if (snap.exists()) {
+                    setDisplayName(snap.data().name);
+                }
+            } catch (error) {
+                console.error("Erro ao busca nome do usuário: ", error)
             }
         });
         return () => unsub();
@@ -71,11 +63,11 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
        ${effectiveOpen ? "w-58 items-start" : "w-20 items-center"}`;
 
     return (
-        // biome-ignore lint/a11y/noStaticElementInteractions: <>
-        <div
+        <nav
             className={containerClasses}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
+            aria-label="Menu lateral"
         >
             <div className={` max-h-screen flex flex-col gap-3 py-10 `}>
                 {isMobile && isOpen && (
@@ -104,23 +96,15 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         className={`ml-2 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-32" : "opacity-0 w-0"}`}
                     >
                         <p className="text-white text-sm font-bold whitespace-nowrap truncate">
-                            {displayName}
+                            {displayName ? displayName : "sem nome"}
                         </p>
                         <div className="mt-1">
                             <RoleBadge />
                         </div>
                     </div>
                 </div>
-                <div
-                    style={{
-                        width: effectiveOpen ? "90%" : "70%",
-                        height: "1px",
-                        borderRadius: "5px",
-                        background: "rgba(73, 73, 73, 0.41)",
-                        margin: "4px auto",
-                    }}
-                />
-                <nav className="flex flex-col items-center gap-2 w-full sm:px-4">
+                <div className={`h-px rouned-[5px] bg-[#49494969] my-1 mx-auto ${effectiveOpen ? 'w-[90%]' : 'w-[70%]'}`}/>
+                <div className="flex flex-col items-center gap-2 w-full sm:px-4">
                     {visibleItems.map((item) => {
                         const active = isActive(item.href);
                         return (
@@ -152,7 +136,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                             </Link>
                         );
                     })}
-                </nav>
+                </div>
                 <div className="mt-auto flex flex-col items-center gap-2 w-full sm:px-4">
                     <button
                         type="button"
@@ -173,6 +157,6 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                     </button>
                 </div>
             </div>
-        </div>
+        </nav>
     );
 }
