@@ -5,7 +5,8 @@ import { useState } from "react";
 import { MdWarningAmber } from "react-icons/md";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/responsive/useIsMobile";
-
+import { toast } from "sonner";
+import { switchStyles } from "@/utils/StyleSwitch";
 export default function SystemSettings() {
     const { systemSettings, updateSystemSettings } = useSettings();
     const isMobile = useIsMobile();
@@ -17,6 +18,7 @@ export default function SystemSettings() {
             await updateSystemSettings({ [field]: value });
         } catch (error) {
             console.error(`Erro ao atualizar ${field}:`, error);
+            toast.error(`Erro ao atualizar ${field}:`, error)
         } finally {
             setLoadingField(null);
         }
@@ -70,16 +72,7 @@ export default function SystemSettings() {
                                     e.target.checked,
                                 )
                             }
-                            sx={{
-                                "& .MuiSwitch-switchBase.Mui-checked": {
-                                    color: "var(--color-brand-500)",
-                                },
-                                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                                    {
-                                        backgroundColor:
-                                            "var(--color-brand-500)",
-                                    },
-                            }}
+                            sx={switchStyles}
                         />
                     </div>
 
@@ -102,16 +95,7 @@ export default function SystemSettings() {
                                     e.target.checked,
                                 )
                             }
-                            sx={{
-                                "& .MuiSwitch-switchBase.Mui-checked": {
-                                    color: "var(--color-brand-500)",
-                                },
-                                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
-                                    {
-                                        backgroundColor:
-                                            "var(--color-brand-500)",
-                                    },
-                            }}
+                            sx={switchStyles}
                         />
                     </div>
                 </div>
