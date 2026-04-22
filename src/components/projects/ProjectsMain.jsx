@@ -6,10 +6,11 @@ import ModalDelete from "@/components/projects/modals/ModalDelete";
 import ProjectForm from "@/components/projects/modals/ProjectForm";
 import { useProjects } from "@/context/ProjectsContext";
 import { useDebounce } from "@/hooks/UseDebounce";
+import NewProject from "./button/NewProject";
 import ProjectsFilters from "./sections/ProjectsFilters";
+import ProjectsGrid from "./sections/ProjectsGrid";
 import ProjectsHeader from "./sections/ProjectsHeader";
 import ProjectsStats from "./sections/ProjectsStats";
-import ProjectsGrid from "./sections/ProjectsGrid";
 
 export default function ProjectsMain() {
     const {
@@ -135,12 +136,12 @@ export default function ProjectsMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-            <ProjectsHeader
-                projectsCount={projects.length}
-                onCreate={handleOpenCreate}
-            />
+            <ProjectsHeader projectsCount={projects.length} />
 
-            <ProjectsStats projects={projects} />
+            <div className="flex justify-between flex-col gap-5 sm:flex-row">
+                <ProjectsStats projects={projects} />
+                <NewProject onCreate={handleOpenCreate} />
+            </div>
 
             <ProjectsFilters
                 onSearchChange={setSearchInput}

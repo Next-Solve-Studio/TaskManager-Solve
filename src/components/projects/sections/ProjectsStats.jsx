@@ -1,5 +1,6 @@
 // Estatísticas dos projetos
 'use client'
+import CanDo from "@/components/auth/CanDo";
 import { StatPill } from "@/components/ui/StatPill";
 import { useMemo } from "react";
 
@@ -41,7 +42,7 @@ const STATS_CONFIG = [
     },
 ];
 
-export default function ProjectsStats({ projects }) {
+export default function ProjectsStats({ projects, onCreate }) {
     const stats = useMemo(() => {
         // Conta quantos projetos existem em cada status
         const counts = {
@@ -76,6 +77,7 @@ export default function ProjectsStats({ projects }) {
                     border={cfg.border}
                 />
             ))}
+            
         </div>
     );
 }

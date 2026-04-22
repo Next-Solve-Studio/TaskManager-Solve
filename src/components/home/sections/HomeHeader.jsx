@@ -66,7 +66,7 @@ export default function HomeHeader({ completionRate, counts, nearDeadline, today
                         {counts.em_andamento}
                     </p>
                     <p className="text-[10px] text-font-gray2 uppercase tracking-wide">
-                        Ativos
+                        Projetos Ativos
                     </p>
                 </div>
                 <div className="w-px h-10 bg-white/5" />
