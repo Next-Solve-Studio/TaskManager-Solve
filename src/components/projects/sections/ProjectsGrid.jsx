@@ -8,6 +8,7 @@ export function ProjectsGrid({
     loadingProjects,
     projects,
     usersMap,
+    clientMap,
     onEdit,
     onDelete,
     onCreate,
@@ -35,6 +36,7 @@ export function ProjectsGrid({
                             key={project.id}
                             project={project}
                             usersMap={usersMap}
+                            clientMap={clientMap}
                             onEdit={onEdit}
                             onDelete={onDelete}
                         />

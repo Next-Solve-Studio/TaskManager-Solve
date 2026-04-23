@@ -15,6 +15,7 @@ import {
 import { useForm } from "react-hook-form";
 import { MdClose } from "react-icons/md";
 import * as yup from "yup";
+import { FormatPhone } from "@/utils/FormatPhone";
 import { useClients } from "@/context/ClientsContext";
 
 const schema = yup.object().shape({
@@ -22,7 +23,14 @@ const schema = yup.object().shape({
     email: yup
         .string()
         .email("E-mail inválido"),
-    contato: yup.string().required("O telefone é obrigatório"),
+    contato: yup
+        .string()
+        .required("O telefone é obrigatório")
+        .test("phone-format", "Telefone inválido", (value) => {
+            if (!value) return false;
+            const numbers = value.replace(/\D/g, ""); // remove tudo que não é número
+            return numbers.length === 11; // DDD + 9 dígitos
+        }),
     documento: yup.string().nullable(),
     status: yup
         .string()
@@ -37,6 +45,8 @@ export default function ClientForm({ isOpen, onClose, client }) {
     const {
         register,
         handleSubmit,
+        watch,
+        setValue,
         formState: { errors, isSubmitting },
     } = useForm({
         resolver: yupResolver(schema),
@@ -51,6 +61,10 @@ export default function ClientForm({ isOpen, onClose, client }) {
 
     const onSubmit = async (data) => {
         try {
+            const cleanData =  {
+                ...data,
+                contato:data.contato.replace(/\D/g, ""),
+            }
             if (isEditing) {
                 await updateClient(client.id, data);
             } else {
@@ -79,6 +93,8 @@ export default function ClientForm({ isOpen, onClose, client }) {
         "& label.Mui-focused": { color: "var(--color-brand-500)" },
         "& .MuiFormHelperText-root": { color: "#ef4444", fontWeight: 600 },
     };
+
+    const contactValue = watch("contato")
 
     return (
         <Dialog
@@ -156,6 +172,10 @@ export default function ClientForm({ isOpen, onClose, client }) {
                         {...register("contato")}
                         label="Telefone / WhatsApp"
                         fullWidth
+                        value={FormatPhone(contactValue)}
+                        onChange={(e)=> {
+                            setValue("contato", e.target.value)
+                        }}
                         error={!!errors.contato}
                         helperText={errors.contato?.message}
                         variant="outlined"

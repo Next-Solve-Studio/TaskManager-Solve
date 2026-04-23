@@ -17,6 +17,8 @@ export default function ProjectsMain() {
         projects,
         users,
         usersMap,
+        clients,
+        clientMap,
         loadingProjects,
         createProject,
         updateProject,
@@ -160,6 +162,7 @@ export default function ProjectsMain() {
                 loadingProjects={loadingProjects}
                 projects={projects}
                 usersMap={usersMap}
+                clientMap={clientMap}
                 onEdit={handleOpenEdit}
                 onDelete={handleOpenDelete}
                 filtered={filtered}
@@ -172,6 +175,9 @@ export default function ProjectsMain() {
                 onClose={() => setDialogOpen(false)}
                 project={editingProject}
                 users={users}
+                usersMap={usersMap}
+                client={clients}
+                
                 onSubmit={handleSubmit}
                 loading={submitting}
             />

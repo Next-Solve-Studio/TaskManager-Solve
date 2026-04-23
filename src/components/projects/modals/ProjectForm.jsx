@@ -22,32 +22,23 @@ import {
     MdClose,
     MdCode,
     MdComputer,
-    MdOutlineRocketLaunch,
-    MdPerson,
+    MdOutlineRocketLaunch
 } from "react-icons/md";
 import { RiGitBranchLine } from "react-icons/ri";
 import { projectSchema } from "@/components/projects/ProjectsConfig";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
-import { muiDark } from "@/utils/StyleInputs";
-
-const menuPaper = {
-    PaperProps: {
-        style: {
-            background: "#171C23",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 10,
-        },
-    },
-};
+import { menuPaper, muiDark } from "@/utils/StyleInputs";
 
 export default function ProjectForm({
     open,
     onClose,
     project,
     users,
+    client,
     onSubmit,
+    usersMap,
     loading,
 }) {
     const isEdit = Boolean(project);
@@ -64,6 +55,7 @@ export default function ProjectForm({
         techStack: "",
         repositoryUrl: "",
         hosting: "",
+        expectedDeliveryDate:"",
     };
 
     const {
@@ -214,24 +206,38 @@ export default function ProjectForm({
                             size="small"
                             sx={muiDark}
                         />
-                        <TextField
-                            label="Cliente"
-                            {...register("client")}
-                            fullWidth
+
+                        <FormControl
                             size="small"
+                            error={Boolean(errors.client)}
                             sx={muiDark}
-                            InputProps={{
-                                startAdornment: (
-                                    <MdPerson
-                                        size={15}
-                                        style={{
-                                            color: "#6b7280",
-                                            marginRight: 6,
-                                        }}
-                                    />
-                                ),
-                            }}
-                        />
+                        >
+                            <InputLabel>Cliente *</InputLabel>
+                            <Controller
+                                name="client"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        label="Cliente *"
+                                        MenuProps={menuPaper}
+                                    >
+                                        {client.map((c) => (
+                                            <MenuItem
+                                                key={c.id}
+                                                value={c.id}
+                                                style={{
+                                                    fontSize: 13,
+                                                    color:"#e5e7eb"
+                                                }}
+                                            >
+                                                {c.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            />
+                        </FormControl>
                     </div>
 
                     {/* Description */}
@@ -343,17 +349,9 @@ export default function ProjectForm({
                                     }
                                     MenuProps={menuPaper}
                                     renderValue={(selected) => (
-                                        <div
-                                            style={{
-                                                display: "flex",
-                                                flexWrap: "wrap",
-                                                gap: 4,
-                                            }}
-                                        >
+                                        <div  className="flex flex-wrap gap-1">
                                             {selected.map((uid) => {
-                                                const u = users.find(
-                                                    (x) => x.id === uid,
-                                                );
+                                                const u = usersMap[uid]
                                                 return (
                                                     <Chip
                                                         key={uid}

@@ -6,7 +6,7 @@ import CardFooter from "./CardFooter";
 import CardHeader from "./CardHeader";
 import CreatedModifiedBy from "./CreatedModifiedBy";
 
-function ProjectCard({ project, usersMap, onEdit, onDelete }) {
+function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
     //guarda o elemento HTML que servirá de “âncora” para o menu (que começa fechado)
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -34,7 +34,7 @@ function ProjectCard({ project, usersMap, onEdit, onDelete }) {
                 <div className="flex items-center gap-1.5">
                     <MdPerson size={13} className="text-font-gray2 shrink-0" />
                     <span className="text-font-gray text-[12px]">
-                        {project.client}
+                        {clientMap[project.client]?.name}
                     </span>
                 </div>
             )}
