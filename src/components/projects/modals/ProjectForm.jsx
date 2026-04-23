@@ -16,7 +16,7 @@ import {
     Select,
     TextField,
 } from "@mui/material";
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     MdClose,
@@ -31,12 +31,12 @@ import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { menuPaper, muiDark } from "@/utils/StyleInputs";
 
-export default function ProjectForm({
+export function ProjectForm({
     open,
     onClose,
     project,
     users,
-    client,
+    clients,
     onSubmit,
     usersMap,
     loading,
@@ -131,29 +131,12 @@ export default function ProjectForm({
                 },
             }}
         >
-            <DialogTitle
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "20px 24px 12px",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
-                }}
-            >
+            <DialogTitle className="flex items-center justify-between border-b border-[#FFFFFF0F]
+                pt-5 px-6 pb-3">
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <div
-                        style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: 8,
-                            background: "rgba(25,202,104,0.15)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                        }}
-                    >
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-500/15">
                         <MdOutlineRocketLaunch
-                            style={{ color: "#19CA68", fontSize: 18 }}
+                            style={{ color: "var(--color-brand-500)", fontSize: 18 }}
                         />
                     </div>
                     <span
@@ -166,37 +149,16 @@ export default function ProjectForm({
                     onClick={handleClose}
                     disabled={loading}
                     type="button"
-                    style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "#6b7280",
-                        padding: 4,
-                        borderRadius: 6,
-                        display: "flex",
-                    }}
-                >
+                    className="bg-none text-font-gray2 cursor-pointer rounded-md flex p-1 border-none">
                     <MdClose size={20} />
                 </button>
             </DialogTitle>
 
             <form onSubmit={handleSubmit(handleFormSubmit)}>
-                <DialogContent
-                    style={{
-                        padding: "20px 24px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 16,
-                    }}
-                >
+                <DialogContent className="flex flex-col gap-4 py-5 px-6">
+
                     {/* Title + Client */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 12,
-                        }}
-                    >
+                    <div className="grid grid-cols-2 gap-3">
                         <TextField
                             label="Título *"
                             {...register("title")}
@@ -222,7 +184,7 @@ export default function ProjectForm({
                                         label="Cliente *"
                                         MenuProps={menuPaper}
                                     >
-                                        {client.map((c) => (
+                                        {clients.map((c) => (
                                             <MenuItem
                                                 key={c.id}
                                                 value={c.id}
@@ -252,13 +214,7 @@ export default function ProjectForm({
                     />
 
                     {/* Status + Priority */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 12,
-                        }}
-                    >
+                    <div className="grid grid-cols-2 gap-3">
                         <FormControl
                             size="small"
                             error={Boolean(errors.status)}
@@ -359,8 +315,8 @@ export default function ProjectForm({
                                                         size="small"
                                                         style={{
                                                             background:
-                                                                "rgba(25,202,104,0.15)",
-                                                            color: "#19CA68",
+                                                                "#19CA6826",
+                                                            color: "var(--color-brand-500)",
                                                             fontSize: 11,
                                                             height: 22,
                                                         }}
@@ -382,37 +338,25 @@ export default function ProjectForm({
                                                 )}
                                                 size="small"
                                                 sx={{
-                                                    color: "#6b7280",
+                                                    color: "var(--color-font-gray2)",
                                                     "&.Mui-checked": {
-                                                        color: "#19CA68",
+                                                        color: "var(--color-brand-500)",
                                                     },
                                                     padding: "0 8px 0 0",
                                                 }}
                                             />
-                                            <div
-                                                style={{
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    gap: 8,
-                                                }}
-                                            >
+                                            <div className="flex items-center gap-2">
                                                 <Avatar
                                                     name={u.name}
                                                     uid={u.id}
                                                     size={22}
+                                                    referrerPolicy="no-referrer"
                                                     src={u.photo}
                                                 />
-                                                <span
-                                                    style={{ color: "#e5e7eb" }}
-                                                >
+                                                <span className="text-[#e5e7eb]">
                                                     {u.name}
                                                 </span>
-                                                <span
-                                                    style={{
-                                                        fontSize: 11,
-                                                        color: "#6b7280",
-                                                    }}
-                                                >
+                                                <span  className="text-font-gray2 text-[11px]">
                                                     ({u.role || "membro"})
                                                 </span>
                                             </div>
@@ -429,13 +373,7 @@ export default function ProjectForm({
                     </FormControl>
 
                     {/* StartDate + DeliveryDate */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 12,
-                        }}
-                    >
+                    <div  className="grid gap-3 grid-cols-2">
                         <TextField
                             label="Data de Início"
                             type="date"
@@ -458,20 +396,15 @@ export default function ProjectForm({
                             <TextField
                                 label="Data de Entrega"
                                 type="date"
+                                sx={muiDark}
                                 {...register("deliveryDate")}
-                                disabled
+
                             />
                         )}
                     </div>
 
                     {/* TechStack + Hosting */}
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "1fr 1fr",
-                            gap: 12,
-                        }}
-                    >
+                    <div className="grid gap-3 grid-cols-2">
                         <TextField
                             label="Tech Stack (separado por vírgula)"
                             {...register("techStack")}
@@ -483,10 +416,7 @@ export default function ProjectForm({
                                 startAdornment: (
                                     <MdCode
                                         size={15}
-                                        style={{
-                                            color: "#6b7280",
-                                            marginRight: 6,
-                                        }}
+                                        className="text-font-gray2 mr-1.5"
                                     />
                                 ),
                             }}
@@ -502,10 +432,7 @@ export default function ProjectForm({
                                 startAdornment: (
                                     <MdComputer
                                         size={15}
-                                        style={{
-                                            color: "#6b7280",
-                                            marginRight: 6,
-                                        }}
+                                        className="text-font-gray2 mr-1.5"
                                     />
                                 ),
                             }}
@@ -526,63 +453,40 @@ export default function ProjectForm({
                             startAdornment: (
                                 <RiGitBranchLine
                                     size={15}
-                                    style={{ color: "#6b7280", marginRight: 6 }}
+                                    className="text-font-gray2 mr-1.5"
                                 />
                             ),
                         }}
                     />
                 </DialogContent>
 
-                <DialogActions
-                    style={{
-                        padding: "12px 24px 20px",
-                        borderTop: "1px solid rgba(255,255,255,0.06)",
-                        gap: 8,
-                    }}
-                >
+                <DialogActions className="gap-2 border-t border-t-[#FFFFFF0F]" >
                     <button
                         type="button"
                         onClick={handleClose}
                         disabled={loading}
-                        style={{
-                            background: "rgba(255,255,255,0.05)",
-                            border: "1px solid rgba(255,255,255,0.1)",
-                            borderRadius: 8,
-                            color: "#9ca3af",
-                            padding: "8px 20px",
-                            cursor: "pointer",
-                            fontSize: 13,
-                            fontWeight: 600,
-                        }}
+                        className="
+                            text-[13px] font-semibold cursor-pointer
+                            rounded-lg py-2 px-5 text-font-gray
+                            border border-[#FFFFFF1A] bg-[#FFFFFF0D]
+                        "
                     >
                         Cancelar
                     </button>
                     <button
                         type="submit"
                         disabled={loading}
-                        style={{
-                            background: loading
-                                ? "rgba(25,202,104,0.4)"
-                                : "linear-gradient(135deg, #19CA68, #1AD76F)",
-                            border: "none",
-                            borderRadius: 8,
-                            color: "#000",
-                            padding: "8px 24px",
-                            cursor: loading ? "not-allowed" : "pointer",
-                            fontSize: 13,
-                            fontWeight: 700,
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 6,
-                            boxShadow: loading
-                                ? "none"
-                                : "0 4px 14px rgba(25,202,104,0.35)",
-                        }}
+                        className={`border-none rounded-lg text-black py-2 px-6 text-[13px] font-bold flex items-center gap-1.5 
+                            ${loading 
+                                ? "bg-brand-500/40 cursor-not-allowed shadow-none" 
+                                : "bg-linear-to-br from-brand-500 to-brand-600 cursor-pointer shadow-[0_4px_14px_#A2C2B059]"
+                            }`
+                        }
                     >
                         {loading && (
                             <CircularProgress
                                 size={14}
-                                style={{ color: "#000" }}
+                                className="text-black"
                             />
                         )}
                         {isEdit ? "Salvar Alterações" : "Criar Projeto"}
@@ -592,3 +496,4 @@ export default function ProjectForm({
         </Dialog>
     );
 }
+export default memo(ProjectForm)

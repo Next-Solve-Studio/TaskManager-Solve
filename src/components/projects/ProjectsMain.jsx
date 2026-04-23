@@ -176,8 +176,7 @@ export default function ProjectsMain() {
                 project={editingProject}
                 users={users}
                 usersMap={usersMap}
-                client={clients}
-                
+                clients={clients}
                 onSubmit={handleSubmit}
                 loading={submitting}
             />

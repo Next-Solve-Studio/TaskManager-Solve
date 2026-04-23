@@ -9,7 +9,7 @@ export const projectSchema = yup.object({
         .min(3, "Mínimo 3 caracteres")
         .required("Título obrigatório"),
     description: yup.string().optional(),
-    client: yup.string().optional(),
+    client: yup.string().required("Insira um cliente"),
     status: yup.string().oneOf(Object.keys(STATUS_MAP)).required(),
     priority: yup.string().oneOf(Object.keys(PRIORITY_MAP)).required(),
     developers: yup
