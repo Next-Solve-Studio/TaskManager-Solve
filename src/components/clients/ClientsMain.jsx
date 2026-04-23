@@ -8,9 +8,10 @@ import { useRole } from "@/hooks/useRole";
 import useIsMobile from "@/responsive/useIsMobile";
 import useIsTablet from "@/responsive/useIsTablet";
 import { StatPill } from "../ui/StatPill";
-import ClientCard from "./sections/ClientCard";
+import NewClient from "./button/NewClient";
 import ClientDeleteModal from "./modals/ClientDeleteModal";
 import ClientForm from "./modals/ClientForm";
+import ClientCard from "./sections/ClientCard";
 import ClientsHeader from "./sections/ClientsHeader";
 import ClientsTable from "./sections/ClientsTable";
 
@@ -46,28 +47,31 @@ export default function ClientsMain() {
 
     return (
         <div className="space-y-8">
-            <ClientsHeader
-                onCreate={
-                    can("canManageClients") ? () => handleOpenModal() : null
-                }
-            />
+            <ClientsHeader />
 
-            <div className="flex flex-wrap gap-4">
-                <StatPill
-                    icon={MdPeople}
-                    label="Total de clientes"
-                    value={totalClients}
-                    color="var(--color-cyan-400)"
-                    bg="var(--color-surface-cyan-alt)"
-                    border="var(--color-surface-cyan-md)"
-                />
-                <StatPill
-                    icon={MdCheckCircle}
-                    label={`${activeClients === 1 ? "Cliente ativo" : "Clientes ativos"}`}
-                    value={activeClients}
-                    color="var(--color-brand-500)"
-                    bg="var(--color-surface-green-alt)"
-                    border="var(--color-surface-green-md)"
+            <div className="flex flex-wrap flex-col sm:flex-row justify-between gap-4">
+                <div className="flex flex-wrap gap-4">
+                    <StatPill
+                        icon={MdPeople}
+                        label="Total de clientes"
+                        value={totalClients}
+                        color="var(--color-cyan-400)"
+                        bg="var(--color-surface-cyan-alt)"
+                        border="var(--color-surface-cyan-md)"
+                    />
+                    <StatPill
+                        icon={MdCheckCircle}
+                        label={`${activeClients === 1 ? "Cliente ativo" : "Clientes ativos"}`}
+                        value={activeClients}
+                        color="var(--color-brand-500)"
+                        bg="var(--color-surface-green-alt)"
+                        border="var(--color-surface-green-md)"
+                    />
+                </div>
+                <NewClient
+                    onCreate={
+                        can("canManageClients") ? () => handleOpenModal() : null
+                    }
                 />
             </div>
 

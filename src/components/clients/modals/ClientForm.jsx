@@ -21,8 +21,7 @@ const schema = yup.object().shape({
     name: yup.string().required("O nome é obrigatório"),
     email: yup
         .string()
-        .email("E-mail inválido")
-        .required("O e-mail é obrigatório"),
+        .email("E-mail inválido"),
     contato: yup.string().required("O telefone é obrigatório"),
     documento: yup.string().nullable(),
     status: yup

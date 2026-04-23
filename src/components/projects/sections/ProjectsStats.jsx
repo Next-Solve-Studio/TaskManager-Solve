@@ -1,8 +1,7 @@
 // Estatísticas dos projetos
-'use client'
-import CanDo from "@/components/auth/CanDo";
-import { StatPill } from "@/components/ui/StatPill";
+"use client";
 import { useMemo } from "react";
+import { StatPill } from "@/components/ui/StatPill";
 
 const STATS_CONFIG = [
     {
@@ -42,7 +41,7 @@ const STATS_CONFIG = [
     },
 ];
 
-export default function ProjectsStats({ projects, onCreate }) {
+export default function ProjectsStats({ projects }) {
     const stats = useMemo(() => {
         // Conta quantos projetos existem em cada status
         const counts = {
@@ -52,19 +51,19 @@ export default function ProjectsStats({ projects, onCreate }) {
             pausado: 0,
             suporte: 0,
             arquivado: 0,
-        }
+        };
 
         // com for, o array será percorrido apenas uma vez
-        for (const project of projects) { // percorre cada elemento do array projects
-            const status = project.status
+        for (const project of projects) {
+            // percorre cada elemento do array projects
+            const status = project.status;
             if (status in counts) {
                 // adiciona os status no counts
                 counts[status]++;
             }
         }
-        return counts
-            
-        },[projects],);
+        return counts;
+    }, [projects]);
     return (
         <div className="flex flex-wrap gap-2 select-none">
             {STATS_CONFIG.map((cfg) => (
@@ -77,7 +76,6 @@ export default function ProjectsStats({ projects, onCreate }) {
                     border={cfg.border}
                 />
             ))}
-            
         </div>
     );
 }
