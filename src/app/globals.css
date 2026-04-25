@@ -66,16 +66,7 @@
     --color-border-subtle: var(--border-subtle);
 
      /* ─── FUNDO / DARK THEME ────────────────────────────── */
-    --color-background-page: #0a0a0a;
-    --color-bg-pure: #000000b6;
-    --color-bg-card: #121212;
-    --color-bg-navy: #171c23;
-    --color-bg-hover: #2d2d2d;
-    --color-bg-selected: #222222;
-    --color-bg-hover2: #4b4b4b;
-    --color-font-gray: #9ca3af;
-    --color-font-gray2: #6b7280;
-    --color-font-gray2-rgb: 107, 114, 128;
+
 
     /* ─── ALIASES SEMÂNTICOS ────────────────────────────── */
     --color-primary: var(--color-brand-500);
