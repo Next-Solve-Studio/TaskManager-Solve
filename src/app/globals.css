@@ -65,8 +65,7 @@
     --color-border-main: var(--border-main);
     --color-border-subtle: var(--border-subtle);
 
-     /* ─── FUNDO / DARK THEME ────────────────────────────── */
-
+    /* ─── FUNDO / DARK THEME ────────────────────────────── */
 
     /* ─── ALIASES SEMÂNTICOS ────────────────────────────── */
     --color-primary: var(--color-brand-500);

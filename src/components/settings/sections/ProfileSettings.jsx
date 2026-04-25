@@ -189,9 +189,9 @@ export default function ProfileSettings() {
                             backgroundColor: "var(--color-brand-600)",
                         },
                         "&.Mui-disabled": {
-                            backgroundColor: "rgba(255,255,255,0.05)",
-                            color: "rgba(255,255,255,0.2)",
-                            border: "1px solid rgba(255,255,255,0.05)",
+                            backgroundColor: "var(--color-border-subtle)",
+                            color: "var(--color-text-muted)",
+                            border: "1px solid var(--color-border-main)",
                         },
                         textTransform: "none",
                         borderRadius: "12px",

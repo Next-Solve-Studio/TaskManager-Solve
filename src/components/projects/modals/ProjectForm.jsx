@@ -194,7 +194,7 @@ export function ProjectForm({
                                                 value={c.id}
                                                 style={{
                                                     fontSize: 13,
-                                                    color: "#e5e7eb",
+                                                    color: "var(--color-text-primary)",
                                                 }}
                                             >
                                                 {c.name}
@@ -222,7 +222,56 @@ export function ProjectForm({
                         <FormControl
                             size="small"
                             error={Boolean(errors.status)}
-                            sx={muiDark}
+                            sx={{
+                                color: "var(--color-text-secondary)",
+                                "& .MuiOutlinedInput-root": {
+                                    color: "var(--color-text-primary)",
+                                    "& fieldset": {
+                                        borderColor:
+                                            "var(--color-text-secondary)",
+                                    },
+                                    "&:hover fieldset": {
+                                        borderColor: "var(--color-border-main)",
+                                    },
+                                    "&.Mui-focused fieldset": {
+                                        borderColor:
+                                            "var(--color-text-secondary)",
+                                    },
+                                    "& .MuiSelect-icon": {
+                                        color: "var(--color-text-secondary)",
+                                    },
+                                    "&.Mui-disabled": {
+                                        "& .MuiOutlinedInput-notchedOutline": {
+                                            borderColor:
+                                                "var(--color-border-main)",
+                                        },
+                                        "& .MuiSelect-select": {
+                                            WebkitTextFillColor:
+                                                "var(--color-text-muted)",
+                                        },
+                                        "& .MuiSelect-icon": {
+                                            color: "var(--color-text-muted)",
+                                        },
+                                    },
+                                    "& .MuiChip-root": {
+                                        background: "rgba(25,202,104,0.15)",
+                                        color: "var(--color-brand-500)",
+                                        fontSize: 11,
+                                    },
+                                },
+                                "& .MuiInputLabel-root": {
+                                    color: "var(--color-text-secondary)",
+                                },
+                                "& .MuiInputLabel-root.Mui-focused": {
+                                    color: "var(--color-text-secondary)",
+                                },
+                                "& .MuiInputLabel-root.Mui-disabled": {
+                                    color: "var(--color-text-muted)",
+                                },
+                                "& .MuiFormHelperText-root": {
+                                    color: "var(--color-error)",
+                                },
+                            }}
                         >
                             <InputLabel>Status *</InputLabel>
                             <Controller
@@ -359,10 +408,10 @@ export function ProjectForm({
                                                     referrerPolicy="no-referrer"
                                                     src={u.photo}
                                                 />
-                                                <span className="text-[#e5e7eb]">
+                                                <span className="text-secondary">
                                                     {u.name}
                                                 </span>
-                                                <span className="text-font-gray2 text-[11px]">
+                                                <span className="text-text-muted text-[11px]">
                                                     ({u.role || "membro"})
                                                 </span>
                                             </div>
