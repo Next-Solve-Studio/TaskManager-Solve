@@ -1,12 +1,12 @@
-import { menuPaper2, muiDark2 } from "@/styles/StyleInputs";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { menuPaper2, muiDark2 } from "@/styles/StyleInputs";
 
 // Componente interno para evitar repetição dos selects
 export default function FilterSelect({
     label,
     value,
     onChange,
-    items, 
+    items,
     isMobile,
     valueKey = "value",
     labelKey = "label",
@@ -14,12 +14,12 @@ export default function FilterSelect({
     allLabel = `Todos ${label.toLowerCase()}`,
 }) {
     const options = Array.isArray(items)
-    ? items
-    : Object.entries(items).map(([val, cfg]) => ({
-        [valueKey]: val,
-        [labelKey]: cfg.label,
-        [colorKey]: cfg.color,
-    }))
+        ? items
+        : Object.entries(items).map(([val, cfg]) => ({
+              [valueKey]: val,
+              [labelKey]: cfg.label,
+              [colorKey]: cfg.color,
+          }));
 
     return (
         <FormControl
@@ -33,15 +33,21 @@ export default function FilterSelect({
                 onChange={(e) => onChange(e.target.value)}
                 MenuProps={menuPaper2}
             >
-                <MenuItem value="all" sx={{ color: "var(--color-text-primary)" }}>
+                <MenuItem
+                    value="all"
+                    sx={{ color: "var(--color-text-primary)" }}
+                >
                     {allLabel}
                 </MenuItem>
 
-                {options.map((item)=> (
+                {options.map((item) => (
                     <MenuItem
                         key={item[valueKey]}
                         value={item[valueKey]}
-                        sx={{ color: item[colorKey] || "var(--color-text-primary)" }}
+                        sx={{
+                            color:
+                                item[colorKey] || "var(--color-text-primary)",
+                        }}
                     >
                         {item[labelKey]}
                     </MenuItem>

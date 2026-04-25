@@ -10,12 +10,10 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
     };
 
     return (
-        <div
-            className="p-5 rounded-2xl bg-bg-card border border-border-main"
-        >
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
             {/* Header do card */}
             <div className="flex items-center gap-3 mb-4">
-                <Avatar name={user.name} uid={user.id} src={user.photo}/>
+                <Avatar name={user.name} uid={user.id} src={user.photo} />
                 <div>
                     <p className="text-text-primary font-semibold text-sm">
                         {user.name}
@@ -48,7 +46,9 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                             <span
                                 className="text-[10px] font-bold uppercase tracking-wide text-center"
                                 style={{
-                                    color: todayDay ? "#19CA68" : "var(--color-text-muted)",
+                                    color: todayDay
+                                        ? "#19CA68"
+                                        : "var(--color-text-muted)",
                                 }}
                             >
                                 {label.slice(0, 3)}

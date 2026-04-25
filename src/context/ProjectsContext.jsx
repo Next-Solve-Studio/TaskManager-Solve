@@ -33,10 +33,10 @@ export const ProjectsProvider = ({ children }) => {
 
     const [projects, setProjects] = useState([]);
     const [users, setUsers] = useState([]);
-    const [clients, setClients] = useState([])
+    const [clients, setClients] = useState([]);
     const [loadingProjects, setLoadingProjects] = useState(true);
     const [loadingUsers, setLoadingUsers] = useState(true);
-    const [loadingClients, setLoadingClients] = useState(true)
+    const [loadingClients, setLoadingClients] = useState(true);
 
     useEffect(() => {
         // consulta que busca a collection projects, e ordena pela data de criação, do mais novo para o mais antigo
@@ -68,7 +68,6 @@ export const ProjectsProvider = ({ children }) => {
             .then((snapshot) => {
                 //converte cada documento em um objeto com id e os dados e guarda no estado users
                 setUsers(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-                
             })
             .catch((error) => {
                 console.error("Erro ao carregar usuários:", error);
@@ -77,17 +76,19 @@ export const ProjectsProvider = ({ children }) => {
             .finally(() => setLoadingUsers(false));
     }, []);
 
-    useEffect(()=>{
-        getDocs(collection(db,"clients"))
-        . then ((snapshot) => {
-            setClients(snapshot.docs.map((d)=> ({id: d.id, ...d.data() })))
-        })
-        .catch((error) => {
-            console.error("Erro ao carregar clientes:", error);
-            toast.error("Erro ao carregar clientes:", error);
-        })
-        .finally(() => setLoadingClients(false))
-    })
+    useEffect(() => {
+        getDocs(collection(db, "clients"))
+            .then((snapshot) => {
+                setClients(
+                    snapshot.docs.map((d) => ({ id: d.id, ...d.data() })),
+                );
+            })
+            .catch((error) => {
+                console.error("Erro ao carregar clientes:", error);
+                toast.error("Erro ao carregar clientes:", error);
+            })
+            .finally(() => setLoadingClients(false));
+    });
 
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
@@ -124,17 +125,19 @@ export const ProjectsProvider = ({ children }) => {
 
     const updateProject = useCallback(
         async (projectId, data, currentProject) => {
-            const prevStatus= currentProject.status
-            const nextStatus = data.status
+            const prevStatus = currentProject.status;
+            const nextStatus = data.status;
 
             // preenchida apenas quando muda para "concluido", zera se sair
             let deliveryDate = currentProject.deliveryDate || null;
 
             // se antes não era concluido e virou concluido, gera a data de entraga, se vice versa, vira null
-            if (prevStatus !== "concluido" && nextStatus === "concluido"){
+            if (prevStatus !== "concluido" && nextStatus === "concluido") {
                 deliveryDate = serverTimestamp();
-
-            } else if (prevStatus === "concluido" && nextStatus !== "concluido"){
+            } else if (
+                prevStatus === "concluido" &&
+                nextStatus !== "concluido"
+            ) {
                 deliveryDate = null;
             }
 
@@ -142,12 +145,11 @@ export const ProjectsProvider = ({ children }) => {
             let supportEndDate = currentProject.supportEndDate || null;
 
             // se antes não era suporte e virou suporte, gera a data final do suporte, se vice versa, vira null
-            if (prevStatus !== "suporte" && nextStatus === "suporte"){
-                const now = new Date()
-                now.setDate(now.getDate() + 45)
-                supportEndDate = now
-
-            } else if (prevStatus === "suporte" && nextStatus !== "suporte"){
+            if (prevStatus !== "suporte" && nextStatus === "suporte") {
+                const now = new Date();
+                now.setDate(now.getDate() + 45);
+                supportEndDate = now;
+            } else if (prevStatus === "suporte" && nextStatus !== "suporte") {
                 supportEndDate = null;
             }
 
@@ -190,7 +192,7 @@ export const ProjectsProvider = ({ children }) => {
     //isso permite usar clientMap[uid] para obter os dados rapidamente de um usuário sem precisar usar find
     const clientMap = useMemo(() => {
         return Object.fromEntries(clients.map((u) => [u.id, u]));
-    },  [clients])
+    }, [clients]);
 
     //Estados e funções disponíveis para os componentes filhos
     const value = {

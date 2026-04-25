@@ -1,4 +1,3 @@
-import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { format, startOfMonth } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -11,14 +10,15 @@ import {
     YAxis,
 } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 const LEGEND_ITEMS = [
-  ["#19CA68", "Concluídos"],
-  ["#22d3ee", "Em Andamento"],
-  ["#f59e0b", "Em Suporte"],
+    ["#19CA68", "Concluídos"],
+    ["#22d3ee", "Em Andamento"],
+    ["#f59e0b", "Em Suporte"],
 ];
 export default function ProjectsWeek({ weeklyData, today }) {
-    const isMobile = useIsMobile()
+    const isMobile = useIsMobile();
     return (
         <div className="xl:col-span-2 p-5 rounded-2xl bg-bg-card border border-border-main">
             <div className="flex items-center justify-between mb-5">
@@ -45,7 +45,12 @@ export default function ProjectsWeek({ weeklyData, today }) {
                 </div>
             </div>
             <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={weeklyData} barGap={4} barCategoryGap="30%" accessibilityLayer={false}>
+                <BarChart
+                    data={weeklyData}
+                    barGap={4}
+                    barCategoryGap="30%"
+                    accessibilityLayer={false}
+                >
                     <CartesianGrid
                         vertical={false}
                         stroke="var(--color-border-main)"
@@ -65,7 +70,11 @@ export default function ProjectsWeek({ weeklyData, today }) {
                     />
                     <Tooltip
                         content={<CustomTooltip />}
-                        cursor={isMobile ? false : { fill: "var(--color-border-subtle)" }}
+                        cursor={
+                            isMobile
+                                ? false
+                                : { fill: "var(--color-border-subtle)" }
+                        }
                         trigger={isMobile ? "click" : "hover"}
                     />
                     <Bar

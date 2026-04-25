@@ -15,14 +15,12 @@ import {
 import { useForm } from "react-hook-form";
 import { MdClose } from "react-icons/md";
 import * as yup from "yup";
-import { FormatPhone } from "@/utils/FormatPhone";
 import { useClients } from "@/context/ClientsContext";
+import { FormatPhone } from "@/utils/FormatPhone";
 
 const schema = yup.object().shape({
     name: yup.string().required("O nome é obrigatório"),
-    email: yup
-        .string()
-        .email("E-mail inválido"),
+    email: yup.string().email("E-mail inválido"),
     contato: yup
         .string()
         .required("O telefone é obrigatório")
@@ -61,10 +59,10 @@ export default function ClientForm({ isOpen, onClose, client }) {
 
     const onSubmit = async (data) => {
         try {
-            const cleanData =  {
+            const cleanData = {
                 ...data,
-                contato:data.contato.replace(/\D/g, ""),
-            }
+                contato: data.contato.replace(/\D/g, ""),
+            };
             if (isEditing) {
                 await updateClient(client.id, data);
             } else {
@@ -82,7 +80,9 @@ export default function ClientForm({ isOpen, onClose, client }) {
             backgroundColor: "var(--color-border-subtle)",
             borderRadius: "12px",
             "& fieldset": { borderColor: "var(--color-border-main)" },
-            "&:hover fieldset": { borderColor: "rgba(var(--color-brand-500-rgb), 0.3)" },
+            "&:hover fieldset": {
+                borderColor: "rgba(var(--color-brand-500-rgb), 0.3)",
+            },
             "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
         },
         "& label": {
@@ -91,10 +91,13 @@ export default function ClientForm({ isOpen, onClose, client }) {
             fontWeight: 600,
         },
         "& label.Mui-focused": { color: "var(--color-brand-500)" },
-        "& .MuiFormHelperText-root": { color: "var(--color-error)", fontWeight: 600 },
+        "& .MuiFormHelperText-root": {
+            color: "var(--color-error)",
+            fontWeight: 600,
+        },
     };
 
-    const contactValue = watch("contato")
+    const contactValue = watch("contato");
 
     return (
         <Dialog
@@ -173,8 +176,8 @@ export default function ClientForm({ isOpen, onClose, client }) {
                         label="Telefone / WhatsApp"
                         fullWidth
                         value={FormatPhone(contactValue)}
-                        onChange={(e)=> {
-                            setValue("contato", e.target.value)
+                        onChange={(e) => {
+                            setValue("contato", e.target.value);
                         }}
                         error={!!errors.contato}
                         helperText={errors.contato?.message}
@@ -260,7 +263,7 @@ export default function ClientForm({ isOpen, onClose, client }) {
                         "&.Mui-disabled": {
                             backgroundColor: "var(--color-border-main)",
                             color: "var(--color-text-muted)",
-                        }
+                        },
                     }}
                 >
                     {isSubmitting

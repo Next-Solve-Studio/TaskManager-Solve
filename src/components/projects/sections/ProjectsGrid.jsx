@@ -1,8 +1,8 @@
-'use client'
-import {memo} from "react"
-import { CircularProgress } from "@mui/material"
-import ProjectCard from "../card/ProjectCard"
-import ProjectsEmptyState from "./ProjectsEmptyState"
+"use client";
+import { CircularProgress } from "@mui/material";
+import { memo } from "react";
+import ProjectCard from "../card/ProjectCard";
+import ProjectsEmptyState from "./ProjectsEmptyState";
 
 export function ProjectsGrid({
     loadingProjects,
@@ -12,8 +12,7 @@ export function ProjectsGrid({
     onEdit,
     onDelete,
     onCreate,
-    filtered
-
+    filtered,
 }) {
     return (
         <section>
@@ -44,7 +43,7 @@ export function ProjectsGrid({
                 </div>
             )}
         </section>
-    )
+    );
 }
 
 export default memo(ProjectsGrid);

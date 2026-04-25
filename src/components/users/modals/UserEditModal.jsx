@@ -92,9 +92,7 @@ export default function UserEditModal({ open, onClose, user }) {
                     >
                         <MdEdit className={`text-cyan-400 text-[17px]`} />
                     </div>
-                    <span
-                        className="text-text-primary font-bold text-base"
-                    >
+                    <span className="text-text-primary font-bold text-base">
                         Editar Cargo
                     </span>
                 </div>
@@ -125,19 +123,18 @@ export default function UserEditModal({ open, onClose, user }) {
                 }}
             >
                 {user && (
-                    <div
-                        className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main"
-                    >
-                        <Avatar name={user.name} uid={user.id} size={40} src={user.photo}/>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main">
+                        <Avatar
+                            name={user.name}
+                            uid={user.id}
+                            size={40}
+                            src={user.photo}
+                        />
                         <div style={{ minWidth: 0 }}>
-                            <p
-                                className="text-text-primary font-bold text-sm m-0 mb-0.5"
-                            >
+                            <p className="text-text-primary font-bold text-sm m-0 mb-0.5">
                                 {user.name}
                             </p>
-                            <p
-                                className="text-text-secondary text-xs m-0 truncate"
-                            >
+                            <p className="text-text-secondary text-xs m-0 truncate">
                                 {user.email}
                             </p>
                         </div>
@@ -159,7 +156,10 @@ export default function UserEditModal({ open, onClose, user }) {
                                 <MenuItem
                                     key={value}
                                     value={value}
-                                    sx={{ fontSize: 13, color: "var(--color-text-primary)" }}
+                                    sx={{
+                                        fontSize: 13,
+                                        color: "var(--color-text-primary)",
+                                    }}
                                 >
                                     <div
                                         style={{
@@ -173,9 +173,7 @@ export default function UserEditModal({ open, onClose, user }) {
                                                 className={`${m.color} text-[15px]`}
                                             />
                                         )}
-                                        <span>
-                                            {label}
-                                        </span>
+                                        <span>{label}</span>
                                     </div>
                                 </MenuItem>
                             );

@@ -17,7 +17,9 @@ export function StatCard({ icon: Icon, label, value, color, bg, border }) {
                 </div>
             </div>
             <div>
-                <p className="text-3xl font-bold text-text-primary tabular-nums">{value}</p>
+                <p className="text-3xl font-bold text-text-primary tabular-nums">
+                    {value}
+                </p>
                 <p className="text-sm text-text-secondary mt-0.5">{label}</p>
             </div>
         </div>

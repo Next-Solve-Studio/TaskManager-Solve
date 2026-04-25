@@ -1,15 +1,21 @@
-'use client'
-import {format } from "date-fns";
-import { RiRocketLine } from 'react-icons/ri'
+"use client";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useMemo } from "react";
+import { RiRocketLine } from "react-icons/ri";
 import { useAuth } from "@/context/AuthContext";
 
-export default function HomeHeader({ completionRate, counts, nearDeadline, today}) {
+export default function HomeHeader({
+    completionRate,
+    counts,
+    nearDeadline,
+    today,
+}) {
     const { currentUser } = useAuth();
-    
+
     const hour = today.getHours();
-    const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
+    const greeting =
+        hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 
     const firstName = useMemo(() => {
         const name = currentUser?.name || currentUser?.displayName || "Dev";
@@ -45,9 +51,7 @@ export default function HomeHeader({ completionRate, counts, nearDeadline, today
                 </p>
             </div>
 
-            <div
-                className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-bg-card border border-border-main"
-            >
+            <div className="flex items-center gap-4 px-4 py-3 rounded-2xl bg-bg-card border border-border-main">
                 <div className="text-center">
                     <p className="text-xl font-bold text-brand-500">
                         {completionRate}%
@@ -76,5 +80,5 @@ export default function HomeHeader({ completionRate, counts, nearDeadline, today
                 </div>
             </div>
         </div>
-    )
+    );
 }

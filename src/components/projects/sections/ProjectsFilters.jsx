@@ -1,8 +1,8 @@
 import { AiOutlineClear } from "react-icons/ai";
 import { MdSearch } from "react-icons/md";
-import useIsMobile from "@/hooks/responsive/useIsMobile";
 import FilterSelect from "@/components/ui/FilterSelect";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function ProjectsFilters({
     onSearchChange,
@@ -15,12 +15,11 @@ export default function ProjectsFilters({
     users,
     clearFilters,
     searchInput,
-
 }) {
     const isMobile = useIsMobile();
-    
+
     // se tiver ao menos um filtro ativo, mostra o botão para limpar(searchInput)
-    const hasFilters = 
+    const hasFilters =
         filterStatus !== "all" ||
         filterPriority !== "all" ||
         filterDev !== "all" ||
@@ -70,7 +69,7 @@ export default function ProjectsFilters({
                 labelKey="name"
                 isMobile={isMobile}
             />
-            
+
             {/* Botão limpar filtros */}
             {hasFilters && (
                 <button
@@ -85,4 +84,3 @@ export default function ProjectsFilters({
         </div>
     );
 }
-

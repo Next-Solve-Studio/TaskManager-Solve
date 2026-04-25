@@ -45,7 +45,7 @@ export const STATUS_MAP = {
     },
     aguardando_teste: {
         label: "Aguardando Teste",
-        color: "#818cf8",        
+        color: "#818cf8",
         bg: "rgba(129,140,248,0.12)",
         border: "rgba(129,140,248,0.25)",
         icon: MdOutlineRateReview,

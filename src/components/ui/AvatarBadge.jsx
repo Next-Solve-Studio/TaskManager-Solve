@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import Image from "next/image";
 export const AVATAR_COLORS = [
     "#19CA68",
@@ -22,64 +22,57 @@ export function getInitials(name = "") {
         .join("");
 }
 
-export function avatarColor(seed  = "") {
+export function avatarColor(seed = "") {
     let hash = 0;
-    for (const c of seed ) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+    for (const c of seed) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
-export function Avatar({
-
-    name = "",
-    uid = "",
-    src = "",
-    size = 32,
-}) {
+export function Avatar({ name = "", uid = "", src = "", size = 32 }) {
     const seed = uid || name || "user";
     const color = avatarColor(seed);
 
-    return (<>
-        {src ? (
-            <div
-                style={{
-                    width: size,
-                    height: size,
-                    borderRadius: "50%",
-                    overflow: "hidden",
-                    position: "relative",
-                    flexShrink: 0,
-                }}
-            >
-                <Image
-                    src={src}
-                    alt="Foto de perfil"
-                    fill
-                    sizes={`${size}px`}
-                    className="object-cover"
-                />
-            </div>
-            
-        ) : (
-                                        
-                                    
-        <div
-            style={{
-                width: size,
-                height: size,
-                borderRadius: "50%",
-                background: `${color}33`, // 20% -> 20% hex is 33
-                border: `2px solid ${color}80`, // 31% -> 50% hex is 80
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: size * 0.36,
-                fontWeight: 700,
-                color,
-                flexShrink: 0,
-            }}
-        >
-            {getInitials(name)}
-        </div>
-        )}</>
+    return (
+        <>
+            {src ? (
+                <div
+                    style={{
+                        width: size,
+                        height: size,
+                        borderRadius: "50%",
+                        overflow: "hidden",
+                        position: "relative",
+                        flexShrink: 0,
+                    }}
+                >
+                    <Image
+                        src={src}
+                        alt="Foto de perfil"
+                        fill
+                        sizes={`${size}px`}
+                        className="object-cover"
+                    />
+                </div>
+            ) : (
+                <div
+                    style={{
+                        width: size,
+                        height: size,
+                        borderRadius: "50%",
+                        background: `${color}33`, // 20% -> 20% hex is 33
+                        border: `2px solid ${color}80`, // 31% -> 50% hex is 80
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: size * 0.36,
+                        fontWeight: 700,
+                        color,
+                        flexShrink: 0,
+                    }}
+                >
+                    {getInitials(name)}
+                </div>
+            )}
+        </>
     );
 }

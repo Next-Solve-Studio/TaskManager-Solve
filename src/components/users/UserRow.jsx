@@ -34,19 +34,20 @@ export default function UserRow({ user, onEdit, onDelete }) {
         >
             {/* Avatar */}
             <div style={{ display: "flex", justifyContent: "center" }}>
-                <Avatar name={user.name} uid={user.id} size={36} src={user.photo}/>
+                <Avatar
+                    name={user.name}
+                    uid={user.id}
+                    size={36}
+                    src={user.photo}
+                />
             </div>
 
             {/* Nome + Email */}
             <div style={{ minWidth: 0 }}>
-                <p
-                    className="text-text-primary font-bold text-sm m-0 mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap"
-                >
+                <p className="text-text-primary font-bold text-sm m-0 mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.name}
                 </p>
-                <p
-                    className="text-text-secondary text-xs m-0 overflow-hidden text-ellipsis whitespace-nowrap"
-                >
+                <p className="text-text-secondary text-xs m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.email}
                 </p>
             </div>
@@ -77,9 +78,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
 
             {/* Data de entrada */}
             <div style={{ display: "flex", alignItems: "center" }}>
-                <span
-                    className="text-[11px] text-text-muted whitespace-nowrap"
-                >
+                <span className="text-[11px] text-text-muted whitespace-nowrap">
                     {formattedDate}
                 </span>
             </div>

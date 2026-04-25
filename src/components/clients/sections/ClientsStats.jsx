@@ -1,19 +1,18 @@
-'use client'
+"use client";
 
-import { StatPill } from "@/components/ui/StatPill";
-import NewClient from "../button/NewClient";
 import { MdCheckCircle, MdPeople } from "react-icons/md";
+import { StatPill } from "@/components/ui/StatPill";
 import { useRole } from "@/hooks/useRole";
+import NewClient from "../button/NewClient";
 
-
-export default function ClientsStats({clients, handleOpenModal}) {
+export default function ClientsStats({ clients, handleOpenModal }) {
     const { can } = useRole();
 
     const totalClients = clients.length;
     const activeClients = clients.filter((c) => c.status === "active").length;
 
     return (
-         <section className="flex flex-wrap flex-col sm:flex-row justify-between gap-4">
+        <section className="flex flex-wrap flex-col sm:flex-row justify-between gap-4">
             <div className="flex flex-wrap gap-4">
                 <StatPill
                     icon={MdPeople}
@@ -38,5 +37,5 @@ export default function ClientsStats({clients, handleOpenModal}) {
                 }
             />
         </section>
-    )
+    );
 }

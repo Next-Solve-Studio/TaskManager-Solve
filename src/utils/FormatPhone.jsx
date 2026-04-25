@@ -1,11 +1,11 @@
 export const FormatPhone = (value) => {
-    if (!value) return ""
+    if (!value) return "";
 
-    const numbers = value.replace(/\D/g, "").slice(0, 11)
+    const numbers = value.replace(/\D/g, "").slice(0, 11);
 
-    if (numbers.length <= 2) return numbers
-    if  (numbers.length  <= 7)
-        return `${numbers.slice(0, 2)} ${numbers.slice(2)}`
+    if (numbers.length <= 2) return numbers;
+    if (numbers.length <= 7)
+        return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
 
-    return `${numbers.slice(0,2)} ${numbers.slice(2, 7)}-${numbers.slice(7)}`
-}
+    return `${numbers.slice(0, 2)} ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+};

@@ -75,9 +75,7 @@ export default function ClientDeleteModal({ open, onClose, client }) {
                     >
                         <MdDelete style={{ color: "#ef4444", fontSize: 17 }} />
                     </div>
-                    <span
-                        className="text-text-primary font-bold text-base"
-                    >
+                    <span className="text-text-primary font-bold text-base">
                         Excluir Cliente
                     </span>
                 </div>
@@ -109,9 +107,7 @@ export default function ClientDeleteModal({ open, onClose, client }) {
             >
                 {/* Client preview */}
                 {client && (
-                    <div
-                        className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main"
-                    >
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main">
                         <div
                             style={{
                                 width: 40,
@@ -130,14 +126,10 @@ export default function ClientDeleteModal({ open, onClose, client }) {
                             {client.name.charAt(0).toUpperCase()}
                         </div>
                         <div style={{ minWidth: 0 }}>
-                            <p
-                                className="text-text-primary font-bold text-sm m-0 mb-0.5"
-                            >
+                            <p className="text-text-primary font-bold text-sm m-0 mb-0.5">
                                 {client.name}
                             </p>
-                            <p
-                                className="text-text-secondary text-xs m-0 truncate"
-                            >
+                            <p className="text-text-secondary text-xs m-0 truncate">
                                 {client.email}
                             </p>
                         </div>

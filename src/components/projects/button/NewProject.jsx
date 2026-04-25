@@ -1,13 +1,12 @@
-import CanDo from '@/components/auth/CanDo'
+import CanDo from "@/components/auth/CanDo";
 
-
-export default function NewProject({onCreate}) {
-  return (
-    <CanDo permission="canCreateProjects">
-        <button
-            onClick={onCreate}
-            type="button"
-            className="
+export default function NewProject({ onCreate }) {
+    return (
+        <CanDo permission="canCreateProjects">
+            <button
+                onClick={onCreate}
+                type="button"
+                className="
                 relative inline-flex items-center gap-1.5
                 px-4.5 h-9.5 rounded-[7px]
                 text-[13px] font-bold tracking-tight text-black
@@ -18,11 +17,11 @@ export default function NewProject({onCreate}) {
                 active:scale-[0.97]
                 shadow-[0_2px_10px_rgba(25,202,104,0.25)]
             "
-        >
-            <span className="pointer-events-none absolute inset-0 rounded-[10px] bg-linear-to-b from-white/18 to-transparent" />
+            >
+                <span className="pointer-events-none absolute inset-0 rounded-[10px] bg-linear-to-b from-white/18 to-transparent" />
 
-            <span className="relative z-10">Novo Projeto</span>
-        </button>
-    </CanDo>
-  )
+                <span className="relative z-10">Novo Projeto</span>
+            </button>
+        </CanDo>
+    );
 }

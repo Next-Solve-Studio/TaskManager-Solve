@@ -30,9 +30,7 @@ export default function ScheduleHeader({ isViewingAll, activeScheduleDoc }) {
 
             {/* Mini stats */}
             {!isViewingAll && (
-                <div
-                    className="flex items-center flex-wrap gap-4 px-4 py-3 rounded-2xl shrink-0 bg-bg-card border border-border-main"
-                >
+                <div className="flex items-center flex-wrap gap-4 px-4 py-3 rounded-2xl shrink-0 bg-bg-card border border-border-main">
                     <div className="text-center">
                         <div>
                             <p className="text-xl font-bold text-brand-500">
@@ -54,7 +52,7 @@ export default function ScheduleHeader({ isViewingAll, activeScheduleDoc }) {
                             </p>
                         </div>
                     </div>
-                    
+
                     <div className="text-center flex  gap-3">
                         <div className="w-px h-10 bg-border-main" />
                         <div>

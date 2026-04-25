@@ -16,7 +16,9 @@ export function CustomTooltip({ active, payload, label }) {
                         style={{ background: entry.color }}
                     />
                     <span className="text-text-secondary">{entry.name}:</span>
-                    <span className="text-text-primary font-bold">{entry.value}</span>
+                    <span className="text-text-primary font-bold">
+                        {entry.value}
+                    </span>
                 </div>
             ))}
         </div>

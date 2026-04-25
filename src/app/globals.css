@@ -14,7 +14,7 @@
 
     --color-cyan-400: #22d3ee;
     --color-cyan-500: #06b6d4;
-    
+
     --color-purple-500: #a855f7;
 
     /* ─── VARIÁVEIS DINÂMICAS (Tema) ─────────────────────── */
@@ -22,11 +22,11 @@
     --color-bg-card: var(--bg-card);
     --color-bg-surface: var(--bg-surface);
     --color-bg-side: var(--bg-side);
-    
+
     --color-text-primary: var(--text-primary);
     --color-text-secondary: var(--text-secondary);
     --color-text-muted: var(--text-muted);
-    
+
     --color-border-main: var(--border-main);
     --color-border-subtle: var(--border-subtle);
 
@@ -37,7 +37,7 @@
     --color-success: #10b981;
     --color-warning: #f59e0b;
     --color-error: #ef4444;
-    
+
     --background-image-geometric: var(--bg-image-geometric);
 }
 
@@ -49,37 +49,37 @@
     --bg-card: #121212;
     --bg-surface: #171c23;
     --bg-side: #000000b6;
-    
+
     --text-primary: #ffffff;
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
-    
+
     --border-main: rgba(255, 255, 255, 0.05);
     --border-subtle: rgba(255, 255, 255, 0.02);
-    
+
     --bg-image-geometric: url("../../public/img/ondas.jpg");
-    
+
     /* Next.js defaults */
     --background: var(--bg-main);
     --foreground: var(--text-primary);
 }
 
-[data-theme='light'] {
+[data-theme="light"] {
     /* LIGHT THEME */
     --bg-main: #f8fafc;
     --bg-card: #ffffff;
     --bg-surface: #f1f5f9;
     --bg-side: #ffffff;
-    
+
     --text-primary: #0f172a;
     --text-secondary: #475569;
     --text-muted: #94a3b8;
-    
+
     --border-main: rgba(0, 0, 0, 0.08);
     --border-subtle: rgba(0, 0, 0, 0.04);
-    
+
     --bg-image-geometric: url("../../public/img/geometric.jpg");
-    
+
     /* Next.js defaults */
     --background: var(--bg-main);
     --foreground: var(--text-primary);
@@ -90,7 +90,9 @@ body {
     background: var(--bg-main);
     color: var(--text-primary);
     font-family: Arial, Helvetica, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition:
+        background-color 0.3s ease,
+        color 0.3s ease;
 }
 
 /* ─── UTILITÁRIOS DE SCROLL ────────────────────────────── */

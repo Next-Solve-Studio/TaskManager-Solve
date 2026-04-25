@@ -8,11 +8,10 @@ import {
     MdOutlineSupportAgent,
     MdTrendingUp,
 } from "react-icons/md";
-
+import { LoadingState } from "@/components/ui/LoadingState";
 import { useProjects } from "@/context/ProjectsContext";
 import { useUsers } from "@/context/UsersContext";
 import { buildWeeklyData, toDate } from "../../utils/DashboardUtils";
-import { LoadingState } from "@/components/ui/LoadingState";
 import HomeHeader from "./sections/HomeHeader";
 import ActiveProjects from "./sections/projects/ActiveProjects";
 import OngoingProjects from "./sections/projects/OngoingProjects";
@@ -27,7 +26,7 @@ export default function HomeMain() {
     const ACTIVE_STATUSES = ["em_andamento", "suporte"]; // Array constante que define quais status de projeto são considerados "ativos"
 
     // csem dependências, today será criado apenas na primeira renderização, evitando cálculos desnecessários.
-    const today = useMemo(()=> new Date());
+    const today = useMemo(() => new Date());
 
     // Recalcula o objeto counts somente quando projects mudar
     const counts = useMemo(
@@ -69,10 +68,7 @@ export default function HomeMain() {
     const activeProjects = useMemo(
         () =>
             projects
-                .filter(
-                    (p) =>
-                        ACTIVE_STATUSES.includes(p.status),
-                )
+                .filter((p) => ACTIVE_STATUSES.includes(p.status))
                 .slice(0, 5),
         [projects],
     );
@@ -96,7 +92,6 @@ export default function HomeMain() {
 
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans">
-
             {/* ── HEADER ── */}
             <HomeHeader
                 counts={counts}

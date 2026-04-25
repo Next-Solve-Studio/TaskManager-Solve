@@ -19,6 +19,5 @@ export default function SideMenu({ isOpen, onToggle, isMobile }) {
                 />
             </aside>
         </>
-        
     );
 }

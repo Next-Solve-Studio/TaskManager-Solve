@@ -22,34 +22,34 @@ export default function WeekNavigation({
                 <MdChevronLeft size={20} />
             </button>
 
-            <div
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-surface border border-border-main"
-            >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-surface border border-border-main">
                 <MdCalendarMonth
                     size={15}
-                    style={{ color: isCurrentWeek ? "#19CA68" : "var(--color-text-muted)" }}
+                    style={{
+                        color: isCurrentWeek
+                            ? "#19CA68"
+                            : "var(--color-text-muted)",
+                    }}
                 />
                 <span className="text-sm font-semibold text-text-primary">
                     {weekLabel}
                 </span>
                 {isCurrentWeek && (
-                    <span
-                        className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-brand-500/15 text-brand-500"
-                    >
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-brand-500/15 text-brand-500">
                         Atual
                     </span>
                 )}
-                </div>
+            </div>
 
-                <button
+            <button
                 type="button"
                 onClick={goToNextWeek}
                 className="flex items-center justify-center w-9 h-9 rounded-xl transition-all duration-150 hover:bg-bg-card bg-bg-surface border border-border-main text-text-secondary"
-                >
+            >
                 <MdChevronRight size={20} />
-                </button>
+            </button>
 
-                {!isCurrentWeek && (
+            {!isCurrentWeek && (
                 <button
                     type="button"
                     onClick={goToCurrentWeek}
@@ -58,7 +58,7 @@ export default function WeekNavigation({
                     <MdToday size={14} />
                     Hoje
                 </button>
-                )}
+            )}
         </div>
     );
 }

@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 import AppProviders from "@/context/AppProviders";
 import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 import Header from "@/layout/header/Header";
 import SideMenu from "@/layout/sideMenu/SideMenu";
 import { ROLES } from "@/lib/roles";
-import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function MainLayout({ children }) {
     const { currentUser, loading: authLoading } = useAuth();

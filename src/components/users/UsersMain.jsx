@@ -13,8 +13,8 @@ import {
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
 import { useUsers } from "@/context/UsersContext";
-import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
+import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
 import UserRow from "./UserRow";
 import UsersCards from "./usersCards/UsersCards";
@@ -68,9 +68,7 @@ export default function UsersMain() {
     ];
 
     return (
-        <div
-            className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col"
-        >
+        <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
             {/* ── Header ── */}
             <div
                 style={{
@@ -91,16 +89,17 @@ export default function UsersMain() {
                             marginBottom: 4,
                         }}
                     >
-                        <MdPeople style={{ color: "var(--color-brand-500)", fontSize: 18 }} />
-                        <span
-                            className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary"
-                        >
+                        <MdPeople
+                            style={{
+                                color: "var(--color-brand-500)",
+                                fontSize: 18,
+                            }}
+                        />
+                        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
                             Gestão de Usuários
                         </span>
                     </div>
-                    <h1
-                        className="text-[26px] font-extrabold text-text-primary mt-2"
-                    >
+                    <h1 className="text-[26px] font-extrabold text-text-primary mt-2">
                         Usuários
                     </h1>
                     <p className="text-[13px] text-text-muted mt-1">
@@ -148,9 +147,7 @@ export default function UsersMain() {
             </div>
 
             {/* ── Filters ── */}
-            <div
-                className="flex flex-wrap gap-2.5 p-3.5 bg-bg-card border border-border-main rounded-[14px] items-center"
-            >
+            <div className="flex flex-wrap gap-2.5 p-3.5 bg-bg-card border border-border-main rounded-[14px] items-center">
                 <div
                     style={{
                         position: "relative",
@@ -192,7 +189,9 @@ export default function UsersMain() {
                                     border: active
                                         ? "1px solid rgba(25,202,104,0.35)"
                                         : "1px solid var(--color-border-main)",
-                                    color: active ? "var(--color-brand-500)" : "var(--color-text-muted)",
+                                    color: active
+                                        ? "var(--color-brand-500)"
+                                        : "var(--color-text-muted)",
                                 }}
                             >
                                 {rf.label}

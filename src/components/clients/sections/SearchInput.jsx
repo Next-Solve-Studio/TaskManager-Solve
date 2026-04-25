@@ -1,10 +1,10 @@
-'use client'
+"use client";
 import { InputAdornment, TextField } from "@mui/material";
 import { MdSearch } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 
-export default function SearchInput({setSearchTerm,searchTerm}) {
-    const isMobile = useIsMobile()
+export default function SearchInput({ setSearchTerm, searchTerm }) {
+    const isMobile = useIsMobile();
 
     return (
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -30,7 +30,8 @@ export default function SearchInput({setSearchTerm,searchTerm}) {
                             borderColor: "var(--color-border-main)",
                         },
                         "&:hover fieldset": {
-                            borderColor: "rgba(var(--color-brand-500-rgb), 0.3)",
+                            borderColor:
+                                "rgba(var(--color-brand-500-rgb), 0.3)",
                         },
                         "&.Mui-focused fieldset": {
                             borderColor: "var(--color-brand-500)",
@@ -39,5 +40,5 @@ export default function SearchInput({setSearchTerm,searchTerm}) {
                 }}
             />
         </div>
-    )
+    );
 }

@@ -18,12 +18,15 @@ export default function UsersFilter({
     const isMobile = useIsMobile();
     const [modalOpen, setModalOpen] = useState(false);
 
-    const otherUsers = loadingUsers ? [] : users.filter((u) => u.id !== currentUser?.uid);
+    const otherUsers = loadingUsers
+        ? []
+        : users.filter((u) => u.id !== currentUser?.uid);
 
     // usuário selecionado atualmente (se for um dev específico)
-    const selectedUser = !isViewingMe && !isViewingAll
-        ? otherUsers.find((u) => u.id === filterUserId)
-        : null;
+    const selectedUser =
+        !isViewingMe && !isViewingAll
+            ? otherUsers.find((u) => u.id === filterUserId)
+            : null;
 
     function handleSelectUser(id) {
         setFilterUserId(id);
@@ -39,9 +42,15 @@ export default function UsersFilter({
                     onClick={() => setFilterUserId("me")}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
                     style={{
-                        background: isViewingMe ? "rgba(25,202,104,0.15)" : "var(--color-bg-surface)",
-                        border: isViewingMe ? "1px solid rgba(25,202,104,0.4)" : "1px solid var(--color-border-main)",
-                        color: isViewingMe ? "#19CA68" : "var(--color-text-secondary)",
+                        background: isViewingMe
+                            ? "rgba(25,202,104,0.15)"
+                            : "var(--color-bg-surface)",
+                        border: isViewingMe
+                            ? "1px solid rgba(25,202,104,0.4)"
+                            : "1px solid var(--color-border-main)",
+                        color: isViewingMe
+                            ? "#19CA68"
+                            : "var(--color-text-secondary)",
                     }}
                 >
                     <MdPerson size={15} />
@@ -54,9 +63,15 @@ export default function UsersFilter({
                         onClick={() => setFilterUserId("all")}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
                         style={{
-                            background: isViewingAll ? "rgba(34,211,238,0.12)" : "var(--color-bg-surface)",
-                            border: isViewingAll ? "1px solid rgba(34,211,238,0.35)" : "1px solid var(--color-border-main)",
-                            color: isViewingAll ? "#22d3ee" : "var(--color-text-secondary)",
+                            background: isViewingAll
+                                ? "rgba(34,211,238,0.12)"
+                                : "var(--color-bg-surface)",
+                            border: isViewingAll
+                                ? "1px solid rgba(34,211,238,0.35)"
+                                : "1px solid var(--color-border-main)",
+                            color: isViewingAll
+                                ? "#22d3ee"
+                                : "var(--color-text-secondary)",
                         }}
                     >
                         <MdGroup size={15} />
@@ -68,15 +83,28 @@ export default function UsersFilter({
                             onClick={() => setModalOpen(true)}
                             className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
                             style={{
-                                background: selectedUser ? `${avatarColor(selectedUser.id)}20` : "var(--color-bg-surface)",
-                                border: selectedUser ? `1px solid ${avatarColor(selectedUser.id)}60` : "1px solid var(--color-border-main)",
-                                color: selectedUser ? avatarColor(selectedUser.id) : "var(--color-text-secondary)",
+                                background: selectedUser
+                                    ? `${avatarColor(selectedUser.id)}20`
+                                    : "var(--color-bg-surface)",
+                                border: selectedUser
+                                    ? `1px solid ${avatarColor(selectedUser.id)}60`
+                                    : "1px solid var(--color-border-main)",
+                                color: selectedUser
+                                    ? avatarColor(selectedUser.id)
+                                    : "var(--color-text-secondary)",
                             }}
                         >
                             {selectedUser ? (
                                 <>
-                                    <Avatar name={selectedUser.name} uid={selectedUser.id} src={selectedUser.photo} size={18} />
-                                    <span>{selectedUser.name.split(" ")[0]}</span>
+                                    <Avatar
+                                        name={selectedUser.name}
+                                        uid={selectedUser.id}
+                                        src={selectedUser.photo}
+                                        size={18}
+                                    />
+                                    <span>
+                                        {selectedUser.name.split(" ")[0]}
+                                    </span>
                                 </>
                             ) : (
                                 <>
@@ -86,22 +114,37 @@ export default function UsersFilter({
                             )}
                         </button>
                     ) : (
-                        !loadingUsers && otherUsers.map((u) => {
+                        !loadingUsers &&
+                        otherUsers.map((u) => {
                             const selected = filterUserId === u.id;
                             const color = avatarColor(u.id);
                             return (
                                 <button
                                     key={u.id}
                                     type="button"
-                                    onClick={() => setFilterUserId(filterUserId === u.id ? "me" : u.id)}
+                                    onClick={() =>
+                                        setFilterUserId(
+                                            filterUserId === u.id ? "me" : u.id,
+                                        )
+                                    }
                                     className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
                                     style={{
-                                        background: selected ? `${color}20` : "var(--color-bg-surface)",
-                                        border: selected ? `1px solid ${color}60` : "1px solid var(--color-border-main)",
-                                        color: selected ? color : "var(--color-text-secondary)",
+                                        background: selected
+                                            ? `${color}20`
+                                            : "var(--color-bg-surface)",
+                                        border: selected
+                                            ? `1px solid ${color}60`
+                                            : "1px solid var(--color-border-main)",
+                                        color: selected
+                                            ? color
+                                            : "var(--color-text-secondary)",
                                     }}
                                 >
-                                    <Avatar name={u.name} uid={u.id} src={u.photo} />
+                                    <Avatar
+                                        name={u.name}
+                                        uid={u.id}
+                                        src={u.photo}
+                                    />
                                     <span>{u.name.split(" ")[0]}</span>
                                 </button>
                             );
@@ -110,16 +153,17 @@ export default function UsersFilter({
                 </CanDo>
             </div>
 
-            {isMobile && modalOpen && createPortal(
-                <UserPickerModal
-                    users={otherUsers}
-                    filterUserId={filterUserId}
-                    onSelect={handleSelectUser}
-                    onClose={() => setModalOpen(false)}
-                />,
-                document.body
-            )}
+            {isMobile &&
+                modalOpen &&
+                createPortal(
+                    <UserPickerModal
+                        users={otherUsers}
+                        filterUserId={filterUserId}
+                        onSelect={handleSelectUser}
+                        onClose={() => setModalOpen(false)}
+                    />,
+                    document.body,
+                )}
         </>
     );
 }
-

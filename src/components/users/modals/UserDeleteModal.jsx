@@ -76,9 +76,7 @@ export default function UserDeleteModal({ open, onClose, user }) {
                     >
                         <MdDelete style={{ color: "#ef4444", fontSize: 17 }} />
                     </div>
-                    <span
-                        className="text-text-primary font-bold text-base"
-                    >
+                    <span className="text-text-primary font-bold text-base">
                         Excluir Usuário
                     </span>
                 </div>
@@ -110,19 +108,18 @@ export default function UserDeleteModal({ open, onClose, user }) {
             >
                 {/* User preview */}
                 {user && (
-                    <div
-                        className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main"
-                    >
-                        <Avatar name={user.name} uid={user.id} size={40} src={user.photo}/>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main">
+                        <Avatar
+                            name={user.name}
+                            uid={user.id}
+                            size={40}
+                            src={user.photo}
+                        />
                         <div style={{ minWidth: 0 }}>
-                            <p
-                                className="text-text-primary font-bold text-sm m-0 mb-0.5"
-                            >
+                            <p className="text-text-primary font-bold text-sm m-0 mb-0.5">
                                 {user.name}
                             </p>
-                            <p
-                                className="text-text-secondary text-xs m-0 truncate"
-                            >
+                            <p className="text-text-secondary text-xs m-0 truncate">
                                 {user.email}
                             </p>
                         </div>

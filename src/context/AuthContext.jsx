@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }) => {
                 const userData = userDoc.exists() ? userDoc.data() : {};
 
                 setCurrentUser({ ...user, ...userData }); // atualiza o estado com a informação recebida do firebase
-                
+
                 // Isso garante que o currentUser já está populado antes do redirect,
                 if (justLoggedIn.current) {
                     justLoggedIn.current = false;
@@ -86,11 +86,7 @@ export const AuthProvider = ({ children }) => {
         justLoggedIn.current = true;
 
         // Recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        await signInWithEmailAndPassword(
-            auth,
-            email,
-            password,
-        );
+        await signInWithEmailAndPassword(auth, email, password);
     };
 
     const register = async (name, email, password) => {

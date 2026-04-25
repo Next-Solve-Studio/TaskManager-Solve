@@ -10,8 +10,8 @@ import ClientDeleteModal from "./modals/ClientDeleteModal";
 import ClientForm from "./modals/ClientForm";
 import ClientCard from "./sections/ClientCard";
 import ClientsHeader from "./sections/ClientsHeader";
-import ClientsTable from "./sections/ClientsTable";
 import ClientsStats from "./sections/ClientsStats";
+import ClientsTable from "./sections/ClientsTable";
 import SearchInput from "./sections/SearchInput";
 
 export default function ClientsMain() {
@@ -43,11 +43,8 @@ export default function ClientsMain() {
         <div className="space-y-8">
             <ClientsHeader />
 
-            <ClientsStats
-                handleOpenModal={handleOpenModal}
-                clients={clients}
-            />
-            
+            <ClientsStats handleOpenModal={handleOpenModal} clients={clients} />
+
             <SearchInput
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}

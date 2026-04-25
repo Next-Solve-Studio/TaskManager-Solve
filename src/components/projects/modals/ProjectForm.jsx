@@ -22,14 +22,14 @@ import {
     MdClose,
     MdCode,
     MdComputer,
-    MdOutlineRocketLaunch
+    MdOutlineRocketLaunch,
 } from "react-icons/md";
 import { RiGitBranchLine } from "react-icons/ri";
 import { projectSchema } from "@/components/projects/schema/ProjectsConfig";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
-import { formatDateInput } from "@/utils/FormatDateProjects";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
+import { formatDateInput } from "@/utils/FormatDateProjects";
 
 export function ProjectForm({
     open,
@@ -55,7 +55,7 @@ export function ProjectForm({
         techStack: "",
         repositoryUrl: "",
         hosting: "",
-        expectedDeliveryDate:"",
+        expectedDeliveryDate: "",
     };
 
     const {
@@ -132,17 +132,20 @@ export function ProjectForm({
                 },
             }}
         >
-            <DialogTitle className="flex items-center justify-between border-b border-border-main
-                pt-5 px-6 pb-3">
+            <DialogTitle
+                className="flex items-center justify-between border-b border-border-main
+                pt-5 px-6 pb-3"
+            >
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-brand-500/15">
                         <MdOutlineRocketLaunch
-                            style={{ color: "var(--color-brand-500)", fontSize: 18 }}
+                            style={{
+                                color: "var(--color-brand-500)",
+                                fontSize: 18,
+                            }}
                         />
                     </div>
-                    <span
-                        className="text-text-primary font-bold text-base"
-                    >
+                    <span className="text-text-primary font-bold text-base">
                         {isEdit ? "Editar Projeto" : "Novo Projeto"}
                     </span>
                 </div>
@@ -150,14 +153,14 @@ export function ProjectForm({
                     onClick={handleClose}
                     disabled={loading}
                     type="button"
-                    className="bg-none text-text-muted cursor-pointer rounded-md flex p-1 border-none hover:text-text-primary transition-colors">
+                    className="bg-none text-text-muted cursor-pointer rounded-md flex p-1 border-none hover:text-text-primary transition-colors"
+                >
                     <MdClose size={20} />
                 </button>
             </DialogTitle>
 
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <DialogContent className="flex flex-col gap-4 py-5 px-6">
-
                     {/* Title + Client */}
                     <div className="grid grid-cols-2 gap-3">
                         <TextField
@@ -191,7 +194,7 @@ export function ProjectForm({
                                                 value={c.id}
                                                 style={{
                                                     fontSize: 13,
-                                                    color:"#e5e7eb"
+                                                    color: "#e5e7eb",
                                                 }}
                                             >
                                                 {c.name}
@@ -306,9 +309,9 @@ export function ProjectForm({
                                     }
                                     MenuProps={menuPaper}
                                     renderValue={(selected) => (
-                                        <div  className="flex flex-wrap gap-1">
+                                        <div className="flex flex-wrap gap-1">
                                             {selected.map((uid) => {
-                                                const u = usersMap[uid]
+                                                const u = usersMap[uid];
                                                 return (
                                                     <Chip
                                                         key={uid}
@@ -320,7 +323,8 @@ export function ProjectForm({
                                                             color: "var(--color-brand-500)",
                                                             fontSize: 11,
                                                             height: 22,
-                                                            "& .MuiChip-label": { px: 1 }
+                                                            "& .MuiChip-label":
+                                                                { px: 1 },
                                                         }}
                                                     />
                                                 );
@@ -358,7 +362,7 @@ export function ProjectForm({
                                                 <span className="text-[#e5e7eb]">
                                                     {u.name}
                                                 </span>
-                                                <span  className="text-font-gray2 text-[11px]">
+                                                <span className="text-font-gray2 text-[11px]">
                                                     ({u.role || "membro"})
                                                 </span>
                                             </div>
@@ -375,7 +379,7 @@ export function ProjectForm({
                     </FormControl>
 
                     {/* StartDate + DeliveryDate */}
-                    <div  className="grid gap-3 grid-cols-2">
+                    <div className="grid gap-3 grid-cols-2">
                         <TextField
                             label="Data de Início"
                             type="date"
@@ -400,7 +404,6 @@ export function ProjectForm({
                                 type="date"
                                 sx={muiDark}
                                 {...register("deliveryDate")}
-
                             />
                         )}
                     </div>
@@ -462,7 +465,7 @@ export function ProjectForm({
                     />
                 </DialogContent>
 
-                <DialogActions className="gap-2 border-t border-border-main py-4 px-6" >
+                <DialogActions className="gap-2 border-t border-border-main py-4 px-6">
                     <button
                         type="button"
                         onClick={handleClose}
@@ -480,11 +483,11 @@ export function ProjectForm({
                         type="submit"
                         disabled={loading}
                         className={`border-none rounded-lg text-black py-2 px-6 text-[13px] font-bold flex items-center gap-1.5 
-                            ${loading 
-                                ? "bg-brand-500/40 cursor-not-allowed shadow-none" 
-                                : "bg-linear-to-br from-brand-500 to-brand-600 cursor-pointer shadow-[0_4px_14px_#A2C2B059]"
-                            }`
-                        }
+                            ${
+                                loading
+                                    ? "bg-brand-500/40 cursor-not-allowed shadow-none"
+                                    : "bg-linear-to-br from-brand-500 to-brand-600 cursor-pointer shadow-[0_4px_14px_#A2C2B059]"
+                            }`}
                     >
                         {loading && (
                             <CircularProgress
@@ -499,4 +502,4 @@ export function ProjectForm({
         </Dialog>
     );
 }
-export default memo(ProjectForm)
+export default memo(ProjectForm);

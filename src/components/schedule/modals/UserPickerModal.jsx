@@ -1,14 +1,22 @@
+import { MdCheck, MdClose } from "react-icons/md";
 import { Avatar, avatarColor } from "@/components/ui/AvatarBadge";
 import { ROLE_LABELS } from "@/lib/roles";
-import { MdClose, MdCheck } from "react-icons/md";
 
-export default function UserPickerModal({ users, filterUserId, onSelect, onClose }) {
+export default function UserPickerModal({
+    users,
+    filterUserId,
+    onSelect,
+    onClose,
+}) {
     return (
         /* overlay */
         <div
             role="none"
             className="fixed inset-0 z-50 flex flex-col justify-center"
-            style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+            style={{
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(4px)",
+            }}
             onClick={onClose}
         >
             <div
@@ -19,8 +27,12 @@ export default function UserPickerModal({ users, filterUserId, onSelect, onClose
                 {/* handle + cabeçalho */}
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col gap-0.5">
-                        <p className="text-text-primary font-semibold text-base">Ver agenda de</p>
-                        <p className="text-xs text-text-secondary">Selecione um desenvolvedor</p>
+                        <p className="text-text-primary font-semibold text-base">
+                            Ver agenda de
+                        </p>
+                        <p className="text-xs text-text-secondary">
+                            Selecione um desenvolvedor
+                        </p>
                     </div>
                     <button
                         type="button"
@@ -43,21 +55,40 @@ export default function UserPickerModal({ users, filterUserId, onSelect, onClose
                                 onClick={() => onSelect(u.id)}
                                 className="flex items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150"
                                 style={{
-                                    background: selected ? `${color}15` : "transparent",
-                                    border: selected ? `1px solid ${color}35` : "1px solid transparent",
+                                    background: selected
+                                        ? `${color}15`
+                                        : "transparent",
+                                    border: selected
+                                        ? `1px solid ${color}35`
+                                        : "1px solid transparent",
                                 }}
                             >
-                                <Avatar name={u.name} uid={u.id} src={u.photo} size={38} />
+                                <Avatar
+                                    name={u.name}
+                                    uid={u.id}
+                                    src={u.photo}
+                                    size={38}
+                                />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-text-primary truncate">
                                         {u.name}
                                     </p>
-                                    <p className="text-xs truncate" style={{ color: selected ? color : "var(--color-text-muted)" }}>
+                                    <p
+                                        className="text-xs truncate"
+                                        style={{
+                                            color: selected
+                                                ? color
+                                                : "var(--color-text-muted)",
+                                        }}
+                                    >
                                         {ROLE_LABELS[u.role] || u.role}
                                     </p>
                                 </div>
                                 {selected && (
-                                    <MdCheck size={18} style={{ color, flexShrink: 0 }} />
+                                    <MdCheck
+                                        size={18}
+                                        style={{ color, flexShrink: 0 }}
+                                    />
                                 )}
                             </button>
                         );

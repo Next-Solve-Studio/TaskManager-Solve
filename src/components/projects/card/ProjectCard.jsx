@@ -34,7 +34,8 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 <div className="flex items-center gap-1.5">
                     <MdPerson size={13} className="text-text-muted shrink-0" />
                     <span className="text-text-secondary text-[12px]">
-                        {clientMap[project.client]?.name || "Cliente não encontrado"}
+                        {clientMap[project.client]?.name ||
+                            "Cliente não encontrado"}
                     </span>
                 </div>
             )}
@@ -43,9 +44,7 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 <p className="text-text-secondary text-[12px] m-0 leading-[1.6]">
                     {project.description.length > 100
                         ? `${project.description.slice(0, 100)}…`
-                        : project.description
-                        || "Sem descrição"    
-                    }
+                        : project.description || "Sem descrição"}
                 </p>
             )}
 

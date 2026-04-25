@@ -1,6 +1,5 @@
 import { MdOutlineRocketLaunch } from "react-icons/md";
 
-
 export default function ProjectsHeader({ projectsCount }) {
     return (
         <div className="flex items-start justify-between flex-wrap gap-4">

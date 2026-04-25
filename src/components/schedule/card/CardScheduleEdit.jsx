@@ -16,7 +16,7 @@ export default function CardScheduleEdit({
     canEdit,
     onSave,
 }) {
-    const isMobile= useIsMobile()
+    const isMobile = useIsMobile();
     const description = scheduleDoc?.days?.[dayKey]?.description || "";
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
@@ -85,9 +85,7 @@ export default function CardScheduleEdit({
                             {dayLabel}
                         </span>
                         {todayDay && (
-                            <span
-                                className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-brand-500/20 text-brand-500"
-                            >
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold bg-brand-500/20 text-brand-500">
                                 Hoje
                             </span>
                         )}
@@ -156,7 +154,7 @@ export default function CardScheduleEdit({
                 ) : (
                     <button
                         type="button"
-                        className={`text-sm ${isMobile?'h-full w-full text-start' : ''} leading-relaxed ${description ? "text-text-secondary" : "text-text-muted"} ${canEdit && !description ? "italic" : ""}`}
+                        className={`text-sm ${isMobile ? "h-full w-full text-start" : ""} leading-relaxed ${description ? "text-text-secondary" : "text-text-muted"} ${canEdit && !description ? "italic" : ""}`}
                         style={{ whiteSpace: "pre-wrap" }}
                         onClick={() => setEditing(true)}
                     >

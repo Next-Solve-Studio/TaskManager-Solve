@@ -52,7 +52,7 @@ export default function RegisterForm({ setHaveAccount }) {
         setLoading(true);
 
         try {
-            await registerUser(data.name, data.email, data.password);    
+            await registerUser(data.name, data.email, data.password);
         } catch (error) {
             const messages = {
                 "auth/email-already-in-use": "Este e-mail já está cadastrado.",

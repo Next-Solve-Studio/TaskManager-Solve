@@ -1,5 +1,5 @@
-import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { FiSettings } from "react-icons/fi";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function SettingsHeader({ title, description, icon: Icon }) {
     const isMobile = useIsMobile();

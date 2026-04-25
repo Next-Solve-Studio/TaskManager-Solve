@@ -4,7 +4,6 @@ import { useMemo } from "react";
 import { parseDate } from "@/utils/FormatDateProjects";
 
 export function useProjectsDates(project) {
-
     const startDateInfo = useMemo(() => {
         // Converte a string (ex: "2024-01-15") em um objeto Date. Se a string for inválida, parseDate deve retornar null
         const start = parseDate(project.startDate);
@@ -61,17 +60,17 @@ export function useProjectsDates(project) {
     }, [project.deliveryDate]);
 
     const supportInfo = useMemo(() => {
-        if (!project.supportEndDate) return null
+        if (!project.supportEndDate) return null;
 
         // Converte a string da data de entrega em objeto Date
-        const support = parseDate(project.supportEndDate)
-        if (!support) return null 
+        const support = parseDate(project.supportEndDate);
+        if (!support) return null;
 
         // Formata a data no padrão brasileiro
         return {
             formatted: format(support, "dd/MM/yyyy"),
         };
-    }, [project.supportEndDate])
+    }, [project.supportEndDate]);
 
     const deliveryStatus = useMemo(() => {
         // Só calcula se ambas as datas existirem

@@ -4,12 +4,12 @@ import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { FiSettings } from "react-icons/fi";
 import { MdPerson, MdSecurity } from "react-icons/md";
-import { useRole } from "@/hooks/useRole";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
+import { useRole } from "@/hooks/useRole";
 import ProfileSettings from "./sections/ProfileSettings";
 import SecuritySettings from "./sections/SecuritySettings";
-import SystemSettings from "./sections/SystemSettings";
 import SettingsHeader from "./sections/SettingsHeader";
+import SystemSettings from "./sections/SystemSettings";
 
 export default function SettingsMain() {
     const [activeTab, setActiveTab] = useState(0);

@@ -18,9 +18,7 @@ export default function ClientsHeader() {
                 >
                     Clientes
                 </h1>
-                
             </div>
-            
         </section>
     );
 }

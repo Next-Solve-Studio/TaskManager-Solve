@@ -7,8 +7,8 @@ import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
-import { auth, db, googleProvider } from "@/lib/firebaseConfig";
 import { useAppRouter } from "@/hooks/useAppRouter";
+import { auth, db, googleProvider } from "@/lib/firebaseConfig";
 
 export default function GoogleLoginBtn() {
     const [loading, setLoading] = useState(false);

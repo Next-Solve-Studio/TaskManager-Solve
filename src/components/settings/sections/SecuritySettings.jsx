@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { muiDark } from "@/styles/StyleInputs";
+
 const schema = yup.object().shape({
     currentPassword: yup.string().required("Senha atual é obrigatória"),
     newPassword: yup
@@ -40,7 +41,7 @@ export default function SecuritySettings() {
             await changePassword(data.currentPassword, data.newPassword);
             reset();
         } catch (err) {
-            console.error("erro ao mudar de senha: ", err)
+            console.error("erro ao mudar de senha: ", err);
         }
     };
 

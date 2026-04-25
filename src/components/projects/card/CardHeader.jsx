@@ -20,9 +20,7 @@ export default function CardHeader({
             }}
         >
             <div style={{ flex: 1, minWidth: 0 }}>
-                <p
-                    className="text-text-primary font-bold text-[15px] leading-tight mb-2"
-                >
+                <p className="text-text-primary font-bold text-[15px] leading-tight mb-2">
                     {project.title}
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>

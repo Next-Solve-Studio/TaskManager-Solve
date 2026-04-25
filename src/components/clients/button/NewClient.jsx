@@ -1,6 +1,4 @@
-
-
-export default function NewClient({onCreate}) {
+export default function NewClient({ onCreate }) {
     return (
         <>
             {onCreate && (
@@ -25,6 +23,5 @@ export default function NewClient({onCreate}) {
                 </button>
             )}
         </>
-        
-    )
+    );
 }

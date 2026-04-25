@@ -18,17 +18,18 @@ export function UserCard({ user, onEdit, onDelete }) {
     }, [user.createdAt]);
 
     return (
-        <div
-            className="bg-bg-card border border-border-main rounded-2xl p-4 flex flex-col gap-3 transition-all duration-200"
-        >
+        <div className="bg-bg-card border border-border-main rounded-2xl p-4 flex flex-col gap-3 transition-all duration-200">
             {/* Top row: avatar + name/email + actions */}
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <Avatar name={user.name} uid={user.id} size={44} src={user.photo} />
+                <Avatar
+                    name={user.name}
+                    uid={user.id}
+                    size={44}
+                    src={user.photo}
+                />
 
                 <div style={{ flex: 1, minWidth: 0 }}>
-                    <p
-                        className="text-text-primary font-bold text-sm m-0 mb-0.5"
-                    >
+                    <p className="text-text-primary font-bold text-sm m-0 mb-0.5">
                         {user.name}
                     </p>
                     <div
@@ -42,9 +43,7 @@ export function UserCard({ user, onEdit, onDelete }) {
                             size={11}
                             className="text-text-muted shrink-0"
                         />
-                        <p
-                            className="text-text-secondary text-xs m-0 truncate"
-                        >
+                        <p className="text-text-secondary text-xs m-0 truncate">
                             {user.email}
                         </p>
                     </div>
@@ -124,9 +123,7 @@ export function UserCard({ user, onEdit, onDelete }) {
 
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                     <MdCalendarToday size={11} className="text-text-muted" />
-                    <span
-                        className="text-[11px] text-text-muted whitespace-nowrap"
-                    >
+                    <span className="text-[11px] text-text-muted whitespace-nowrap">
                         {formattedDate}
                     </span>
                 </div>

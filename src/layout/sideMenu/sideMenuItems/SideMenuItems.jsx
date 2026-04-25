@@ -17,7 +17,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
     // No desktop, o menu abre com hover (ou se isOpen for true, mas isOpen só é usado no mobile)
     const effectiveOpen = isMobile ? isOpen : hoverOpen;
-    const [displayName, setDisplayName] = useState("")
+    const [displayName, setDisplayName] = useState("");
     const [user, setUser] = useState(null);
     const { role } = useRole();
     const { logout } = useAuth();
@@ -34,14 +34,14 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     useEffect(() => {
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             setUser(firebaseUser);
-            
+
             try {
                 const snap = await getDoc(doc(db, "users", firebaseUser.uid));
                 if (snap.exists()) {
                     setDisplayName(snap.data().name);
                 }
             } catch (error) {
-                console.error("Erro ao busca nome do usuário: ", error)
+                console.error("Erro ao busca nome do usuário: ", error);
             }
         });
         return () => unsub();
@@ -103,7 +103,9 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         </div>
                     </div>
                 </div>
-                <div className={`h-px bg-border-main my-1 mx-auto ${effectiveOpen ? 'w-[90%]' : 'w-[70%]'}`}/>
+                <div
+                    className={`h-px bg-border-main my-1 mx-auto ${effectiveOpen ? "w-[90%]" : "w-[70%]"}`}
+                />
                 <div className="flex flex-col items-center gap-2 w-full sm:px-4">
                     {visibleItems.map((item) => {
                         const active = isActive(item.href);

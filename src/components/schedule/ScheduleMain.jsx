@@ -124,16 +124,18 @@ export default function ScheduleMain() {
                 <div>
                     {/* Cabeçalho do dev visualizado (se não for "eu") */}
                     {!isViewingMe && (
-                        <div
-                            className="flex items-center gap-3 mb-4 p-4 rounded-2xl bg-bg-card border border-border-main"
-                        >
+                        <div className="flex items-center gap-3 mb-4 p-4 rounded-2xl bg-bg-card border border-border-main">
                             {(() => {
                                 const u = users.find(
                                     (u) => u.id === filterUserId,
                                 );
                                 return u ? (
                                     <>
-                                        <Avatar name={u.name} uid={u.id} src={u.photo}/>
+                                        <Avatar
+                                            name={u.name}
+                                            uid={u.id}
+                                            src={u.photo}
+                                        />
                                         <div>
                                             <p className="text-text-primary font-semibold">
                                                 {u.name}
