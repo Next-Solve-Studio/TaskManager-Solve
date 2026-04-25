@@ -2,8 +2,9 @@ import { differenceInDays } from "date-fns";
 import { MdOutlineTimer } from "react-icons/md";
 import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { toDate } from "@/utils/DashboardUtils";
-
+import { useProjects } from "@/context/ProjectsContext";
 export default function OngoingProjects({ ongoingProjects, today }) {
+    const {clientMap} = useProjects()
     return (
         <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
             <div className="flex items-center justify-between mb-5">
@@ -71,7 +72,7 @@ export default function OngoingProjects({ ongoingProjects, today }) {
                                         )}
                                         {proj.client && (
                                             <span className="text-[10px] text-text-muted truncate">
-                                                {proj.client}
+                                                {clientMap[proj.client]?.name}
                                             </span>
                                         )}
                                     </div>
