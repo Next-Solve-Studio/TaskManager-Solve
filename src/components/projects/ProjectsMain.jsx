@@ -116,7 +116,7 @@ export default function ProjectsMain() {
     const handleConfirmDelete = async () => {
         setDeleting(true);
         try {
-            await deleteProject(deletingProject.id); // exclui o projeto baseado no id dele
+            await deleteProject(deletingProject); // exclui o projeto baseado no objeto dele
             toast.success("Projeto excluído!");
             setDeleteDialogOpen(false);
             setDeletingProject(null);

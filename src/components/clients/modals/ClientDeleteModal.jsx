@@ -24,7 +24,7 @@ export default function ClientDeleteModal({ open, onClose, client }) {
         setLoading(true);
 
         try {
-            await deleteClient(client.id);
+            await deleteClient(client);
             toast.success(`${client.name} foi removido!`);
             onClose();
         } catch (err) {
