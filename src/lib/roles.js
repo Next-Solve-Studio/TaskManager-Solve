@@ -60,6 +60,9 @@ export const PERMISSIONS = {
     canViewAllTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
     canCompleteTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
 
+    // Histórico de Atividades
+    canViewActivityHistorys: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+
     // Projetos
     canCreateProjects: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
     canEditProjects: [ROLES.ADMIN, ROLES.PROJECT_LEAD],

@@ -11,6 +11,7 @@ import {
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useProjects } from "@/context/ProjectsContext";
 import { useUsers } from "@/context/UsersContext";
+import { useRole } from "@/hooks/useRole";
 import { buildWeeklyData, toDate } from "../../utils/DashboardUtils";
 import ActivityFeed from "./sections/ActivityFeed";
 import HomeHeader from "./sections/HomeHeader";
@@ -24,6 +25,7 @@ import { TeamRadar } from "./sections/team/TeamRadar";
 export default function HomeMain() {
     const { projects, loadingProjects } = useProjects(); // Retorna um objeto com a lista de projetos
     const { users, loadingUsers } = useUsers(); // lista de usuários
+    const { can } = useRole();
     const ACTIVE_STATUSES = ["em_andamento", "suporte"]; // Array constante que define quais status de projeto são considerados "ativos"
 
     // csem dependências, today será criado apenas na primeira renderização, evitando cálculos desnecessários.
@@ -161,7 +163,7 @@ export default function HomeMain() {
             <TeamRadar users={users} projects={projects} />
 
             {/* HISTÓRICO DE ATIVIDADES */}
-            <ActivityFeed />
+            {can("canViewActivityHistorys") && <ActivityFeed />}
         </div>
     );
 }
