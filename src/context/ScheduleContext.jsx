@@ -150,19 +150,22 @@ export const ScheduleProvider = ({ children }) => {
                 });
 
                 // Log de Atividade
-                const dayLabel = WEEK_DAYS.find((d) => d.key === dayKey)?.label || dayKey;
+                const dayLabel =
+                    WEEK_DAYS.find((d) => d.key === dayKey)?.label || dayKey;
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
-                    action: 'update',
-                    resourceType: 'schedule',
+                    action: "update",
+                    resourceType: "schedule",
                     resourceId: docId,
                     resourceName: `Agenda de ${dayLabel}`,
                     details: {
-                        field: 'description',
-                        newValue: description?.substring(0, 50) + (description?.length > 50 ? '...' : '')
-                    }
+                        field: "description",
+                        newValue:
+                            description?.substring(0, 50) +
+                            (description?.length > 50 ? "..." : ""),
+                    },
                 });
             } catch (err) {
                 console.error(err);

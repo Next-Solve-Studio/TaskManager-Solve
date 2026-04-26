@@ -3,7 +3,7 @@ import { db } from "@/lib/firebaseConfig";
 
 /**
  * Registra uma atividade no sistema.
- * 
+ *
  * @param {Object} activityData - Dados da atividade
  * @param {string} activityData.userId - ID do usuário que realizou a ação
  * @param {string} activityData.userName - Nome do usuário
@@ -24,17 +24,20 @@ export const logActivity = async (activityData) => {
             resourceType,
             resourceId,
             resourceName,
-            details = {}
+            details = {},
         } = activityData;
 
         // Validação básica
         if (!userId || !action || !resourceType) {
-            console.error("Dados insuficientes para log de atividade:", activityData);
+            console.error(
+                "Dados insuficientes para log de atividade:",
+                activityData,
+            );
             return;
         }
 
         const logsRef = collection(db, "activity_logs");
-        
+
         await addDoc(logsRef, {
             userId,
             userName: userName || "Usuário desconhecido",
@@ -46,7 +49,6 @@ export const logActivity = async (activityData) => {
             details,
             timestamp: serverTimestamp(),
         });
-
     } catch (error) {
         console.error("Erro ao registrar log de atividade:", error);
     }
@@ -69,13 +71,13 @@ export const getActivityMessage = (log) => {
     const label = resourceLabels[resourceType] || resourceType;
 
     switch (action) {
-        case 'create':
+        case "create":
             return `criou o ${label} "${resourceName}" através da página "${resourceType}"`;
-        case 'delete':
+        case "delete":
             return `removeu o ${label} "${resourceName}" através da página "${resourceType}"`;
-        case 'status_change':
-            return `alterou o status de "${resourceName}" para ${details.newValue || '—'}`;
-        case 'update':
+        case "status_change":
+            return `alterou o status de "${resourceName}" para ${details.newValue || "—"}`;
+        case "update":
             if (details.field) {
                 return `atualizou o campo ${details.field} de "${resourceName}" através da página "${resourceType}"`;
             }

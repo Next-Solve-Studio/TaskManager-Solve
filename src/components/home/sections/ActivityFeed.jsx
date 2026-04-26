@@ -60,12 +60,16 @@ export default function ActivityFeed() {
                 {loading ? (
                     <div className="py-10 flex flex-col items-center gap-2">
                         <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent animate-spin rounded-full" />
-                        <p className="text-xs text-text-muted">Carregando feed...</p>
+                        <p className="text-xs text-text-muted">
+                            Carregando feed...
+                        </p>
                     </div>
                 ) : activities.length === 0 ? (
                     <div className="py-10 text-center space-y-2">
                         <MdNotificationsNone className="text-3xl text-text-muted/20 mx-auto" />
-                        <p className="text-xs text-text-muted">Nenhuma atividade registrada ainda.</p>
+                        <p className="text-xs text-text-muted">
+                            Nenhuma atividade registrada ainda.
+                        </p>
                     </div>
                 ) : (
                     <div className="relative max-h-80 overflow-y-auto pr-2 scroll-hidden">

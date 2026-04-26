@@ -63,7 +63,7 @@
     --color-text-muted: var(--text-muted);
 
     --color-border-main: var(--border-main);
-    --color-border-main2:var(--border-main2);
+    --color-border-main2: var(--border-main2);
     --color-border-subtle: var(--border-subtle);
 
     /* ─── FUNDO / DARK THEME ────────────────────────────── */
@@ -96,8 +96,8 @@
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
 
-    --border-main: #FFFFFF04;
-    --border-main2:#FFFFFF0d;
+    --border-main: #ffffff04;
+    --border-main2: #ffffff0d;
     --border-subtle: rgba(255, 255, 255, 0.02);
 
     --background: var(--bg-main);
@@ -116,7 +116,7 @@
     --text-muted: #94a3b8;
 
     --border-main: #00000014;
-    --border-main2:#000000d0;
+    --border-main2: #000000d0;
     --border-subtle: rgba(0, 0, 0, 0.04);
 
     --background: var(--bg-main);

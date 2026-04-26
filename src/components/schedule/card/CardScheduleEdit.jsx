@@ -67,7 +67,6 @@ export default function CardScheduleEdit({
                     : "bg-border-main border-border-main2"
             }`}
             style={{
-
                 minHeight: "160px",
             }}
         >

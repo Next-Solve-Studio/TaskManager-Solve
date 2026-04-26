@@ -68,16 +68,16 @@ export const ClientsProvider = ({ children }) => {
                     updatedAt: serverTimestamp(),
                 };
                 const ref = await addDoc(collection(db, "clients"), payload);
-                
+
                 // Log de Atividade
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
-                    action: 'create',
-                    resourceType: 'client',
+                    action: "create",
+                    resourceType: "client",
                     resourceId: ref.id,
-                    resourceName: payload.name
+                    resourceName: payload.name,
                 });
 
                 toast.success("Cliente criado com sucesso");
@@ -108,10 +108,10 @@ export const ClientsProvider = ({ children }) => {
                 userId: currentUser.uid,
                 userName: currentUser.name || currentUser.displayName,
                 userPhoto: currentUser.photo || currentUser.photoURL,
-                action: 'update',
-                resourceType: 'client',
+                action: "update",
+                resourceType: "client",
                 resourceId: clientId,
-                resourceName: payload.name
+                resourceName: payload.name,
             });
 
             toast.success("Cliente atualizado com sucesso");
@@ -132,10 +132,10 @@ export const ClientsProvider = ({ children }) => {
                 userId: currentUser.uid,
                 userName: currentUser.name || currentUser.displayName,
                 userPhoto: currentUser.photo || currentUser.photoURL,
-                action: 'delete',
-                resourceType: 'client',
+                action: "delete",
+                resourceType: "client",
                 resourceId: clientId,
-                resourceName: client.name
+                resourceName: client.name,
             });
 
             toast.success("Cliente excluído com sucesso");
