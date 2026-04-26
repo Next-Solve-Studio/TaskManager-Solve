@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
+import { logActivity } from "@/utils/ActivityLogger";
 
 const ScheduleContext = createContext(); // contexto da agenda criado
 
@@ -146,6 +147,22 @@ export const ScheduleProvider = ({ children }) => {
                 await updateDoc(docRef, {
                     [`days.${dayKey}.description`]: description,
                     [`days.${dayKey}.updatedAt`]: new Date(),
+                });
+
+                // Log de Atividade
+                const dayLabel = WEEK_DAYS.find((d) => d.key === dayKey)?.label || dayKey;
+                await logActivity({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || currentUser.displayName,
+                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    action: 'update',
+                    resourceType: 'schedule',
+                    resourceId: docId,
+                    resourceName: `Agenda de ${dayLabel}`,
+                    details: {
+                        field: 'description',
+                        newValue: description?.substring(0, 50) + (description?.length > 50 ? '...' : '')
+                    }
                 });
             } catch (err) {
                 console.error(err);
