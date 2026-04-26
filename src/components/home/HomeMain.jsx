@@ -12,6 +12,7 @@ import { LoadingState } from "@/components/ui/LoadingState";
 import { useProjects } from "@/context/ProjectsContext";
 import { useUsers } from "@/context/UsersContext";
 import { buildWeeklyData, toDate } from "../../utils/DashboardUtils";
+import ActivityFeed from "./sections/ActivityFeed";
 import HomeHeader from "./sections/HomeHeader";
 import ActiveProjects from "./sections/projects/ActiveProjects";
 import OngoingProjects from "./sections/projects/OngoingProjects";
@@ -158,6 +159,9 @@ export default function HomeMain() {
 
             {/* RADAR DE TIME */}
             <TeamRadar users={users} projects={projects} />
+
+            {/* HISTÓRICO DE ATIVIDADES */}
+            <ActivityFeed />
         </div>
     );
 }
