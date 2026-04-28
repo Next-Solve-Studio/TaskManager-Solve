@@ -66,6 +66,7 @@ export const getActivityMessage = (log) => {
         client: "cliente",
         user: "usuário",
         schedule: "agenda",
+        task: "tarefa",
     };
 
     const label = resourceLabels[resourceType] || resourceType;
