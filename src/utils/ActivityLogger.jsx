@@ -59,7 +59,7 @@ export const logActivity = async (activityData) => {
  * Útil para exibição no Feed de Atividades.
  */
 export const getActivityMessage = (log) => {
-    const { userName, action, resourceType, resourceName, details } = log;
+    const { action, resourceType, resourceName, details } = log;
 
     const resourceLabels = {
         project: "projeto",

@@ -53,13 +53,6 @@ export const PERMISSIONS = {
     canManageUsers: [ROLES.ADMIN],
     canViewUsers: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
-    // Tarefas
-    canCreateTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canAssignTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canDeleteTasks: [ROLES.ADMIN],
-    canViewAllTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canCompleteTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
-
     // Histórico de Atividades
     canViewActivityHistorys: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
@@ -78,4 +71,10 @@ export const PERMISSIONS = {
 
     // Agenda
     canViewAllUsersSchedule: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+
+    // Tarefas
+    canCreateTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canEditTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
+    canCompleteTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
+    canDeleteTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
 };

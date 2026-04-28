@@ -247,10 +247,16 @@ export const ProjectsProvider = ({ children }) => {
         return Object.fromEntries(users.map((u) => [u.id, u]));
     }, [users]);
 
-    //isso permite usar clientMap[uid] para obter os dados rapidamente de um usuário sem precisar usar find
+    //isso permite usar clientMap[uid] para obter os dados rapidamente de um cliente sem precisar usar find
     const clientMap = useMemo(() => {
         return Object.fromEntries(clients.map((u) => [u.id, u]));
     }, [clients]);
+
+    //isso permite usar projectMap[uid] para obter os dados rapidamente de um projeto sem precisar usar find
+    const projectMap = useMemo(
+        () => Object.fromEntries(projects.map((p) => [p.id, p])),
+        [projects],
+    );
 
     //Estados e funções disponíveis para os componentes filhos
     const value = {
@@ -259,6 +265,7 @@ export const ProjectsProvider = ({ children }) => {
         usersMap,
         clients,
         clientMap,
+        projectMap,
         loadingProjects,
         loadingUsers,
         loadingClients,
