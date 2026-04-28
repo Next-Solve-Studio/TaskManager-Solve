@@ -31,7 +31,7 @@ export const STATUS_MAP = {
     },
     arquivado: {
         label: "Arquivado",
-        color: "var(--color-font-gray2)",
+        color: "var(--color-text-secondary)",
         bg: "rgba(var(--color-font-gray2-rgb), 0.12) ",
         border: "rgba(var(--color-font-gray2-rgb), 0.25)",
         icon: MdArchive,

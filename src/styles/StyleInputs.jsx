@@ -1,8 +1,9 @@
 export const muiDark = {
     "& .MuiOutlinedInput-root": {
         color: "var(--color-text-primary)",
-        "& fieldset": { borderColor: "var(--color-border-main)" },
-        "&:hover fieldset": { borderColor: "var(--color-border-main)" },
+        background: "var(--color-bg-surface)",
+        "& fieldset": { borderColor: "var(--color-border-subtle)" },
+        "&:hover fieldset": { borderColor: "var(--color-surface-green-md)" },
         "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
         "& .MuiSelect-icon": { color: "var(--color-text-muted)" },
         "& .MuiChip-root": {
@@ -14,7 +15,16 @@ export const muiDark = {
     "& .MuiInputLabel-root": { color: "var(--color-text-muted)" },
     "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
     "& .MuiFormHelperText-root": { color: "var(--color-error)" },
-    "& .MuiOutlinedInput-input": { color: "var(--color-text-primary)" },
+
+    "& .MuiOutlinedInput-input": { 
+        color: "var(--color-text-primary)",
+        colorScheme: "var(--theme-scheme)",
+        
+        "&::-webkit-calendar-picker-indicator": {
+            cursor: "pointer",
+
+        }
+    },
 };
 
 export const muiDark2 = {
@@ -37,7 +47,7 @@ export const muiDark2 = {
 export const menuPaper = {
     PaperProps: {
         sx: {
-            background: "var(--color-bg-card)",
+            background: "var(--color-bg-surface)",
             border: "1px solid var(--color-border-main)",
             borderRadius: "12px",
             backgroundImage: "none",
@@ -59,7 +69,7 @@ export const menuPaper = {
 export const menuPaper2 = {
     PaperProps: {
         sx: {
-            background: "var(--color-bg-card)",
+            background: "var(--color-bg-surface)",
             border: "1px solid var(--color-border-main)",
             borderRadius: 1,
             mt: 1,

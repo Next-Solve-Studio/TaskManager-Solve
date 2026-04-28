@@ -222,56 +222,7 @@ export function ProjectForm({
                         <FormControl
                             size="small"
                             error={Boolean(errors.status)}
-                            sx={{
-                                color: "var(--color-text-secondary)",
-                                "& .MuiOutlinedInput-root": {
-                                    color: "var(--color-text-primary)",
-                                    "& fieldset": {
-                                        borderColor:
-                                            "var(--color-text-secondary)",
-                                    },
-                                    "&:hover fieldset": {
-                                        borderColor: "var(--color-border-main)",
-                                    },
-                                    "&.Mui-focused fieldset": {
-                                        borderColor:
-                                            "var(--color-text-secondary)",
-                                    },
-                                    "& .MuiSelect-icon": {
-                                        color: "var(--color-text-secondary)",
-                                    },
-                                    "&.Mui-disabled": {
-                                        "& .MuiOutlinedInput-notchedOutline": {
-                                            borderColor:
-                                                "var(--color-border-main)",
-                                        },
-                                        "& .MuiSelect-select": {
-                                            WebkitTextFillColor:
-                                                "var(--color-text-muted)",
-                                        },
-                                        "& .MuiSelect-icon": {
-                                            color: "var(--color-text-muted)",
-                                        },
-                                    },
-                                    "& .MuiChip-root": {
-                                        background: "rgba(25,202,104,0.15)",
-                                        color: "var(--color-brand-500)",
-                                        fontSize: 11,
-                                    },
-                                },
-                                "& .MuiInputLabel-root": {
-                                    color: "var(--color-text-secondary)",
-                                },
-                                "& .MuiInputLabel-root.Mui-focused": {
-                                    color: "var(--color-text-secondary)",
-                                },
-                                "& .MuiInputLabel-root.Mui-disabled": {
-                                    color: "var(--color-text-muted)",
-                                },
-                                "& .MuiFormHelperText-root": {
-                                    color: "var(--color-error)",
-                                },
-                            }}
+                            sx={muiDark}
                         >
                             <InputLabel>Status *</InputLabel>
                             <Controller
@@ -523,7 +474,7 @@ export function ProjectForm({
                             text-[13px] font-semibold cursor-pointer
                             rounded-lg py-2 px-5 text-text-secondary
                             border border-border-main bg-bg-surface
-                            hover:bg-bg-card transition-colors
+                            hover:bg-bg-surface/60 duration-200 transition-all
                         "
                     >
                         Cancelar
@@ -535,7 +486,7 @@ export function ProjectForm({
                             ${
                                 loading
                                     ? "bg-brand-500/40 cursor-not-allowed shadow-none"
-                                    : "bg-linear-to-br from-brand-500 to-brand-600 cursor-pointer shadow-[0_4px_14px_#A2C2B059]"
+                                    : "bg-linear-to-br from-brand-500 to-brand-600 cursor-pointer duration-200 transition-all shadow-[0_4px_14px_#A2C2B059] sm:hover:to-brand-700 sm:hover:from-brand-700"
                             }`}
                     >
                         {loading && (

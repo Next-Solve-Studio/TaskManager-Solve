@@ -114,16 +114,9 @@ export default function UserEditModal({ open, onClose, user }) {
                 </button>
             </DialogTitle>
 
-            <DialogContent
-                sx={{
-                    padding: "20px 24px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 20,
-                }}
-            >
+            <DialogContent className="flex flex-col gap-4 py-5 px-6">
                 {user && (
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-bg-surface border border-border-main">
+                    <div className="flex items-center mt-4 gap-3 p-3 rounded-md bg-bg-surface border border-border-main">
                         <Avatar
                             name={user.name}
                             uid={user.id}
@@ -183,7 +176,7 @@ export default function UserEditModal({ open, onClose, user }) {
 
                 {meta && (
                     <div
-                        className={`${meta.bg} ${meta.border} rounded-[10px] border flex items-start gap-2.5 py-2.5 px-3.5`}
+                        className={`${meta.bg} ${meta.border} rounded-md border flex items-start gap-2.5 py-2.5 px-3.5`}
                     >
                         <meta.icon
                             className={`${meta.color} mt-px text-base shrink-0`}
@@ -208,7 +201,12 @@ export default function UserEditModal({ open, onClose, user }) {
                     type="button"
                     onClick={handleClose}
                     disabled={loading}
-                    className="bg-bg-surface border border-border-main text-text-secondary py-2 px-5 rounded-lg font-semibold text-xs cursor-pointer hover:bg-bg-card transition-colors"
+                    className="
+                        text-[13px] font-semibold cursor-pointer
+                        rounded-lg py-2 px-5 text-text-secondary
+                        border border-border-main bg-bg-surface
+                        hover:bg-bg-surface/60 duration-200 transition-all
+                    "
                 >
                     Cancelar
                 </button>

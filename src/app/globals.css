@@ -67,6 +67,8 @@
     --color-border-subtle: var(--border-subtle);
 
     /* ─── FUNDO / DARK THEME ────────────────────────────── */
+    --color-font-gray2: #6b7280;
+    --color-font-gray2-rgb: 107, 114, 128;
 
     /* ─── ALIASES SEMÂNTICOS ────────────────────────────── */
     --color-primary: var(--color-brand-500);
@@ -92,6 +94,8 @@
     --bg-surface: #1a1a1a;
     --bg-side: #000000b6;
 
+    --theme-scheme: dark;
+
     --text-primary: #ffffff;
     --text-secondary: #9ca3af;
     --text-muted: #6b7280;
@@ -110,6 +114,8 @@
     --bg-card: #ffffff;
     --bg-surface: #f1f5f9;
     --bg-side: #ffffff;
+
+    --theme-scheme: light;
 
     --text-primary: #0f172a;
     --text-secondary: #475569;
