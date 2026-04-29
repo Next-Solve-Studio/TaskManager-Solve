@@ -110,15 +110,15 @@ export default function HomeMain() {
                     label="Projetos Concluídos"
                     value={counts.concluido}
                     color="#19CA68"
-                    bg="rgba(25,202,104,0.06)"
-                    border="rgba(25,202,104,0.15)"
+                    bg="#19CA680F"
+                    border="#19CA6826"
                 />
                 <StatCard
                     icon={MdOutlineLoop}
                     label="Em Andamento"
                     value={counts.em_andamento}
                     color="#22d3ee"
-                    bg="rgba(34, 211, 238, 0.06)"
+                    bg="#22D3EE0F"
                     border="rgba(34,211,238,0.15)"
                 />
                 <StatCard

@@ -253,27 +253,49 @@ export default function UsersMain() {
                     style={{ display: "flex", flexDirection: "column", gap: 6 }}
                 >
                     {/* Cabeçalho */}
-                    <div
-                        className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4
-                        px-5 py-1.5 text-[11px] font-bold
-                        text-[#4b5563] select-none uppercase tracking-[0.08em]"
-                    >
-                        <span />
-                        <span>Usuário</span>
-                        <span>Cargo</span>
-                        <span>Acesso</span>
-                        <span>Entrada</span>
-                        <span />
+                    <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
+                        {/* Espaço vazio para alinhar com o Avatar */}
+                        <div></div> 
+                        
+                        <div>
+                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                                Usuário
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                                Cargo
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                                Acesso
+                            </p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                                Entrada
+                            </p>
+                        </div>
+                        {/* Alinhado à direita para bater com o flex-end dos botões */}
+                        <div className="text-center">
+                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                                Ações
+                            </p>
+                        </div>
                     </div>
 
-                    {filtered.map((user) => (
-                        <UserRow
-                            key={user.id}
-                            user={user}
-                            onEdit={handleOpenEdit}
-                            onDelete={handleOpenDelete}
-                        />
-                    ))}
+                    {/* Lista de Usuários */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {filtered.map((user) => (
+                            <UserRow
+                                key={user.id}
+                                user={user}
+                                onEdit={handleOpenEdit}
+                                onDelete={handleOpenDelete}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
 

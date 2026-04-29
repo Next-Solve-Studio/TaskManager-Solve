@@ -1,7 +1,7 @@
 export function StatCard({ icon: Icon, label, value, color, bg, border }) {
     return (
         <div
-            className="relative flex flex-col gap-3 p-5 rounded-2xl overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
+            className="shadow-lg relative flex flex-col gap-3 p-5 rounded-2xl overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
             style={{ background: bg, border: `1px solid ${border}` }}
         >
             <div

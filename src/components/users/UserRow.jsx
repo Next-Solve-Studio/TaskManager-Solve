@@ -52,12 +52,12 @@ export default function UserRow({ user, onEdit, onDelete }) {
             </div>
 
             {/* Cargo */}
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex items-center justify-center">
                 <RoleBadge role={user.role} />
             </div>
 
             {/* Auth method */}
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex items-center justify-center">
                 <span
                     style={{
                         display: "inline-flex",
@@ -76,7 +76,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
             </div>
 
             {/* Data de entrada */}
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div className="flex items-center justify-center">
                 <span className="text-[11px] text-text-muted whitespace-nowrap">
                     {formattedDate}
                 </span>
@@ -84,14 +84,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
 
             {/* Ações */}
             <CanDo permission="canManageUsers">
-                <div
-                    style={{
-                        display: "flex",
-                        gap: 6,
-                        alignItems: "center",
-                        justifyContent: "flex-end",
-                    }}
-                >
+                <div className="flex items-center justify-center gap-1.5">
                     <button
                         type="button"
                         onClick={() => onEdit(user)}

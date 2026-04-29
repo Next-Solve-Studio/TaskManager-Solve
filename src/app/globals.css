@@ -110,8 +110,8 @@
 
 [data-theme="light"] {
     /* LIGHT THEME */
-    --bg-main: #f8fafc;
-    --bg-card: #ffffff;
+    --bg-main: #ececec;
+    --bg-card: #f3f3f3;
     --bg-surface: #f1f5f9;
     --bg-side: #ffffff;
 

@@ -19,7 +19,7 @@ export default function OngoingProjects({ ongoingProjects, today }) {
                 <MdOutlineTimer className="text-text-muted text-xl" />
             </div>
 
-            <div className="flex flex-col gap-2 overflow-y-auto max-h-72 pr-1 scroll-hidden">
+            <div className="flex flex-col gap-4 overflow-y-auto max-h-72 scroll-hidden p-3 pl-1">
                 {ongoingProjects.length === 0 ? (
                     <p className="text-xs text-text-secondary text-center py-6">
                         Nenhum projeto em andamento
@@ -39,9 +39,9 @@ export default function OngoingProjects({ ongoingProjects, today }) {
                         return (
                             <div
                                 key={proj.id}
-                                className="flex items-start gap-3 p-3 rounded-xl transition-colors duration-150 hover:bg-bg-surface border border-border-subtle"
+                                className="shadow-md flex items-start gap-3 p-3 rounded-xl transition-colors duration-150 hover:bg-bg-surface border border-border-subtle "
                             >
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 ">
                                     <div className="flex items-start justify-between gap-2">
                                         <p className="text-sm text-text-primary font-medium leading-tight truncate">
                                             {proj.title}
