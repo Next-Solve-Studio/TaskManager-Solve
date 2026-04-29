@@ -181,10 +181,11 @@ export default function ProfileSettings() {
                     type="submit"
                     variant="contained"
                     disabled={isSubmitting || !isDirty}
-                    startIcon={<MdEdit />}
+                    startIcon={<MdEdit className="text-white"/>}
                     className={`${isMobile ? "w-full" : ""} shadow-lg shadow-brand-500/20`}
                     sx={{
                         backgroundColor: "var(--color-brand-500)",
+                        
                         "&:hover": {
                             backgroundColor: "var(--color-brand-600)",
                         },
@@ -194,12 +195,12 @@ export default function ProfileSettings() {
                             border: "1px solid var(--color-border-main)",
                         },
                         textTransform: "none",
-                        borderRadius: "12px",
-                        color: "black",
+                        borderRadius: "10px",
+                        color: "white",
                         fontWeight: 700,
                         fontSize: "0.875rem",
-                        py: 1.5,
-                        px: 4,
+                        py: 1,
+                        px: 3,
                     }}
                 >
                     {isSubmitting ? "Salvando..." : "Salvar Alterações"}

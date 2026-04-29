@@ -49,9 +49,9 @@ export default function ActivityFeed() {
                 </div>
                 <div className="text-[10px] flex items-center gap-2 bg-bg-surface px-2 py-0.5 rounded-full text-text-muted font-bold uppercase tracking-wider">
                     <p>Tempo Real</p>
-                    <span class="relative flex size-2">
-                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
-                        <span class="relative inline-flex size-2 rounded-full bg-info"></span>
+                    <span className="relative flex size-2">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75"></span>
+                        <span className="relative inline-flex size-2 rounded-full bg-info"></span>
                     </span>
                 </div>
             </div>

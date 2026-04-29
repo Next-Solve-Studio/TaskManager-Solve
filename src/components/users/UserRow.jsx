@@ -25,7 +25,6 @@ export default function UserRow({ user, onEdit, onDelete }) {
             : "rgba(34,211,238,0.1)";
 
     return (
-        // biome-ignore lint/a11y/noStaticElementInteractions: <>
         <div
             className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] 
             gap-4 items-center px-5 py-3 bg-bg-card

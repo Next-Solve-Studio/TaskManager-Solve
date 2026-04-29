@@ -1,7 +1,7 @@
 // Célula editável de um dia
 "use client";
 import { CircularProgress } from "@mui/material";
-import { format, isToday, isWeekend } from "date-fns";
+import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdEdit } from "react-icons/md";
@@ -57,30 +57,22 @@ export default function CardScheduleEdit({
     };
 
     const todayDay = isToday(date);
-    const weekend = isWeekend(date);
 
     return (
         <div
-            className={`flex flex-col gap-2 p-4 rounded-2xl transition-all duration-200 group relative border ${
+            className={`flex flex-col min-w-40 gap-2 p-4 rounded-2xl transition-all duration-200 group relative border ${
                 todayDay
                     ? "bg-brand-500/10 border-brand-500/30"
-                    : "bg-border-main border-border-main2"
+                    : "bg-bg-surface border-border-main"
             }`}
-            style={{
-                minHeight: "160px",
-            }}
         >
             {/* Header do dia */}
             <div className="flex items-start justify-between">
                 <div>
                     <div className="flex items-center gap-2">
                         <span
-                            className="text-xs font-bold uppercase tracking-widest"
-                            style={{
-                                color: todayDay
-                                    ? "#19CA68"
-                                    : "var(--color-text-muted)",
-                            }}
+                            className={`text-xs font-bold uppercase tracking-widest
+                            ${todayDay ? 'text-brand-500' : 'text-text-muted'}`}
                         >
                             {dayLabel}
                         </span>
@@ -97,7 +89,7 @@ export default function CardScheduleEdit({
                         </span>
                     </p>
                 </div>
-
+                
                 {/* Botão editar (só para o próprio usuário e se pode editar) */}
                 {canEdit && !editing && (
                     <button
@@ -109,7 +101,7 @@ export default function CardScheduleEdit({
                     </button>
                 )}
             </div>
-
+            <div className="w-full h-px bg-border-main2 rounded-xl" />
             <div className="flex-1">
                 {editing ? (
                     <div className="flex flex-col gap-2">
@@ -120,9 +112,7 @@ export default function CardScheduleEdit({
                             rows={4}
                             placeholder="O que você fez hoje?"
                             className="w-full resize-none rounded-xl px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-150 bg-bg-card border border-brand-500/40 focus:border-brand-500"
-                            style={{
-                                fontFamily: "inherit",
-                            }}
+
                         />
                         <div className="flex flex-wrap items-center gap-2">
                             <button

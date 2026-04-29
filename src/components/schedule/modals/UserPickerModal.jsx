@@ -53,14 +53,15 @@ export default function UserPickerModal({
                                 key={u.id}
                                 type="button"
                                 onClick={() => onSelect(u.id)}
-                                className="flex items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150"
+                                className={`flex items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150
+                                    ${selected 
+                                        ? "bg-(--btn-bg) border-(--btn-border)" 
+                                        : "bg-transparent border-transparent sm:hover:bg-bg-surface active:bg-bg-surface border"
+                                    }`
+                                }
                                 style={{
-                                    background: selected
-                                        ? `${color}15`
-                                        : "transparent",
-                                    border: selected
-                                        ? `1px solid ${color}35`
-                                        : "1px solid transparent",
+                                    "--btn-bg": `${color}15`,
+                                    "--btn-border": `${color}35`,
                                 }}
                             >
                                 <Avatar

@@ -44,7 +44,7 @@ export default function UsersFilter({
                     style={{
                         background: isViewingMe
                             ? "rgba(25,202,104,0.15)"
-                            : "var(--color-border-main2)",
+                            : "var(--color-bg-surface)",
                         border: isViewingMe
                             ? "1px solid rgba(25,202,104,0.4)"
                             : "1px solid var(--color-border-main)",
@@ -65,10 +65,10 @@ export default function UsersFilter({
                         style={{
                             background: isViewingAll
                                 ? "rgba(34,211,238,0.12)"
-                                : "var(--color-border-main2)",
+                                : "var(--color-bg-surface)",
                             border: isViewingAll
                                 ? "1px solid rgba(34,211,238,0.35)"
-                                : "1px solid var(--color-border-main)",
+                                : "1px solid var(--color-bg-surface)",
                             color: isViewingAll
                                 ? "#22d3ee"
                                 : "var(--color-text-secondary)",
@@ -81,14 +81,14 @@ export default function UsersFilter({
                         <button
                             type="button"
                             onClick={() => setModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
+                            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 "
                             style={{
                                 background: selectedUser
                                     ? `${avatarColor(selectedUser.id)}20`
-                                    : "var(--color-border-main2)",
+                                    : "var(--color-bg-surface)",
                                 border: selectedUser
                                     ? `1px solid ${avatarColor(selectedUser.id)}60`
-                                    : "1px solid var(--color-border-main)",
+                                    : "1px solid var(--color-bg-surface)",
                                 color: selectedUser
                                     ? avatarColor(selectedUser.id)
                                     : "var(--color-text-secondary)",
@@ -115,40 +115,40 @@ export default function UsersFilter({
                         </button>
                     ) : (
                         !loadingUsers &&
-                        otherUsers.map((u) => {
-                            const selected = filterUserId === u.id;
-                            const color = avatarColor(u.id);
-                            return (
-                                <button
-                                    key={u.id}
-                                    type="button"
-                                    onClick={() =>
-                                        setFilterUserId(
-                                            filterUserId === u.id ? "me" : u.id,
-                                        )
-                                    }
-                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
-                                    style={{
-                                        background: selected
-                                            ? `${color}20`
-                                            : "var(--color-border-main2)",
-                                        border: selected
-                                            ? `1px solid ${color}60`
-                                            : "1px solid var(--color-border-main)",
-                                        color: selected
-                                            ? color
-                                            : "var(--color-text-secondary)",
-                                    }}
-                                >
-                                    <Avatar
-                                        name={u.name}
-                                        uid={u.id}
-                                        src={u.photo}
-                                    />
-                                    <span>{u.name.split(" ")[0]}</span>
-                                </button>
-                            );
-                        })
+                            otherUsers.map((u) => {
+                                const selected = filterUserId === u.id;
+                                const color = avatarColor(u.id);
+                                return (
+                                    <button
+                                        key={u.id}
+                                        type="button"
+                                        onClick={() =>
+                                            setFilterUserId(
+                                                filterUserId === u.id ? "me" : u.id,
+                                            )
+                                        }
+                                        className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+                                        style={{
+                                            background: selected
+                                                ? `${color}20`
+                                                : "var(--color-bg-surface)",
+                                            border: selected
+                                                ? `1px solid ${color}60`
+                                                : "1px solid var(--color-border-main)",
+                                            color: selected
+                                                ? color
+                                                : "var(--color-text-secondary)",
+                                        }}
+                                    >
+                                        <Avatar
+                                            name={u.name}
+                                            uid={u.id}
+                                            src={u.photo}
+                                        />
+                                        <span>{u.name.split(" ")[0]}</span>
+                                    </button>
+                                );
+                            })
                     )}
                 </CanDo>
             </div>
