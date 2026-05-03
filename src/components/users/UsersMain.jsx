@@ -254,9 +254,7 @@ export default function UsersMain() {
                 >
                     {/* Cabeçalho */}
                     <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
-                        {/* Espaço vazio para alinhar com o Avatar */}
                         <div></div> 
-                        
                         <div>
                             <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
                                 Usuário
@@ -277,7 +275,6 @@ export default function UsersMain() {
                                 Entrada
                             </p>
                         </div>
-                        {/* Alinhado à direita para bater com o flex-end dos botões */}
                         <div className="text-center">
                             <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
                                 Ações

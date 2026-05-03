@@ -8,6 +8,7 @@ import {
     FiSettings,
     FiUsers,
 } from "react-icons/fi";
+import { MdOutlineTaskAlt } from "react-icons/md";
 import { ROLES } from "@/lib/roles";
 
 const { ADMIN, PROJECT_LEAD, DEVELOPER } = ROLES;
@@ -29,6 +30,12 @@ export const menuItems = [
         icon: FiLayers,
         label: "Lista de Projetos",
         href: "/projects",
+        roles: [ADMIN, PROJECT_LEAD, DEVELOPER],
+    },
+    {
+        icon: MdOutlineTaskAlt,
+        label: "Tarefas",
+        href: "/tasks",
         roles: [ADMIN, PROJECT_LEAD, DEVELOPER],
     },
     {

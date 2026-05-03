@@ -194,8 +194,6 @@ export const TasksProvider = ({children, projectId}) =>{
             })
         }, [currentUser]
     )
-    
-    
 
     // Estados e funções disponíveis para os componentes filhos
     const value = {
