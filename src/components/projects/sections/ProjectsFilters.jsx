@@ -26,7 +26,7 @@ export default function ProjectsFilters({
         searchInput;
 
     return (
-        <div className="flex flex-wrap gap-4 md:gap-2.5 py-3.5 px-4 bg-bg-card border border-border-main rounded-[14px] items-center">
+        <div className="flex flex-wrap gap-4 md:gap-2.5 py-3.5 px-4 bg-bg-card border border-border-main2 rounded-[14px] items-center">
             {/* Campo de busca */}
             <div className="relative min-w-45 flex-[1_1_200px]">
                 <MdSearch

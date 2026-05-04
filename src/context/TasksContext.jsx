@@ -72,6 +72,7 @@ export const TasksProvider = ({children, projectId}) =>{
             const payload = {
                 title: data.title,
                 description: data.description || "",
+                projectId: data.projectId || projectId || "",
                 assignedTo: data.assignedTo || [],
                 startDate: data.startDate || "",
                 endDate: data.endDate || "",
@@ -98,7 +99,7 @@ export const TasksProvider = ({children, projectId}) =>{
                 resourceType: "task",
                 resourceId: ref.id,
                 resourceName: payload.title,
-                details: { projectId },
+                details: { projectId: payload.projectId || null },
             });
 
             // A função retorna o projeto recém-criado com seu ID.
@@ -115,6 +116,7 @@ export const TasksProvider = ({children, projectId}) =>{
             const payload = {
                 title: data.title,
                 description: data.description || "",
+                projectId: data.projectId || projectId || "",
                 assignedTo: data.assignedTo || [],
                 startDate: data.startDate ? new Date(data.startDate) : null,
                 endDate: data.endDate ? new Date(data.endDate) : null,
@@ -144,8 +146,8 @@ export const TasksProvider = ({children, projectId}) =>{
                         field: "status",
                         oldValue: prevStatus,
                         newValue: nextStatus,
-                        projectId,
-                    },
+                        projectId: payload.projectId || null, 
+                    }
                 })
             } else {
                 await logActivity({
@@ -156,7 +158,7 @@ export const TasksProvider = ({children, projectId}) =>{
                     resourceType: "task",
                     resourceId: taskId,
                     resourceName: payload.title,
-                    details: { projectId },
+                    details: { projectId: payload.projectId || null },
                 });
             }
 
@@ -177,9 +179,9 @@ export const TasksProvider = ({children, projectId}) =>{
                 resourceType: "task",
                 resourceId: task.id,
                 resourceName: task.title,
-                details: { projectId },
+                details: { projectId: payload.projectId || null },
             });
-        }, [currentUser, projectId]
+        }, [currentUser]
     )
 
     // Atualiza apenas o checklist de uma tarefa (sem reabrir modal)

@@ -29,17 +29,18 @@ import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { SelectController } from "@/components/ui/SelectController";
 
-function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading}) {
+function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, projects}) {
     const isEdit = Boolean(task)
     
     const defaultValues = {
         title: "",
         description: "",
+        projectId:"",
         assignedTo: [],
         startDate: "",
         endDate: "",
         priority: "media",
-        status: "pendente",
+        status: "em_andamento",
         solution: "",
     }
 
@@ -61,6 +62,7 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading}) {
                 reset({
                     title: task.title || "",
                     description: task.description || "",
+                    projectId: task.projectId || "",
                     assignedTo: task.assignedTo || [],
                     startDate: formatDateInput(task.startDate),
                     endDate: formatDateInput(task.endDate),
@@ -158,7 +160,33 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading}) {
                         error={!!errors.title}
                         helperText={errors.title?.message}
                     />
-
+                    <Controller
+                        name="projectId"
+                        control={control}
+                        rules={{ required: "Selecione um projeto" }}
+                        render={({ field }) => (
+                            <FormControl fullWidth size="small" sx={muiDark} error={!!errors.projectId}>
+                                <InputLabel>Projeto *</InputLabel>
+                                <Select
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    MenuProps={menuPaper}
+                                    label="Projeto *"
+                                >
+                                    {projects?.map((p) => (
+                                        <MenuItem key={p.id} value={p.id}>
+                                            {p.title}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                {errors.projectId && (
+                                    <p className="text-[11px] text-error mt-1 ml-1">
+                                        {errors.projectId.message}
+                                    </p>
+                                )}
+                            </FormControl>
+                        )}
+                    />
                     {/* Descrição */}
                     <TextField
                         label="Descrição"
