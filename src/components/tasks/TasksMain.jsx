@@ -85,17 +85,6 @@ export default function TasksMain() {
         currentUser,
     ]);
 
-    // calcula número de tarefas por status com base em todas as tarefas
-    const stats = useMemo(
-        () => ({
-            total: tasks.length,
-            done: tasks.filter((t) => t.status === "concluido").length,
-            inProgress: tasks.filter((t) => t.status === "em_andamento").length,
-            pending: tasks.filter((t) => t.status === "pausado").length,
-        }),
-        [tasks],
-    );
-
     // agrupa as tarefas por projeto
     const groupedByProject = useMemo(() => {
         const map = {};

@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { StatPill } from "@/components/ui/StatPill";
-import { STATUS_MAP } from "@/components/ui/StatusBadge";
 
 export default function TasksStats({ tasks }) {
     const STATS_CONFIG = [
@@ -34,6 +33,8 @@ export default function TasksStats({ tasks }) {
         },
 
     ];
+
+    // calcula número de tarefas por status com base em todas as tarefas
     const stats = useMemo(
         () => ({
             total: tasks.length,
@@ -44,6 +45,7 @@ export default function TasksStats({ tasks }) {
         }),
         [tasks],
     );
+    
     return (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {Object.entries(STATS_CONFIG).map(([key, s]) => (
