@@ -15,6 +15,8 @@ import CanDo from "../auth/CanDo";
 import { PRIORITY_MAP, STATUS_MAP } from "../ui/StatusBadge";
 import TaskDeleteModal from "./modals/TaskDeleteModal";
 import TaskForm from "./modals/TaskForm";
+import TasksHeader from "./sections/TasksHeader";
+import TasksStats from "./sections/TasksStats";
 
 export default function TasksMain() {
     const { tasks, loadingTasks, createTask, updateTask, deleteTask } =
@@ -178,72 +180,11 @@ export default function TasksMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-            {/* Header */}
-            <div className="flex items-start justify-between flex-wrap gap-4">
-                <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        <MdOutlineTaskAlt className="text-brand-500 text-lg" />
-                        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
-                            Gestão de Tarefas
-                        </span>
-                    </div>
-                    <h1 className="text-[26px] font-extrabold text-text-primary m-0">
-                        Tarefas
-                    </h1>
-                    <p className="text-[13px] text-text-muted mt-1">
-                        {tasks.length} tarefa{tasks.length !== 1 ? "s" : ""} no
-                        sistema
-                    </p>
-                </div>
-                <CanDo permission="canCreateTasks">
-                    <button
-                        type="button"
-                        onClick={handleOpenCreate}
-                        className="flex items-center gap-1.5 px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white text-[13px] font-bold rounded-xl transition-colors cursor-pointer"
-                    >
-                        <MdAdd size={18} />
-                        Nova Tarefa
-                    </button>
-                </CanDo>
-            </div>
+
+            <TasksHeader handleOpenCreate={handleOpenCreate} tasks={tasks}/>
 
             {/* Stats */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                    {
-                        label: "Total",
-                        value: stats.total,
-                        color: "text-text-primary",
-                    },
-                    {
-                        label: "Pendentes",
-                        value: stats.pending,
-                        color: "text-warning",
-                    },
-                    {
-                        label: "Em Execução",
-                        value: stats.inProgress,
-                        color: "text-cyan-400",
-                    },
-                    {
-                        label: "Concluídas",
-                        value: stats.done,
-                        color: "text-brand-500",
-                    },
-                ].map((s) => (
-                    <div
-                        key={s.label}
-                        className="bg-bg-card border border-border-main2 rounded-xl px-4 py-3"
-                    >
-                        <p className="text-[11px] text-text-muted uppercase tracking-widest font-bold">
-                            {s.label}
-                        </p>
-                        <p className={"text-[24px] font-extrabold " + s.color}>
-                            {s.value}
-                        </p>
-                    </div>
-                ))}
-            </div>
+            <TasksStats tasks={tasks}/>
 
             {/* Busca + Filtros */}
             <div className="flex flex-col gap-3">

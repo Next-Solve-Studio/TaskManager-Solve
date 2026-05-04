@@ -27,10 +27,11 @@ import { Avatar } from "@/components/ui/AvatarBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
+import { SelectController } from "@/components/ui/SelectController";
 
 function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading}) {
     const isEdit = Boolean(task)
-
+    
     const defaultValues = {
         title: "",
         description: "",
@@ -244,54 +245,26 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading}) {
                             fullWidth
                             InputLabelProps={{ shrink: true }}
                             sx={muiDark}
-                            {...register("endDate")}
+                            {...register("endDate", {
+                                validate: (value, formValues) => !value || !formValues.startDate || value >= formValues.startDate || "Fim deve ser após início"
+                            })}
                         />
                     </div>
 
                     {/* Prioridade + Status */}
                     <div className="grid grid-cols-2 gap-3">
-                        <Controller
+                        <SelectController
                             name="priority"
                             control={control}
-                            render={({ field }) => (
-                                <FormControl fullWidth size="small" sx={muiDark}>
-                                    <InputLabel>Prioridade</InputLabel>
-                                    <Select {...field} label="Prioridade" MenuProps={menuPaper}>
-                                        {Object.entries(PRIORITY_MAP).map(([key, val]) => (
-                                            <MenuItem key={key} value={key}>
-                                                <span
-                                                    style={{
-                                                        color: val.color,
-                                                        fontWeight: 600,
-                                                        fontSize: 13,
-                                                    }}
-                                                >
-                                                    {val.label}
-                                                </span>
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            )}
+                            label="Prioridade"
+                            map={PRIORITY_MAP}
                         />
-                        <Controller
+                        <SelectController
                             name="status"
                             control={control}
-                            render={({ field }) => (
-                                <FormControl fullWidth size="small" sx={muiDark}>
-                                    <InputLabel>Status</InputLabel>
-                                    <Select {...field} label="Status" MenuProps={menuPaper}>
-                                        {Object.entries(STATUS_MAP).map(([key, val]) => (
-                                            <MenuItem key={key} value={key}>
-                                                <span style={{ color: val.color, fontWeight: 600, fontSize: 13 }}>
-                                                    {val.label}
-                                                </span>
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            )}
-                        />
+                            label="Status"
+                            map={STATUS_MAP}
+                        />       
                     </div>
 
                     {/* Solução */}
