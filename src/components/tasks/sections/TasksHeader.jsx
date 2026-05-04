@@ -3,7 +3,7 @@ import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
 
 export default function TasksHeader({handleOpenCreate, tasks}) {
     return (
-        <div className="flex items-start justify-between flex-wrap gap-4">
+        <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
                 <div className="flex items-center gap-2 mb-1">
                     <MdOutlineTaskAlt className="text-brand-500 text-lg" />

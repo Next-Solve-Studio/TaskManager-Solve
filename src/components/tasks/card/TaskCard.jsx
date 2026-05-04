@@ -41,7 +41,9 @@ function TaskCard({ task, usersMap, onEdit, onDelete}) {
         new Date((task.endDate?.toDate ? task.endDate.toDate() : new Date(task.endDate))) < new Date();
 
     return (
-        <div className="bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 hover:border-brand-500/20 hover:-translate-y-0.5 transition-all duration-200 select-none">
+        <div className="bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 
+        hover:border-brand-500/20 hover:-translate-y-0.5 transition-all duration-200 select-none
+        max-w-130 ">
             {/* Header */}
             <div className="flex items-start gap-2">
                 <div className="flex-1 min-w-0">
