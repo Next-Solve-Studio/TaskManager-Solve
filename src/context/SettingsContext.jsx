@@ -28,6 +28,9 @@ export const SettingsProvider = ({ children }) => {
 
     // Ouvir configurações do sistema (Global)
     useEffect(() => {
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
+        
         const systemDocRef = doc(db, "system_settings", "config");
         const unsubscribe = onSnapshot(systemDocRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -36,7 +39,7 @@ export const SettingsProvider = ({ children }) => {
             setLoading(false);
         });
         return unsubscribe;
-    }, []);
+    }, [currentUser]);
 
     // Atualizar perfil do usuário (name, preferences, etc)
     const updateProfile = useCallback(

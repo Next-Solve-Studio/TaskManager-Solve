@@ -32,6 +32,9 @@ export const ClientsProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
+        
         const q = query(
             collection(db, "clients"),
             orderBy("createdAt", "desc"),
@@ -52,7 +55,7 @@ export const ClientsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, []);
+    }, [currentUser]);
 
     const createClient = useCallback(
         async (data) => {
@@ -120,7 +123,7 @@ export const ClientsProvider = ({ children }) => {
             toast.error("Erro ao atualizar cliente");
             throw error;
         }
-    }, []);
+    }, [currentUser]);
 
     const deleteClient = useCallback(async (client) => {
         try {
@@ -144,7 +147,7 @@ export const ClientsProvider = ({ children }) => {
             toast.error("Erro ao excluir cliente");
             throw error;
         }
-    }, []);
+    }, [currentUser]);
 
     const value = {
         clients,

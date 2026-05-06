@@ -37,6 +37,9 @@ export const TasksProvider = ({children, projectId}) =>{
     const [loadingTasks, setLoadingTasks] = useState(true)
 
     useEffect(()=>{
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
+
         const q =  projectId
         // caso exista projectId, busca as tasks pelo id específico dele
         ? query (
@@ -64,7 +67,7 @@ export const TasksProvider = ({children, projectId}) =>{
         )
 
         return unsubscribe;
-    }, [projectId])
+    }, [projectId, currentUser])
 
     const createTask = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)

@@ -40,7 +40,12 @@ export const ProjectsProvider = ({ children }) => {
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [loadingClients, setLoadingClients] = useState(true);
 
+
+    
+
     useEffect(() => {
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
         // consulta que busca a collection projects, e ordena pela data de criação, do mais novo para o mais antigo
         const q = query(
             collection(db, "projects"),
@@ -63,7 +68,7 @@ export const ProjectsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, []);
+    }, [currentUser]);
 
     useEffect(() => {
         getDocs(collection(db, "users")) // busca todos os documentos da coleção users apenas uma vez
@@ -79,6 +84,9 @@ export const ProjectsProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
+
         getDocs(collection(db, "clients"))
             .then((snapshot) => {
                 setClients(
@@ -90,7 +98,7 @@ export const ProjectsProvider = ({ children }) => {
                 toast.error("Erro ao carregar clientes:", error);
             })
             .finally(() => setLoadingClients(false));
-    });
+    },[currentUser]);
 
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)

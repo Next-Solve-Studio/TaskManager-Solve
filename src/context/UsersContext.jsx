@@ -17,17 +17,21 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { db } from "@/lib/firebaseConfig";
-
+import { useAuth } from "@/context/AuthContext";
 const UsersContext = createContext(); // Contexto criado
 
 export const useUsers = () => useContext(UsersContext);
 // hook personalizado, para usar useUsers, ao invés se sempre escrever useContext(UsersContext)
 
 export const UsersProvider = ({ children }) => {
+    const { currentUser } = useAuth();
     const [users, setUsers] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
 
     useEffect(() => {
+        // só busca dados se o usuário estiver logado.
+        if (!currentUser?.uid) return;
+        
         const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
 
         const unSubscribe = onSnapshot(
@@ -45,7 +49,7 @@ export const UsersProvider = ({ children }) => {
         );
 
         return unSubscribe;
-    }, []);
+    }, [currentUser]);
 
     const updateUser = useCallback(async (userId, newRole) => {
         await updateDoc(doc(db, "users", userId), { role: newRole }); // localiza o documento e aplica o novo cargo

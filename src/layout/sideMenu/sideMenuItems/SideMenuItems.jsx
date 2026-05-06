@@ -1,15 +1,13 @@
 "use client";
-import { onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CiLogout } from "react-icons/ci";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { useAuth } from "@/context/AuthContext";
 import { useRole } from "@/hooks/useRole";
-import { auth, db } from "@/lib/firebaseConfig";
+
 import { BurgerButton } from "./BurgerBtn";
 import { menuItems } from "./MenuItems";
 
@@ -17,10 +15,8 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
     // No desktop, o menu abre com hover (ou se isOpen for true, mas isOpen só é usado no mobile)
     const effectiveOpen = isMobile ? isOpen : hoverOpen;
-    const [displayName, setDisplayName] = useState("");
-    const [user, setUser] = useState(null);
     const { role } = useRole();
-    const { logout } = useAuth();
+    const { logout, currentUser } = useAuth();
     const pathname = usePathname();
 
     const handleMouseEnter = !isMobile ? () => setHoverOpen(true) : undefined;
@@ -31,27 +27,12 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
         (item) => !item.roles || item.roles.includes(role),
     );
 
-    useEffect(() => {
-        const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
-            setUser(firebaseUser);
-
-            try {
-                const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-                if (snap.exists()) {
-                    setDisplayName(snap.data().name);
-                }
-            } catch (error) {
-                console.error("Erro ao busca nome do usuário: ", error);
-            }
-        });
-        return () => unsub();
-    }, []);
-
     const isActive = (href) => {
         if (href === "/") return pathname === "/";
         return pathname.startsWith(href);
     };
 
+    const displayName = currentUser?.name || currentUser?.displayName || "";
     const initial = displayName ? displayName.charAt(0).toUpperCase() : "";
 
     const containerClasses = isMobile
@@ -78,9 +59,9 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                 <div className="mb-6 flex items-center min-h-10 w-full">
                     <div className="w-20 flex justify-center shrink-0">
                         <div className="relative w-10 h-10 rounded-full overflow-hidden border border-border-main shadow-inner bg-bg-surface flex items-center justify-center">
-                            {user?.photoURL ? (
+                            {currentUser?.photoURL ? (
                                 <Image
-                                    src={user.photoURL}
+                                    src={currentUser.photoURL}
                                     alt="Foto de perfil"
                                     fill
                                     className="object-cover"
