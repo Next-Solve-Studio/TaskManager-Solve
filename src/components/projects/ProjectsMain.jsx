@@ -23,6 +23,8 @@ export default function ProjectsMain() {
         createProject,
         updateProject,
         deleteProject,
+        visibleProjects,
+        loadMoreProjects,
     } = useProjects();
 
     const [filterStatus, setFilterStatus] = useState("all");
@@ -165,9 +167,21 @@ export default function ProjectsMain() {
                 clientMap={clientMap}
                 onEdit={handleOpenEdit}
                 onDelete={handleOpenDelete}
-                filtered={filtered}
+                filtered={filtered.slice(0, visibleProjects.length)}
                 onCreate={handleOpenCreate}
             />
+            
+            {filtered.length > visibleProjects.length && (
+                <div className="flex justify-center pt-4">
+                    <button
+                        type="button"
+                        onClick={loadMoreProjects}
+                        className="px-6 py-2 bg-bg-card border border-border-main2 hover:border-brand-500/50 text-text-secondary hover:text-brand-500 text-[13px] font-bold rounded-xl transition-all cursor-pointer"
+                    >
+                        Carregar mais projetos ({filtered.length - visibleProjects.length} restantes)
+                    </button>
+                </div>
+            )}
 
             {/* Modals */}
             <ProjectForm

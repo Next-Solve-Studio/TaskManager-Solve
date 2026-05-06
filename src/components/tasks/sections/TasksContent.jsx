@@ -8,7 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import CanDo from '@/components/auth/CanDo';
 
 export default function TasksContent({loadingTasks, searchInput, filterStatus, filterPriority,
-    usersMap, filterProject, filterAssignee, tasks, projectMap, onEdit, onDelete, onCreate}) {
+    usersMap, filterProject, filterAssignee, filterMonth, tasks, projectMap, onEdit, onDelete, onCreate, visibleTasksCount, loadMoreTasks}) {
 
     const { currentUser } = useAuth();
 
@@ -16,60 +16,76 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
     const debouncedSearch = useDebounce(searchInput, 300);
 
     const filtered = useMemo(() => {
-            return tasks.filter((t) => {
-                //se o status nao for "all", e o status atual da task, for diferente do filtro, a task some
-                if (filterStatus !== "all" && t.status !== filterStatus)
-                    return false;
-                if (filterPriority !== "all" && t.priority !== filterPriority)
-                    return false;
-                if (filterProject !== "all" && t.projectId !== filterProject)
-                    return false;
-                if (
-                    filterAssignee === "mine" &&
-                    !(t.assignedTo || []).includes(currentUser.uid)
-                )
-                    return false;
-                if (
-                    filterAssignee !== "all" &&
-                    filterAssignee !== "mine" &&
-                    !(t.assignedTo || []).includes(filterAssignee)
-                )
-                    return false;
-                if (debouncedSearch) {
-                    const q = debouncedSearch.toLowerCase();
-                    return (
-                        t.title?.toLowerCase().includes(q) ||
-                        t.description?.toLowerCase().includes(q) ||
-                        (t.assignedTo || []).some((uid) =>
-                            usersMap[uid]?.name?.toLowerCase().includes(q),
-                        ) ||
-                        projectMap[t.projectId]?.title?.toLowerCase().includes(q)
-                    );
-                }
-                return true;
-            });
-        }, [
-            tasks,
-            filterStatus,
-            filterPriority,
-            filterProject,
-            filterAssignee,
-            debouncedSearch,
-            usersMap,
-            projectMap,
-            currentUser,
-        ]);
+        return tasks.filter((t) => {
+            //se o status nao for "all", e o status atual da task, for diferente do filtro, a task some
+            if (filterStatus !== "all" && t.status !== filterStatus)
+                return false;
+            if (filterPriority !== "all" && t.priority !== filterPriority)
+                return false;
+            if (filterProject !== "all" && t.projectId !== filterProject)
+                return false;
+            if (
+                filterAssignee === "mine" &&
+                !(t.assignedTo || []).includes(currentUser.uid)
+            )
+                return false;
+            if (
+                filterAssignee !== "all" &&
+                filterAssignee !== "mine" &&
+                !(t.assignedTo || []).includes(filterAssignee)
+            )
+                return false;
 
+            if (filterMonth !== "all") {
+                const taskDate = t.startDate || t.createdAt;
+                if (taskDate) {
+                    const date = taskDate.toDate ? taskDate.toDate() : new Date(taskDate);
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    if (monthKey !== filterMonth) return false;
+                } else {
+                    return false;
+                }
+            }
+            if (debouncedSearch) {
+                const q = debouncedSearch.toLowerCase();
+                return (
+                    t.title?.toLowerCase().includes(q) ||
+                    t.description?.toLowerCase().includes(q) ||
+                    (t.assignedTo || []).some((uid) =>
+                        usersMap[uid]?.name?.toLowerCase().includes(q),
+                    ) ||
+                    projectMap[t.projectId]?.title?.toLowerCase().includes(q)
+                );
+            }
+            return true;
+        });
+    }, [
+        tasks,
+        filterStatus,
+        filterPriority,
+        filterProject,
+        filterAssignee,
+        filterMonth,
+        debouncedSearch,
+        usersMap,
+        projectMap,
+        currentUser,
+    ]);
+
+    // Paginação aplicada após o filtro
+    const paginated = useMemo(() => filtered.slice(0, visibleTasksCount), [filtered, visibleTasksCount]);
+    const hasMore = filtered.length > visibleTasksCount;
+    
     // agrupa as tarefas por projeto
     const groupedByProject = useMemo(() => {
         const map = {};
-        filtered.forEach((t) => {
+        paginated.forEach((t) => {
             const pid = t.projectId || "__sem_projeto__";
             if (!map[pid]) map[pid] = [];
             map[pid].push(t);
         });
         return Object.entries(map);
-    }, [filtered]);
+    }, [paginated]);
 
 
     return (
@@ -136,6 +152,17 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
                             </div>
                         );
                     })}
+                    {hasMore && (
+                        <div className="flex justify-center pt-4">
+                            <button
+                                type="button"
+                                onClick={loadMoreTasks}
+                                className="px-6 py-2 bg-bg-card border border-border-main2 hover:border-brand-500/50 text-text-secondary hover:text-brand-500 text-[13px] font-bold rounded-xl transition-all cursor-pointer"
+                            >
+                                Carregar mais tarefas ({filtered.length - visibleTasksCount} restantes)
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
         </>

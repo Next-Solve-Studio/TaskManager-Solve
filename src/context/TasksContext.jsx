@@ -36,6 +36,10 @@ export const TasksProvider = ({children, projectId}) =>{
     const [tasks, setTasks] = useState([])
     const [loadingTasks, setLoadingTasks] = useState(true)
 
+    // Paginação
+    const [visibleTasksCount, setVisibleTasksCount] = useState(20);
+    const loadMoreTasks = useCallback(() => setVisibleTasksCount(prev => prev + 20), []);
+
     useEffect(()=>{
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.uid) return;
@@ -204,6 +208,8 @@ export const TasksProvider = ({children, projectId}) =>{
     const value = {
         tasks,
         loadingTasks,
+        visibleTasksCount,
+        loadMoreTasks,
         createTask,
         updateTask,
         deleteTask,

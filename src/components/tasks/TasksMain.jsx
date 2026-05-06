@@ -11,7 +11,7 @@ import TasksFilters from "./sections/TasksFilters";
 import TasksContent from "./sections/TasksContent";
 
 export default function TasksMain() {
-    const { tasks, loadingTasks, createTask, updateTask, deleteTask } = useTasks();
+    const { tasks, loadingTasks, createTask, updateTask, deleteTask, visibleTasksCount, loadMoreTasks } = useTasks();
     const { projects, projectMap, users, usersMap } = useProjects();
 
     const [formOpen, setFormOpen] = useState(false);
@@ -25,6 +25,7 @@ export default function TasksMain() {
     const [filterPriority, setFilterPriority] = useState("all");
     const [filterProject, setFilterProject] = useState("all");
     const [filterAssignee, setFilterAssignee] = useState("all");
+    const [filterMonth, setFilterMonth] = useState("all");
 
     // abre o form para criar task
     const handleOpenCreate = () => {
@@ -94,6 +95,8 @@ export default function TasksMain() {
                 setFilterPriority={setFilterPriority}
                 filterProject={filterProject}
                 setFilterProject={setFilterProject}
+                filterMonth={filterMonth}
+                setFilterMonth={setFilterMonth}
             />
 
             {/* Conteúdo */}
@@ -105,11 +108,14 @@ export default function TasksMain() {
                 usersMap={usersMap}
                 filterProject={filterProject}
                 filterAssignee={filterAssignee}
+                filterMonth={filterMonth}
                 tasks={tasks}
                 projectMap={projectMap}
                 onEdit={(task) => { setEditingTask(task); setFormOpen(true); }}
                 onDelete={(task) => { setDeletingTask(task); setDeleteOpen(true); }}
                 onCreate={handleOpenCreate}
+                visibleTasksCount={visibleTasksCount}
+                loadMoreTasks={loadMoreTasks}
             />
 
             <TaskForm

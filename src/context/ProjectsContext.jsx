@@ -40,7 +40,11 @@ export const ProjectsProvider = ({ children }) => {
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [loadingClients, setLoadingClients] = useState(true);
 
-
+    // Paginação
+    const [visibleProjectsCount, setVisibleProjectsCount] = useState(10);
+    const visibleProjects = useMemo(() => projects.slice(0, visibleProjectsCount), [projects, visibleProjectsCount]);
+    const hasMoreProjects = projects.length > visibleProjectsCount;
+    const loadMoreProjects = () => setVisibleProjectsCount(prev => prev + 10);
     
 
     useEffect(() => {
@@ -277,6 +281,9 @@ export const ProjectsProvider = ({ children }) => {
         loadingProjects,
         loadingUsers,
         loadingClients,
+        visibleProjects,
+        hasMoreProjects,
+        loadMoreProjects,
         createProject,
         updateProject,
         deleteProject,

@@ -1,147 +1,231 @@
-'use client'
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+"use client";
+
+// Importações do Material UI
+import {
+    Box,
+    Button,
+    Collapse,
+    FormControl,
+    IconButton,
+    InputAdornment,
+    InputLabel,
+    MenuItem,
+    Select,
+    TextField,
+    Tooltip,
+} from "@mui/material";
 import { useState } from "react";
 import { AiOutlineClear } from "react-icons/ai";
 import { MdOutlineFilterList, MdSearch } from "react-icons/md";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { menuPaper, muiDark } from "@/styles/StyleInputs";
 
-
-export default function TasksFilters({projects, users, searchInput,filterStatus, filterPriority, filterAssignee, filterProject, setFilterStatus, setFilterPriority, setFilterProject, setFilterAssignee, setSearchInput }) {
+export default function TasksFilters({
+    projects,
+    users,
+    searchInput,
+    filterStatus,
+    filterPriority,
+    filterAssignee,
+    filterProject,
+    filterMonth,
+    setFilterStatus,
+    setFilterPriority,
+    setFilterProject,
+    setFilterAssignee,
+    setSearchInput,
+    setFilterMonth,
+}) {
     const [showFilters, setShowFilters] = useState(false);
 
     const clearFilters = () => {
-        // função para limpar filtros
         setFilterStatus("all");
         setFilterPriority("all");
         setFilterProject("all");
         setFilterAssignee("all");
+        setFilterMonth("all");
         setSearchInput("");
     };
 
-    const selectCls =
-            "text-[12px] bg-bg-surface border border-border-main2 text-text-secondary rounded-lg px-3 py-1.5 outline-none focus:border-brand-500/50 cursor-pointer";
-    return (
-        <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-3 flex-wrap">
-                    <div className="relative flex-1 min-w-48">
-                        <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-base" />
-                        <input
-                            type="text"
-                            value={searchInput}
-                            onChange={(e) => setSearchInput(e.target.value)}
-                            placeholder="Buscar tarefa, responsável, projeto..."
-                            className="w-full bg-bg-surface border border-border-main2 rounded-xl pl-9 pr-4 py-2 text-[13px] text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/50 transition-colors"
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => setShowFilters((v) => !v)}
-                        className={
-                            "flex items-center gap-1.5 px-3 py-2 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer " +
-                            (showFilters
-                                ? "bg-brand-500/15 border-brand-500/30 text-brand-500"
-                                : "bg-bg-surface border-border-main2 text-text-secondary hover:text-text-primary")
-                        }
-                    >
-                        <MdOutlineFilterList size={16} />
-                        Filtros
-                    </button>
-                    {(filterStatus !== "all" ||
-                        filterPriority !== "all" ||
-                        filterProject !== "all" ||
-                        filterAssignee !== "all") && (
-                            <button
-                                onClick={clearFilters}
-                                type="button"
-                                className="flex items-center gap-1 bg-error/10 text-error cursor-pointer text-[12px] font-semibold border border-error/20 rounded-lg p-2"
-                                aria-label="Limpar filtros"
-                            >
-                                <AiOutlineClear className="text-xl" />
-                            </button>
-                                   
-                    )}
-                </div>
+    const hasActiveFilters =
+        filterStatus !== "all" ||
+        filterPriority !== "all" ||
+        filterProject !== "all" ||
+        filterAssignee !== "all" ||
+        filterMonth !== "all";
 
-                {showFilters && (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 bg-bg-card border border-border-main2 rounded-xl">
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                                Status
-                            </span>
-                            <select
-                                value={filterStatus}
-                                onChange={(e) =>
-                                    setFilterStatus(e.target.value)
-                                }
-                                className={selectCls}
-                            >
-                                <option value="all">Todos</option>
-                                {Object.entries(STATUS_MAP).map(([k, v]) => (
-                                    <option key={k} value={k}>
-                                        {v.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                                Prioridade
-                            </span>
-                            <select
-                                value={filterPriority}
-                                onChange={(e) =>
-                                    setFilterPriority(e.target.value)
-                                }
-                                className={selectCls}
-                            >
-                                <option value="all">Todas</option>
-                                {Object.entries(PRIORITY_MAP).map(([k, v]) => (
-                                    <option key={k} value={k}>
-                                        {v.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                                Projeto
-                            </span>
-                            <select
-                                value={filterProject}
-                                onChange={(e) =>
-                                    setFilterProject(e.target.value)
-                                }
-                                className={selectCls}
-                            >
-                                <option value="all">Todos</option>
-                                {projects.map((p) => (
-                                    <option key={p.id} value={p.id}>
-                                        {p.title}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                                Responsável
-                            </span>
-                            <select
-                                value={filterAssignee}
-                                onChange={(e) =>
-                                    setFilterAssignee(e.target.value)
-                                }
-                                className={selectCls}
-                            >
-                                <option value="all">Todos</option>
-                                <option value="mine">Minhas tarefas</option>
-                                {users.map((u) => (
-                                    <option key={u.id} value={u.id}>
-                                        {u.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
+    return (
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {/* Barra de Pesquisa e Botões Superiores */}
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    flexWrap: "wrap",
+                }}
+            >
+                <TextField
+                    size="small"
+                    value={searchInput}
+                    
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    placeholder="Buscar tarefa, responsável, projeto..."
+                    sx={{ ...muiDark, flex: 1, minWidth: 250 }}
+
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <MdSearch size={20} className="text-text-primary"/>
+                            </InputAdornment>
+                        ),
+                        sx: { borderRadius: 3 },
+                    }}
+                />
+
+                <Button
+                    variant={showFilters ? "contained" : "outlined"}
+                    color="primary"
+                    disableElevation
+                    onClick={() => setShowFilters((v) => !v)}
+                    startIcon={<MdOutlineFilterList />}
+                    sx={{
+                        borderRadius: 3,
+                        textTransform: "none",
+                        fontWeight: 600,
+                        height: 40,
+                    }}
+                >
+                    Filtros
+                </Button>
+
+                {hasActiveFilters && (
+                    <Tooltip title="Limpar filtros" arrow>
+                        <IconButton
+                            color="error"
+                            onClick={clearFilters}
+                            sx={{
+                                border: "1px solid",
+                                borderColor: "error.light",
+                                borderRadius: 3,
+                                bgcolor: "error.main",
+                                color: "white",
+                                "&:hover": {
+                                    bgcolor: "error.dark",
+                                },
+                            }}
+                        >
+                            <AiOutlineClear size={20} />
+                        </IconButton>
+                    </Tooltip>
                 )}
-            </div>
-    )
+            </Box>
+
+            {/* Painel de Filtros Avançados (com animação Collapse do MUI) */}
+            <Collapse in={showFilters}>
+                <Box
+                    sx={{
+                        display: "grid",
+                        gridTemplateColumns: {
+                            xs: "repeat(2, 1fr)",
+                            sm: "repeat(5, 1fr)",
+                        },
+                        gap: 2,
+                        p: 2,
+                        bgcolor: "var(--color-bg-card)",
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 3,
+                        boxShadow: 1,
+                    }}
+                >
+                    <FormControl size="small" fullWidth sx={muiDark}>
+                        <InputLabel id="status-label">Status</InputLabel>
+                        <Select
+                            labelId="status-label"
+                            label="Status"
+                            MenuProps={menuPaper}
+                            value={filterStatus}
+                            onChange={(e) => setFilterStatus(e.target.value)}
+                        >
+                            <MenuItem value="all">Todos</MenuItem>
+                            {Object.entries(STATUS_MAP).map(([k, v]) => (
+                                <MenuItem key={k} value={k}>
+                                    {v.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl size="small" fullWidth sx={muiDark}>
+                        <InputLabel id="priority-label">Prioridade</InputLabel>
+                        <Select
+                            labelId="priority-label"
+                            label="Prioridade"
+                            value={filterPriority}
+                            MenuProps={menuPaper}
+                            onChange={(e) => setFilterPriority(e.target.value)}
+                        >
+                            <MenuItem value="all">Todas</MenuItem>
+                            {Object.entries(PRIORITY_MAP).map(([k, v]) => (
+                                <MenuItem key={k} value={k}>
+                                    {v.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl size="small" fullWidth sx={muiDark}>
+                        <InputLabel id="project-label">Projeto</InputLabel>
+                        <Select
+                            labelId="project-label"
+                            label="Projeto"
+                            value={filterProject}
+                            MenuProps={menuPaper}
+                            onChange={(e) => setFilterProject(e.target.value)}
+                        >
+                            <MenuItem value="all">Todos</MenuItem>
+                            {projects.map((p) => (
+                                <MenuItem key={p.id} value={p.id}>
+                                    {p.title}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <FormControl size="small" fullWidth sx={muiDark}>
+                        <InputLabel id="assignee-label">Responsável</InputLabel>
+                        <Select
+                            labelId="assignee-label"
+                            label="Responsável"
+                            value={filterAssignee}
+                            MenuProps={menuPaper}
+                            onChange={(e) => setFilterAssignee(e.target.value)}
+                        >
+                            <MenuItem value="all">Todos</MenuItem>
+                            <MenuItem value="mine">Minhas tarefas</MenuItem>
+                            {users.map((u) => (
+                                <MenuItem key={u.id} value={u.id}>
+                                    {u.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <TextField
+                        type="month"
+                        label="Mês"
+                        size="small"
+                        fullWidth
+                        sx={muiDark}
+                        InputLabelProps={{ shrink: true }}
+                        value={filterMonth === "all" ? "" : filterMonth}
+                        onChange={(e) =>
+                            setFilterMonth(e.target.value || "all")
+                        }
+                    />
+                </Box>
+            </Collapse>
+        </Box>
+    );
 }
