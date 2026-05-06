@@ -11,8 +11,7 @@ import TasksFilters from "./sections/TasksFilters";
 import TasksContent from "./sections/TasksContent";
 
 export default function TasksMain() {
-    const { tasks, loadingTasks, createTask, updateTask, deleteTask } =
-        useTasks();
+    const { tasks, loadingTasks, createTask, updateTask, deleteTask } = useTasks();
     const { projects, projectMap, users, usersMap } = useProjects();
 
     const [formOpen, setFormOpen] = useState(false);

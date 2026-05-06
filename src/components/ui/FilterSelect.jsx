@@ -1,5 +1,5 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
-import { menuPaper2, muiDark2 } from "@/styles/StyleInputs";
+import { menuPaper2, muiDark } from "@/styles/StyleInputs";
 
 // Componente interno para evitar repetição dos selects
 export default function FilterSelect({
@@ -24,7 +24,7 @@ export default function FilterSelect({
     return (
         <FormControl
             size="small"
-            sx={{ minWidth: isMobile ? "100%" : 160, ...muiDark2 }}
+            sx={{ minWidth: isMobile ? "100%" : 160, ...muiDark }}
         >
             <InputLabel>{label}</InputLabel>
             <Select
