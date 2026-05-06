@@ -72,41 +72,81 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
     }
 
     const fieldSx = {
+        width: "100%",
         "& .MuiOutlinedInput-root": {
-            borderRadius: "10px",
-            color: "white",
-            "& fieldset": { borderColor: "var(--color-bg-hover)" },
-            "&:hover fieldset": { borderColor: "var(--color-bg-hover2)" },
+            borderRadius: "12px",
+            color: "var(--text-primary)",
+            backgroundColor: "var(--bg-surface)",
+            fontSize: "0.95rem",
+            transition: "box-shadow 0.2s ease",
+            "& fieldset": {
+                borderColor: "var(--border-main2)",
+                transition: "border-color 0.2s ease",
+            },
+            "&:hover fieldset": { borderColor: "var(--color-brand-500)" },
             "&.Mui-focused fieldset": {
-                borderColor: "var(--color-primary)",
+                borderColor: "var(--color-brand-500)",
                 borderWidth: "1.5px",
             },
-        },
-        "& .MuiInputLabel-root": { color: "#666" },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-primary)" },
-
-        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
-            {
-                transition: "background-color 50000s ease-in-out 0s",
-                WebkitTextFillColor: "white !important",
-                caretColor: "white",
+            "&.Mui-focused": {
+                boxShadow: "0 0 0 3px rgba(26, 215, 111, 0.12)",
             },
+        },
+        "& .MuiInputLabel-root": {
+            color: "var(--text-muted)",
+            fontSize: "0.9rem",
+        },
+        "& .MuiInputLabel-root.Mui-focused": {
+            color: "var(--color-brand-500)",
+        },
+        "& .MuiFormHelperText-root": {
+            fontSize: "0.78rem",
+            marginLeft: "4px",
+        },
+        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active": {
+            transition: "background-color 50000s ease-in-out 0s",
+            WebkitTextFillColor: "var(--text-primary) !important",
+            caretColor: "var(--text-primary)",
+        },
     };
 
-    function handlePassword() {
-        setSeePassword(!seePassword);
-    }
-
     return (
-        <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="bg-white/10 backdrop-blur-xl md:bg-transparent md:border-0 md:backdrop-blur-none border border-white/20 
-                shadow-2xl absolute top-10 md:top-0 md:relative flex flex-col gap-10 overflow-hidden rounded-2xl mx-auto w-[90%] sm:w-full max-w-120 p-8 pb-20"
-        >
-            <h2 className="flex items-center justify-center w-full max-w-100 text-4xl font-bold text-center ">
-                Acesse sua Conta
-            </h2>
-            <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-8 w-full">
+
+            {/* Header */}
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 mb-1">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-500 to-cyan-400
+                                    flex items-center justify-center
+                                    shadow-[0_0_20px_rgba(26,215,111,0.35)]">
+                        <IoMdLock size={18} color="white" />
+                    </div>
+                    <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-500">
+                        Autenticação
+                    </span>
+                </div>
+                <h2 className="text-3xl font-black tracking-tight text-text-primary">
+                    Acesse sua conta
+                </h2>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                    Insira suas credenciais para continuar
+                </p>
+            </div>
+
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col gap-5"
+            >
+                <GoogleLoginBtn />
+
+                <div className="flex items-center gap-3 my-1">
+                    <div className="flex-1 h-px bg-border-main2" />
+                    <span className="text-xs font-medium text-text-muted uppercase tracking-widest px-1">
+                        ou
+                    </span>
+                    <div className="flex-1 h-px bg-border-main2" />
+                </div>
+
                 <TextField
                     {...register("email")}
                     label="E-mail"
@@ -119,13 +159,14 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         startAdornment: (
                             <InputAdornment position="start">
                                 <MdOutlineEmail
-                                    color="var(--color-primary)"
-                                    size={20}
+                                    color="var(--color-brand-500)"
+                                    size={19}
                                 />
                             </InputAdornment>
                         ),
                     }}
                 />
+
                 <div className="flex w-full relative items-center">
                     <TextField
                         {...register("password")}
@@ -139,8 +180,8 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                             startAdornment: (
                                 <InputAdornment position="start">
                                     <IoMdLock
-                                        color="var(--color-primary)"
-                                        size={20}
+                                        color="var(--color-brand-500)"
+                                        size={19}
                                     />
                                 </InputAdornment>
                             ),
@@ -149,54 +190,54 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                     />
                     <button
                         type="button"
-                        className="absolute right-2"
-                        onClick={handlePassword}
+                        className="absolute right-3 text-text-muted hover:text-brand-500 transition-colors duration-150"
+                        onClick={() => setSeePassword(!seePassword)}
                     >
-                        {seePassword ? (
-                            <FaEyeSlash
-                                size={20}
-                                className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"
-                            />
-                        ) : (
-                            <FaEye
-                                size={20}
-                                className="cursor-pointer text-white md:text-bg-hover md:hover:text-bg-hover2"
-                            />
-                        )}
+                        {seePassword
+                            ? <FaEyeSlash size={18} />
+                            : <FaEye size={18} />
+                        }
                     </button>
                 </div>
+
                 {allowRegistration && (
                     <button
                         type="button"
-                        className="text-white md:text-bg-hover2 cursor-pointer md:hover:text-brand-700"
+                        className="text-sm text-text-muted hover:text-brand-500 transition-colors duration-150
+                                   text-left cursor-pointer"
                         onClick={() => setHaveAccount(false)}
                     >
-                        Não tem uma conta? clique aqui
+                        Não tem uma conta?{" "}
+                        <span className="text-brand-500 font-semibold underline underline-offset-2">
+                            Criar agora
+                        </span>
                     </button>
                 )}
-            </div>
-            <button
-                type="submit"
-                disabled={loading}
-                className="
-                    mt-1 h-12 w-full max-w-100 mx-auto rounded-lg
-                    font-semibold text-xl tracking-wide
-                    bg-brand-600 sm:hover:bg-brand-700
-                    text-white
-                    shadow-[0_0_20px_var(--color-surface-green-md)]
-                    cursor-pointer
-                    sm:hover:shadow-[0_0_28px_var(--color-surface-green-alt)]
-                    disabled:opacity-50 disabled:cursor-not-allowed
-                    active:scale-95 active:brightness-90 transition-all duration-150
-                "
-            >
-                {loading ? (
-                    <CircularProgress size={24} color="inherit" />
-                ) : (
-                    "Entrar"
-                )}
-            </button>
-            <GoogleLoginBtn />
-        </form>
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="
+                        relative overflow-hidden mt-2
+                        h-12 w-full rounded-xl
+                        font-bold text-base tracking-wide text-white
+                        bg-linear-to-r from-brand-600 to-brand-500
+                        shadow-[0_4px_24px_rgba(26,215,111,0.35)]
+                        sm:hover:shadow-[0_5px_28px_rgba(26,215,111,0.5)]
+                        sm:hover:brightness-100
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        active:scale-[0.98] transition-all duration-200
+                        cursor-pointer
+                    "
+                >
+                    <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0
+                                     -translate-x-full hover:translate-x-full transition-transform duration-700" />
+                    {loading
+                        ? <CircularProgress size={22} color="inherit" />
+                        : "Entrar"
+                    }
+                </button>
+            </form>
+        </div>
     );
 }

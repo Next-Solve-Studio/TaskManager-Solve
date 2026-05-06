@@ -75,22 +75,33 @@ export default function GoogleLoginBtn() {
     }
 
     return (
-        <div className="flex flex-col items-center gap-4 w-full max-w-100 mx-auto">
-            <button
-                type="button"
-                onClick={handleGoogleLogin}
-                disabled={loading}
-                className="
-                    flex items-center justify-center gap-3
-                    w-full py-3 px-4 border -mt-3
-                  border-gray-300 rounded-lg bg-white
-                  text-gray-700 font-medium shadow-sm transition-all cursor-pointer
-                  sm:hover:bg-[#D1D1D1] sm:hover:shadow-md active:scale-[0.98] disabled:opacity-50
-                "
-            >
-                <FcGoogle className="text-2xl " />
-                {loading ? "Conectando..." : "Entrar com Google"}
-            </button>
-        </div>
+        <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            className="
+                group relative flex items-center justify-center gap-3
+                w-full h-11 px-4
+                rounded-xl border border-border-main2
+                bg-bg-surface
+                text-text-primary text-sm font-semibold
+                hover:border-brand-500/40
+                hover:bg-bg-card
+                hover:shadow-[0_0_16px_rgba(26,215,111,0.12)]
+                disabled:opacity-50 disabled:cursor-not-allowed
+                active:scale-[0.98]
+                transition-all duration-200
+                cursor-pointer
+            "
+        >
+            <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
+                             bg-linear-to-r from-brand-500/5 to-cyan-400/5
+                             transition-opacity duration-200" />
+
+            <FcGoogle size={20} className="shrink-0 relative z-10" />
+            <span className="relative z-10">
+                {loading ? "Conectando..." : "Continuar com Google"}
+            </span>
+        </button>
     );
 }
