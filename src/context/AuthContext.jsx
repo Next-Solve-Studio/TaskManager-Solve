@@ -107,8 +107,12 @@ export const AuthProvider = ({ children }) => {
             createdAt: new Date(),
             authMethod: "email",
         });
-        // Sinaliza redirect após onAuthStateChanged popular o currentUser
-        justLoggedIn.current = true;
+        // garantimos o cookie e o roteamento AQUI:
+        const token = await userCredential.user.getIdToken();
+        setSessionCookie(token);
+        
+        // Redireciona o usuário
+        router.goHome();
     };
 
     const logout = async () => {
@@ -126,6 +130,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        justLoggedIn
     };
 
     return (

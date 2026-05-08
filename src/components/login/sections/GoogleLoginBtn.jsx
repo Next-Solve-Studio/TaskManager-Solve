@@ -9,15 +9,18 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { useAppRouter } from "@/hooks/useAppRouter";
 import { auth, db, googleProvider } from "@/lib/firebaseConfig";
+import { useAuth } from "@/context/AuthContext";
 
 export default function GoogleLoginBtn() {
     const [loading, setLoading] = useState(false);
     const router = useAppRouter();
+    const { setJustLoggedIn } = useAuth();
 
     async function handleGoogleLogin() {
         setLoading(true);
 
         try {
+            setJustLoggedIn(true);
             const result = await signInWithPopup(auth, googleProvider);
             const user = result.user;
             const token = await user.getIdToken();
@@ -55,6 +58,7 @@ export default function GoogleLoginBtn() {
 
             router.goHome();
         } catch (error) {
+            console.error(" ERRO DETALHADO NO LOGIN:", error);
             const messages = {
                 "auth/user-not-found":
                     "Nenhuma conta encontrada com este e-mail.",

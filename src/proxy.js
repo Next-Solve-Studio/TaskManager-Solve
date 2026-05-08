@@ -12,6 +12,10 @@ export function proxy(request) {
     // O firebase armazena a sessão em um cookie chamado '__session'
     const sessionCookie = request.cookies.get("__session");
 
+    if (sessionCookie && pathname === "/login") {
+        return NextResponse.redirect(new URL("/", request.url)); 
+    }
+
     // Se não houver sessão e o user tentar acessar uma rota protegida, redireciona para o lohin
     if (!sessionCookie && pathname !== "/login") {
         return NextResponse.redirect(new URL("/login", request.url));
