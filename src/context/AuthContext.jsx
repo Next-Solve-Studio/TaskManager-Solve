@@ -52,6 +52,10 @@ export const AuthProvider = ({ children }) => {
     // indica que o login acabou de acontecer nesta sessão, Usamos ref para não causar re-render e evitar loop
     const justLoggedIn = useRef(false);
 
+    const setJustLoggedIn = useCallback((val) => {
+        justLoggedIn.current = val;
+    }, []);
+
     // Guarda dados do novo usuário
     const pendingUserData = useRef(null);
 
@@ -141,7 +145,8 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
-        justLoggedIn
+        justLoggedIn,
+        setJustLoggedIn
     };
 
     return (

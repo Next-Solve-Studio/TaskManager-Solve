@@ -21,6 +21,7 @@ export default function CardScheduleEdit({
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
     const [saving, setSaving] = useState(false);
+    const [expanded, setExpanded] = useState(false)
     const textareaRef = useRef(null);
 
     // Sync quando descrição mudar externamente
@@ -58,9 +59,12 @@ export default function CardScheduleEdit({
 
     const todayDay = isToday(date);
 
+    // Lógica para saber se o texto é longo o suficiente para precisar do botão "Ler tudo"
+    const isLongText = description.length > 50 || (description.match(/\n/g) || []).length > 3;
+
     return (
         <div
-            className={`flex flex-col min-w-40 gap-2 p-4 rounded-2xl transition-all duration-200 group relative border ${
+            className={`flex flex-col min-w-40 gap-2 p-4 rounded-2xl transition-all duration-200 group relative border overflow-hidden ${
                 todayDay
                     ? "bg-brand-500/10 border-brand-500/30"
                     : "bg-bg-surface border-border-main"
@@ -142,15 +146,37 @@ export default function CardScheduleEdit({
                         </div>
                     </div>
                 ) : (
-                    <button
-                        type="button"
-                        className={`text-sm ${isMobile ? "h-full w-full text-start" : ""} leading-relaxed ${description ? "text-text-secondary" : "text-text-muted"} ${canEdit && !description ? "italic" : ""}`}
-                        style={{ whiteSpace: "pre-wrap" }}
-                        onClick={() => setEditing(true)}
-                    >
-                        {description ||
-                            (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
-                    </button>
+                    <div className="flex flex-col w-full">
+                        <button
+                            type="button"
+                            className={`text-sm w-full text-start leading-relaxed whitespace-pre-wrap wrap-break-word transition-all duration-200 ${
+                                description ? "text-text-secondary" : "text-text-muted"
+                            } ${canEdit && !description ? "italic hover:text-brand-500" : ""} ${
+                                !expanded && description ? "line-clamp-4" : ""
+                            }`}
+                            onClick={() => {
+                                if (canEdit) {
+                                    setEditing(true); 
+                                } else if (description) {
+                                    setExpanded(!expanded);
+                                }
+                            }}
+                        >
+                            {description || (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
+                        </button>
+
+                        {/* Só mostra 'Ler tudo' se tiver descrição e for grande */}
+                        {isLongText && (
+                            <button
+                                type="button"
+                                onClick={() => setExpanded(!expanded)}
+                                className="mt-2 text-[11px] cursor-pointer font-bold uppercase tracking-wider text-brand-500 hover:text-brand-400 self-start transition-colors"
+                            >
+                                {expanded ? "Mostrar menos" : "Ler tudo"}
+                            </button>
+                        )}
+                    </div>
+                    
                 )}
             </div>
         </div>
