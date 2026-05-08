@@ -104,9 +104,21 @@ export function ProjectForm({
     };
 
     const handleFormSubmit = (data) => {
+        
+        const fixTimezone = (dateString) => {
+            if (!dateString) return "";
+            // Cria a data adicionando 'T12:00:00' para garantir que, 
+            // independente do fuso (-3, -4, etc), não mude de dia.
+            const d = new Date(`${dateString}T12:00:00`); 
+            return d.toISOString(); // ou envie como objeto Date, dependendo do seu backend
+        }
+
         // função para enviar dados, e ja recebe eles validados pelo react hook form
         onSubmit({
             ...data,
+            startDate: fixTimezone(data.startDate),
+            expectedDeliveryDate: fixTimezone(data.expectedDeliveryDate),
+            deliveryDate: fixTimezone(data.deliveryDate),
             techStack: data.techStack
                 ? data.techStack
                       .split(",")
