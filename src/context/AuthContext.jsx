@@ -8,7 +8,7 @@ import {
     signInWithEmailAndPassword,
     signOut,
 } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -104,14 +104,11 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (name, email, password) => {
     
-        const usersSnapshot = await getDocs(collection(db, "users"));
-        const isFirstUser = usersSnapshot.empty;
-
         // dados do novo user
         const userData = {
             name: name.trim(),
             email,
-            role: isFirstUser ? "administrador" : "desenvolvedor",
+            role: "desenvolvedor",
             createdAt: new Date(),
             authMethod: "email",
         };
