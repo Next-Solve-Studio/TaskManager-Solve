@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { MdHistory, MdNotificationsNone } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { db } from "@/lib/firebaseConfig";
-import { getActivityMessage, cleanOldLog } from "@/utils/ActivityLogger";
+import { cleanOldLogs, getActivityMessage } from "@/utils/ActivityLogger";
 
 export default function ActivityFeed() {
     const [activities, setActivities] = useState([]);
