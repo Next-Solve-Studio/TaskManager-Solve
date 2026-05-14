@@ -45,13 +45,15 @@ export default function CardChecklist({ task }) {
                         />
                     </div>
                     {/* Items do checklist (máx 3 visíveis) */}
-                    <div className="flex flex-col gap-1">
-                        {checklist.slice(0, 3).map((item) => (
+                    <div className="flex flex-col gap-2 max-h-28 overflow-y-auto scroll-hidden">
+                        {checklist.map((item, index) => (
                             <button
                                 key={item.id}
                                 type="button"
                                 onClick={() => toggleItem(item.id)}
-                                className="flex items-center gap-2 text-left group cursor-pointer"
+                                className={`flex items-center gap-2 text-left group cursor-pointer pb-1.5
+                                    ${index !== checklist.length - 1 ? "border-b border-[#a1a1a15e]" : ""}
+                                `}
                             >
                                 <MdCheckCircleOutline
                                     size={14}
@@ -70,13 +72,9 @@ export default function CardChecklist({ task }) {
                                 >
                                     {item.text}
                                 </span>
-                            </button>
+                            </button>     
                         ))}
-                        {checklist.length > 3 && (
-                            <span className="text-[10px] text-text-muted pl-5">
-                                +{checklist.length - 3} itens...
-                            </span>
-                        )}
+
                     </div>
                 </div>
             )}

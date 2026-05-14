@@ -31,6 +31,7 @@ export default function ActivityFeed() {
                 id: doc.id,
                 ...doc.data(),
             }));
+            
             setActivities(logs);
             setLoading(false);
         });

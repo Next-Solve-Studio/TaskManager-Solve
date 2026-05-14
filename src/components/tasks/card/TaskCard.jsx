@@ -4,7 +4,7 @@ import CardHeader from "./sections/CardHeader";
 import CardFooter from "./sections/CardFooter";
 import CardChecklist from "./sections/CardChecklist";
 
-function TaskCard({ task, usersMap, onEdit, onDelete}) {
+function TaskCard({ task, usersMap, onEdit, onDelete}) { 
     
     const assignedUsers = (task.assignedTo || [])
         .map((uid) => usersMap[uid])
