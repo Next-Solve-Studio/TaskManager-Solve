@@ -254,7 +254,7 @@ export default function UsersMain() {
                 >
                     {/* Cabeçalho */}
                     <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
-                        <div></div> 
+                        <div></div>
                         <div>
                             <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
                                 Usuário
@@ -283,7 +283,13 @@ export default function UsersMain() {
                     </div>
 
                     {/* Lista de Usuários */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 6,
+                        }}
+                    >
                         {filtered.map((user) => (
                             <UserRow
                                 key={user.id}

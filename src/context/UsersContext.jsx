@@ -16,8 +16,9 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { db } from "@/lib/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/lib/firebaseConfig";
+
 const UsersContext = createContext(); // Contexto criado
 
 export const useUsers = () => useContext(UsersContext);
@@ -31,7 +32,7 @@ export const UsersProvider = ({ children }) => {
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.uid) return;
-        
+
         const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
 
         const unSubscribe = onSnapshot(

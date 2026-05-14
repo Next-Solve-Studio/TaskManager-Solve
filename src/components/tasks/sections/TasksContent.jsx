@@ -1,15 +1,29 @@
-'use client'
+"use client";
 
-import { MdAdd, MdOutlineTaskAlt } from 'react-icons/md';
-import TaskCard from '../card/TaskCard';
-import { useMemo } from 'react';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useAuth } from '@/context/AuthContext';
-import CanDo from '@/components/auth/CanDo';
+import { useMemo } from "react";
+import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
+import CanDo from "@/components/auth/CanDo";
+import { useAuth } from "@/context/AuthContext";
+import { useDebounce } from "@/hooks/useDebounce";
+import TaskCard from "../card/TaskCard";
 
-export default function TasksContent({loadingTasks, searchInput, filterStatus, filterPriority,
-    usersMap, filterProject, filterAssignee, filterMonth, tasks, projectMap, onEdit, onDelete, onCreate, visibleTasksCount, loadMoreTasks}) {
-
+export default function TasksContent({
+    loadingTasks,
+    searchInput,
+    filterStatus,
+    filterPriority,
+    usersMap,
+    filterProject,
+    filterAssignee,
+    filterMonth,
+    tasks,
+    projectMap,
+    onEdit,
+    onDelete,
+    onCreate,
+    visibleTasksCount,
+    loadMoreTasks,
+}) {
     const { currentUser } = useAuth();
 
     // atraso de 300ms para cada pesquisa após parar de digitar, melhora a performance
@@ -39,8 +53,10 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
             if (filterMonth !== "all") {
                 const taskDate = t.startDate || t.createdAt;
                 if (taskDate) {
-                    const date = taskDate.toDate ? taskDate.toDate() : new Date(taskDate);
-                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                    const date = taskDate.toDate
+                        ? taskDate.toDate()
+                        : new Date(taskDate);
+                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
                     if (monthKey !== filterMonth) return false;
                 } else {
                     return false;
@@ -73,9 +89,12 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
     ]);
 
     // Paginação aplicada após o filtro
-    const paginated = useMemo(() => filtered.slice(0, visibleTasksCount), [filtered, visibleTasksCount]);
+    const paginated = useMemo(
+        () => filtered.slice(0, visibleTasksCount),
+        [filtered, visibleTasksCount],
+    );
     const hasMore = filtered.length > visibleTasksCount;
-    
+
     // agrupa as tarefas por projeto
     const groupedByProject = useMemo(() => {
         const map = {};
@@ -86,7 +105,6 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
         });
         return Object.entries(map);
     }, [paginated]);
-
 
     return (
         <>
@@ -159,12 +177,13 @@ export default function TasksContent({loadingTasks, searchInput, filterStatus, f
                                 onClick={loadMoreTasks}
                                 className="px-6 py-2 bg-bg-card border border-border-main2 hover:border-brand-500/50 text-text-secondary hover:text-brand-500 text-[13px] font-bold rounded-xl transition-all cursor-pointer"
                             >
-                                Carregar mais tarefas ({filtered.length - visibleTasksCount} restantes)
+                                Carregar mais tarefas (
+                                {filtered.length - visibleTasksCount} restantes)
                             </button>
                         </div>
                     )}
                 </div>
             )}
         </>
-    )
+    );
 }

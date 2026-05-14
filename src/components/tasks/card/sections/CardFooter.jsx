@@ -1,14 +1,16 @@
+import { MdOutlineCalendarToday, MdPerson } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
-import { MdOutlineCalendarToday, MdPerson } from "react-icons/md";
 
-
-export default function CardFooter({assignedUsers, task}) {
-    
+export default function CardFooter({ assignedUsers, task }) {
     const isOverdue =
         task.endDate &&
         task.status !== "concluido" &&
-        new Date((task.endDate?.toDate ? task.endDate.toDate() : new Date(task.endDate))) < new Date();
+        new Date(
+            task.endDate?.toDate
+                ? task.endDate.toDate()
+                : new Date(task.endDate),
+        ) < new Date();
 
     return (
         <div className="flex items-center justify-between pt-1 border-t border-border-main2/50">
@@ -47,12 +49,12 @@ export default function CardFooter({assignedUsers, task}) {
                 >
                     <MdOutlineCalendarToday size={11} />
                     <span>
-                        {formatDateInput(task.startDate)}
+                        {formatDateInput(task.startDate).dateFormatted}
                         {task.startDate && task.endDate && " → "}
-                        {formatDateInput(task.endDate)}
+                        {formatDateInput(task.endDate).dateFormatted}
                     </span>
                 </div>
             )}
         </div>
-    )
+    );
 }

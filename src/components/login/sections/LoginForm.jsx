@@ -103,22 +103,24 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
             fontSize: "0.78rem",
             marginLeft: "4px",
         },
-        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active": {
-            transition: "background-color 50000s ease-in-out 0s",
-            WebkitTextFillColor: "var(--text-primary) !important",
-            caretColor: "var(--text-primary)",
-        },
+        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
+            {
+                transition: "background-color 50000s ease-in-out 0s",
+                WebkitTextFillColor: "var(--text-primary) !important",
+                caretColor: "var(--text-primary)",
+            },
     };
 
     return (
         <div className="flex flex-col gap-8 w-full">
-
             {/* Header */}
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3 mb-1">
-                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-500 to-cyan-400
+                    <div
+                        className="w-10 h-10 rounded-xl bg-linear-to-br from-brand-500 to-cyan-400
                                     flex items-center justify-center
-                                    shadow-[0_0_20px_rgba(26,215,111,0.35)]">
+                                    shadow-[0_0_20px_rgba(26,215,111,0.35)]"
+                    >
                         <IoMdLock size={18} color="white" />
                     </div>
                     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-brand-500">
@@ -193,10 +195,11 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         className="absolute right-3 text-text-muted hover:text-brand-500 transition-colors duration-150"
                         onClick={() => setSeePassword(!seePassword)}
                     >
-                        {seePassword
-                            ? <FaEyeSlash size={18} />
-                            : <FaEye size={18} />
-                        }
+                        {seePassword ? (
+                            <FaEyeSlash size={18} />
+                        ) : (
+                            <FaEye size={18} />
+                        )}
                     </button>
                 </div>
 
@@ -230,12 +233,15 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         cursor-pointer
                     "
                 >
-                    <span className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0
-                                     -translate-x-full hover:translate-x-full transition-transform duration-700" />
-                    {loading
-                        ? <CircularProgress size={22} color="inherit" />
-                        : "Entrar"
-                    }
+                    <span
+                        className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0
+                                     -translate-x-full hover:translate-x-full transition-transform duration-700"
+                    />
+                    {loading ? (
+                        <CircularProgress size={22} color="inherit" />
+                    ) : (
+                        "Entrar"
+                    )}
                 </button>
             </form>
         </div>

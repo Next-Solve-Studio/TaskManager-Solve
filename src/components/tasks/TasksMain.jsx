@@ -5,13 +5,21 @@ import { useProjects } from "@/context/ProjectsContext";
 import { useTasks } from "@/context/TasksContext";
 import TaskDeleteModal from "./modals/TaskDeleteModal";
 import TaskForm from "./modals/TaskForm";
+import TasksContent from "./sections/TasksContent";
+import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
-import TasksFilters from "./sections/TasksFilters";
-import TasksContent from "./sections/TasksContent";
 
 export default function TasksMain() {
-    const { tasks, loadingTasks, createTask, updateTask, deleteTask, visibleTasksCount, loadMoreTasks } = useTasks();
+    const {
+        tasks,
+        loadingTasks,
+        createTask,
+        updateTask,
+        deleteTask,
+        visibleTasksCount,
+        loadMoreTasks,
+    } = useTasks();
     const { projects, projectMap, users, usersMap } = useProjects();
 
     const [formOpen, setFormOpen] = useState(false);
@@ -32,7 +40,7 @@ export default function TasksMain() {
         setEditingTask(null);
         setFormOpen(true);
     };
-    
+
     const handleSubmit = async (data) => {
         // recebe os dados do form
         setSubmitting(true);
@@ -44,9 +52,8 @@ export default function TasksMain() {
                 toast.success("Tarefa atualizada!");
             } else {
                 // data.projectId já vem preenchido pelo form
-                await createTask(data); 
+                await createTask(data);
                 toast.success("Tarefa criada!");
-
             }
             setFormOpen(false);
         } catch (err) {
@@ -75,11 +82,10 @@ export default function TasksMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-
-            <TasksHeader handleOpenCreate={handleOpenCreate} tasks={tasks}/>
+            <TasksHeader handleOpenCreate={handleOpenCreate} tasks={tasks} />
 
             {/* Stats */}
-            <TasksStats tasks={tasks}/>
+            <TasksStats tasks={tasks} />
 
             {/* Busca + Filtros */}
             <TasksFilters
@@ -111,8 +117,14 @@ export default function TasksMain() {
                 filterMonth={filterMonth}
                 tasks={tasks}
                 projectMap={projectMap}
-                onEdit={(task) => { setEditingTask(task); setFormOpen(true); }}
-                onDelete={(task) => { setDeletingTask(task); setDeleteOpen(true); }}
+                onEdit={(task) => {
+                    setEditingTask(task);
+                    setFormOpen(true);
+                }}
+                onDelete={(task) => {
+                    setDeletingTask(task);
+                    setDeleteOpen(true);
+                }}
                 onCreate={handleOpenCreate}
                 visibleTasksCount={visibleTasksCount}
                 loadMoreTasks={loadMoreTasks}
@@ -128,7 +140,7 @@ export default function TasksMain() {
                 onSubmit={handleSubmit}
                 loading={submitting}
             />
-            
+
             <TaskDeleteModal
                 open={deleteOpen}
                 onClose={() => {

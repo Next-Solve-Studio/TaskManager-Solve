@@ -1,13 +1,13 @@
-import { 
-    addDoc, 
-    collection, 
-    serverTimestamp, 
-    query, 
-    where, 
-    getDocs, 
-    deleteDoc, 
+import {
+    addDoc,
+    collection,
+    deleteDoc,
     doc,
-    Timestamp 
+    getDocs,
+    query,
+    serverTimestamp,
+    Timestamp,
+    where,
 } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 
@@ -65,14 +65,14 @@ export const logActivity = async (activityData) => {
 };
 /**
  * Exclui logs de atividade mais antigos que o número de dias especificado.
- * 
+ *
  * @param {number} days - Número de dias para manter os logs (padrão 2)
  */
 
 export const cleanOldLogs = async (days = 2) => {
     try {
         const logsRef = collection(db, "activity_logs");
-        
+
         // Calcula a data limite (X dias atrás)
         const cutoffDate = new Date();
         cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -87,12 +87,14 @@ export const cleanOldLogs = async (days = 2) => {
         }
 
         // Deleta cada documento encontrado
-        const deletePromises = querySnapshot.docs.map((document) => 
-            deleteDoc(doc(db, "activity_logs", document.id))
+        const deletePromises = querySnapshot.docs.map((document) =>
+            deleteDoc(doc(db, "activity_logs", document.id)),
         );
 
         await Promise.all(deletePromises);
-        console.log(`${querySnapshot.size} logs antigos (mais de ${days} dias) foram removidos.`);
+        console.log(
+            `${querySnapshot.size} logs antigos (mais de ${days} dias) foram removidos.`,
+        );
     } catch (error) {
         console.error("Erro ao limpar logs antigos:", error);
     }

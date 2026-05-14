@@ -16,14 +16,13 @@ export const muiDark = {
     "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
     "& .MuiFormHelperText-root": { color: "var(--color-error)" },
 
-    "& .MuiOutlinedInput-input": { 
+    "& .MuiOutlinedInput-input": {
         color: "var(--color-text-primary)",
         colorScheme: "var(--theme-scheme)",
-        
+
         "&::-webkit-calendar-picker-indicator": {
             cursor: "pointer",
-
-        }
+        },
     },
 };
 

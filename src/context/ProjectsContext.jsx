@@ -42,10 +42,12 @@ export const ProjectsProvider = ({ children }) => {
 
     // Paginação
     const [visibleProjectsCount, setVisibleProjectsCount] = useState(10);
-    const visibleProjects = useMemo(() => projects.slice(0, visibleProjectsCount), [projects, visibleProjectsCount]);
+    const visibleProjects = useMemo(
+        () => projects.slice(0, visibleProjectsCount),
+        [projects, visibleProjectsCount],
+    );
     const hasMoreProjects = projects.length > visibleProjectsCount;
-    const loadMoreProjects = () => setVisibleProjectsCount(prev => prev + 10);
-    
+    const loadMoreProjects = () => setVisibleProjectsCount((prev) => prev + 10);
 
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
@@ -102,7 +104,7 @@ export const ProjectsProvider = ({ children }) => {
                 toast.error("Erro ao carregar clientes:", error);
             })
             .finally(() => setLoadingClients(false));
-    },[currentUser]);
+    }, [currentUser]);
 
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)

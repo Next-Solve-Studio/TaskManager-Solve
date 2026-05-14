@@ -115,40 +115,40 @@ export default function UsersFilter({
                         </button>
                     ) : (
                         !loadingUsers &&
-                            otherUsers.map((u) => {
-                                const selected = filterUserId === u.id;
-                                const color = avatarColor(u.id);
-                                return (
-                                    <button
-                                        key={u.id}
-                                        type="button"
-                                        onClick={() =>
-                                            setFilterUserId(
-                                                filterUserId === u.id ? "me" : u.id,
-                                            )
-                                        }
-                                        className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
-                                        style={{
-                                            background: selected
-                                                ? `${color}20`
-                                                : "var(--color-bg-surface)",
-                                            border: selected
-                                                ? `1px solid ${color}60`
-                                                : "1px solid var(--color-border-main)",
-                                            color: selected
-                                                ? color
-                                                : "var(--color-text-secondary)",
-                                        }}
-                                    >
-                                        <Avatar
-                                            name={u.name}
-                                            uid={u.id}
-                                            src={u.photo}
-                                        />
-                                        <span>{u.name.split(" ")[0]}</span>
-                                    </button>
-                                );
-                            })
+                        otherUsers.map((u) => {
+                            const selected = filterUserId === u.id;
+                            const color = avatarColor(u.id);
+                            return (
+                                <button
+                                    key={u.id}
+                                    type="button"
+                                    onClick={() =>
+                                        setFilterUserId(
+                                            filterUserId === u.id ? "me" : u.id,
+                                        )
+                                    }
+                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+                                    style={{
+                                        background: selected
+                                            ? `${color}20`
+                                            : "var(--color-bg-surface)",
+                                        border: selected
+                                            ? `1px solid ${color}60`
+                                            : "1px solid var(--color-border-main)",
+                                        color: selected
+                                            ? color
+                                            : "var(--color-text-secondary)",
+                                    }}
+                                >
+                                    <Avatar
+                                        name={u.name}
+                                        uid={u.id}
+                                        src={u.photo}
+                                    />
+                                    <span>{u.name.split(" ")[0]}</span>
+                                </button>
+                            );
+                        })
                     )}
                 </CanDo>
             </div>

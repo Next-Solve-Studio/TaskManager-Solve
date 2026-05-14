@@ -1,6 +1,6 @@
 export const FormatDocument = (value) => {
     if (!value) return "";
-    
+
     // Remove tudo que não for número
     let v = value.replace(/\D/g, "");
 

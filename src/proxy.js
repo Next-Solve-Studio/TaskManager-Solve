@@ -13,7 +13,7 @@ export function proxy(request) {
     const sessionCookie = request.cookies.get("__session");
 
     if (sessionCookie && pathname === "/login") {
-        return NextResponse.redirect(new URL("/", request.url)); 
+        return NextResponse.redirect(new URL("/", request.url));
     }
 
     // Se não houver sessão e o user tentar acessar uma rota protegida, redireciona para o lohin

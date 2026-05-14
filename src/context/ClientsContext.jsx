@@ -34,7 +34,7 @@ export const ClientsProvider = ({ children }) => {
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.uid) return;
-        
+
         const q = query(
             collection(db, "clients"),
             orderBy("createdAt", "desc"),
@@ -94,60 +94,66 @@ export const ClientsProvider = ({ children }) => {
         [currentUser],
     );
 
-    const updateClient = useCallback(async (clientId, data) => {
-        try {
-            const payload = {
-                name: data.name,
-                email: data.email || "",
-                contato: data.contato || "",
-                documento: data.documento || "",
-                status: data.status,
-                updatedAt: serverTimestamp(),
-            };
-            await updateDoc(doc(db, "clients", clientId), payload);
+    const updateClient = useCallback(
+        async (clientId, data) => {
+            try {
+                const payload = {
+                    name: data.name,
+                    email: data.email || "",
+                    contato: data.contato || "",
+                    documento: data.documento || "",
+                    status: data.status,
+                    updatedAt: serverTimestamp(),
+                };
+                await updateDoc(doc(db, "clients", clientId), payload);
 
-            // Log de Atividade
-            await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                userPhoto: currentUser.photo || currentUser.photoURL,
-                action: "update",
-                resourceType: "client",
-                resourceId: clientId,
-                resourceName: payload.name,
-            });
+                // Log de Atividade
+                await logActivity({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || currentUser.displayName,
+                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    action: "update",
+                    resourceType: "client",
+                    resourceId: clientId,
+                    resourceName: payload.name,
+                });
 
-            toast.success("Cliente atualizado com sucesso");
-        } catch (error) {
-            console.error("Erro ao atualizar cliente:", error);
-            toast.error("Erro ao atualizar cliente");
-            throw error;
-        }
-    }, [currentUser]);
+                toast.success("Cliente atualizado com sucesso");
+            } catch (error) {
+                console.error("Erro ao atualizar cliente:", error);
+                toast.error("Erro ao atualizar cliente");
+                throw error;
+            }
+        },
+        [currentUser],
+    );
 
-    const deleteClient = useCallback(async (client) => {
-        try {
-            const clientId = client.id;
-            await deleteDoc(doc(db, "clients", clientId));
+    const deleteClient = useCallback(
+        async (client) => {
+            try {
+                const clientId = client.id;
+                await deleteDoc(doc(db, "clients", clientId));
 
-            // Log de Atividade
-            await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                userPhoto: currentUser.photo || currentUser.photoURL,
-                action: "delete",
-                resourceType: "client",
-                resourceId: clientId,
-                resourceName: client.name,
-            });
+                // Log de Atividade
+                await logActivity({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || currentUser.displayName,
+                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    action: "delete",
+                    resourceType: "client",
+                    resourceId: clientId,
+                    resourceName: client.name,
+                });
 
-            toast.success("Cliente excluído com sucesso");
-        } catch (error) {
-            console.error("Erro ao excluir cliente:", error);
-            toast.error("Erro ao excluir cliente");
-            throw error;
-        }
-    }, [currentUser]);
+                toast.success("Cliente excluído com sucesso");
+            } catch (error) {
+                console.error("Erro ao excluir cliente:", error);
+                toast.error("Erro ao excluir cliente");
+                throw error;
+            }
+        },
+        [currentUser],
+    );
 
     const value = {
         clients,

@@ -1,7 +1,7 @@
-import CanDo from "@/components/auth/CanDo";
 import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
+import CanDo from "@/components/auth/CanDo";
 
-export default function TasksHeader({handleOpenCreate, tasks}) {
+export default function TasksHeader({ handleOpenCreate, tasks }) {
     return (
         <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
@@ -25,10 +25,10 @@ export default function TasksHeader({handleOpenCreate, tasks}) {
                     onClick={handleOpenCreate}
                     className="flex items-center gap-1.5 px-5 py-1.5 bg-brand-500 hover:bg-brand-700 text-white text-[13px] font-bold rounded-lg transition-colors cursor-pointer tracking-wide"
                 >
-                    <MdAdd size={18} className="mt-0.5"/>
+                    <MdAdd size={18} className="mt-0.5" />
                     Nova Tarefa
                 </button>
             </CanDo>
         </div>
-    )
+    );
 }

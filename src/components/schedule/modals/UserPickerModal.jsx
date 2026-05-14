@@ -54,11 +54,11 @@ export default function UserPickerModal({
                                 type="button"
                                 onClick={() => onSelect(u.id)}
                                 className={`flex items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150
-                                    ${selected 
-                                        ? "bg-(--btn-bg) border-(--btn-border)" 
-                                        : "bg-transparent border-transparent sm:hover:bg-bg-surface active:bg-bg-surface border"
-                                    }`
-                                }
+                                    ${
+                                        selected
+                                            ? "bg-(--btn-bg) border-(--btn-border)"
+                                            : "bg-transparent border-transparent sm:hover:bg-bg-surface active:bg-bg-surface border"
+                                    }`}
                                 style={{
                                     "--btn-bg": `${color}15`,
                                     "--btn-border": `${color}35`,

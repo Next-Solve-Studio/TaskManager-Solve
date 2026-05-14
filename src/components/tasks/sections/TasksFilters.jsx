@@ -68,15 +68,16 @@ export default function TasksFilters({
                 <TextField
                     size="small"
                     value={searchInput}
-                    
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Buscar tarefa, responsável, projeto..."
                     sx={{ ...muiDark, flex: 1, minWidth: 250 }}
-
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position="start">
-                                <MdSearch size={20} className="text-text-primary"/>
+                                <MdSearch
+                                    size={20}
+                                    className="text-text-primary"
+                                />
                             </InputAdornment>
                         ),
                         sx: { borderRadius: 3 },

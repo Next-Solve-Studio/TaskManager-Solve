@@ -81,7 +81,6 @@
     --color: var(--color-font-gray2);
     --bg: var(--color-font-gray2 / 12);
     --border: var(--color-font-gray2 / 25);
-
 }
 
 /* ─── CONFIGURAÇÃO DE TEMAS ─────────────────────────────── */
@@ -109,16 +108,16 @@
 
 [data-theme="light"] {
     /* LIGHT THEME */
-       --bg-main: #e8e6e1;        
-    --bg-card: #efede8;       
-    --bg-surface: #e2e0db;     
-    --bg-side: #f5f3ee;        
+    --bg-main: #e8e6e1;
+    --bg-card: #efede8;
+    --bg-surface: #e2e0db;
+    --bg-side: #f5f3ee;
 
     --theme-scheme: light;
 
-    --text-primary: #1c1917;  
-    --text-secondary: #44403c; 
-    --text-muted: #78716c; 
+    --text-primary: #1c1917;
+    --text-secondary: #44403c;
+    --text-muted: #78716c;
 
     --border-main: #00000014;
     --border-main2: #0000001e;
@@ -150,37 +149,75 @@ html {
     display: none;
 }
 
-
 @keyframes float1 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    33% { transform: translate(30px, -40px) scale(1.08); }
-    66% { transform: translate(-20px, 20px) scale(0.95); }
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    33% {
+        transform: translate(30px, -40px) scale(1.08);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.95);
+    }
 }
 @keyframes float2 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    40% { transform: translate(-35px, 30px) scale(1.1); }
-    70% { transform: translate(25px, -25px) scale(0.92); }
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    40% {
+        transform: translate(-35px, 30px) scale(1.1);
+    }
+    70% {
+        transform: translate(25px, -25px) scale(0.92);
+    }
 }
 @keyframes float3 {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    30% { transform: translate(20px, 35px) scale(1.05); }
-    65% { transform: translate(-30px, -15px) scale(0.97); }
+    0%,
+    100% {
+        transform: translate(0, 0) scale(1);
+    }
+    30% {
+        transform: translate(20px, 35px) scale(1.05);
+    }
+    65% {
+        transform: translate(-30px, -15px) scale(0.97);
+    }
 }
 @keyframes gridMove {
-    0% { background-position: 0 0; }
-    100% { background-position: 40px 40px; }
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 40px 40px;
+    }
 }
 @keyframes slideUp {
-    from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 @keyframes shimmer {
-    0% { background-position: -200% center; }
-    100% { background-position: 200% center; }
+    0% {
+        background-position: -200% center;
+    }
+    100% {
+        background-position: 200% center;
+    }
 }
 .brand-shimmer {
     background: linear-gradient(
@@ -203,12 +240,19 @@ html {
 .visual-animate {
     animation: fadeIn 0.8s ease both;
 }
-.orb-1 { animation: float1 9s ease-in-out infinite; }
-.orb-2 { animation: float2 12s ease-in-out infinite; }
-.orb-3 { animation: float3 7s ease-in-out infinite; }
+.orb-1 {
+    animation: float1 9s ease-in-out infinite;
+}
+.orb-2 {
+    animation: float2 12s ease-in-out infinite;
+}
+.orb-3 {
+    animation: float3 7s ease-in-out infinite;
+}
 .grid-bg {
-    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-                        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
     background-size: 40px 40px;
     animation: gridMove 8s linear infinite;
 }

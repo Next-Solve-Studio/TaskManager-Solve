@@ -8,7 +8,13 @@ import {
 } from "@mui/material";
 import { MdDeleteOutline } from "react-icons/md";
 
-export default function TaskDeleteModal({ open, onClose, task, onConfirm, loading }) {
+export default function TaskDeleteModal({
+    open,
+    onClose,
+    task,
+    onConfirm,
+    loading,
+}) {
     return (
         <Dialog
             open={open}
@@ -58,7 +64,9 @@ export default function TaskDeleteModal({ open, onClose, task, onConfirm, loadin
                     disabled={loading}
                     className="px-5 py-2 rounded-xl text-[13px] font-bold bg-error hover:bg-error/80 text-white transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
                 >
-                    {loading && <CircularProgress size={13} sx={{ color: "white" }} />}
+                    {loading && (
+                        <CircularProgress size={13} sx={{ color: "white" }} />
+                    )}
                     Excluir
                 </button>
             </DialogActions>

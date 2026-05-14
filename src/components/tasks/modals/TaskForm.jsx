@@ -24,25 +24,34 @@ import {
     MdOutlineTaskAlt,
 } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
-import { menuPaper, muiDark } from "@/styles/StyleInputs";
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
-import { formatDateInput } from "@/utils/FormatDateProjects";
 import { SelectController } from "@/components/ui/SelectController";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { menuPaper, muiDark } from "@/styles/StyleInputs";
+import { formatDateInput } from "@/utils/FormatDateProjects";
 
-function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, projects}) {
-    const isEdit = Boolean(task)
-    
+function TaskForm({
+    open,
+    onClose,
+    task,
+    users,
+    usersMap,
+    onSubmit,
+    loading,
+    projects,
+}) {
+    const isEdit = Boolean(task);
+
     const defaultValues = {
         title: "",
         description: "",
-        projectId:"",
+        projectId: "",
         assignedTo: [],
         startDate: "",
         endDate: "",
         priority: "media",
         status: "em_andamento",
         solution: "",
-    }
+    };
 
     const {
         register,
@@ -52,7 +61,7 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
         formState: { errors },
     } = useForm({ defaultValues });
 
-     // Checklist gerenciado separadamente
+    // Checklist gerenciado separadamente
     const [checklistItems, setChecklistItems] = useState([]);
     const [newItem, setNewItem] = useState("");
 
@@ -64,22 +73,22 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                     description: task.description || "",
                     projectId: task.projectId || "",
                     assignedTo: task.assignedTo || [],
-                    startDate: formatDateInput(task.startDate),
-                    endDate: formatDateInput(task.endDate),
+                    startDate: formatDateInput(task.startDate).dateOrigin,
+                    endDate: formatDateInput(task.endDate).dateOrigin,
                     priority: task.priority || "media",
                     status: task.status || "em_andamento",
                     solution: task.solution || "",
-                })
-                setChecklistItems(task.checklist || [])
-            } else{
-                reset(defaultValues)
-                setChecklistItems([])
+                });
+                setChecklistItems(task.checklist || []);
+            } else {
+                reset(defaultValues);
+                setChecklistItems([]);
             }
-            setNewItem("")
+            setNewItem("");
         }
-    }, [open, task, reset])
+    }, [open, task, reset]);
 
-     const addChecklistItem = () => {
+    const addChecklistItem = () => {
         const trimmed = newItem.trim();
         if (!trimmed) return;
         setChecklistItems((prev) => [
@@ -148,7 +157,12 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
 
             <form onSubmit={handleSubmit(onValid)}>
                 <DialogContent
-                    sx={{ pt: 1, display: "flex", flexDirection: "column", gap: 2 }}
+                    sx={{
+                        pt: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 2,
+                    }}
                 >
                     {/* Título */}
                     <TextField
@@ -156,7 +170,9 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                         size="small"
                         fullWidth
                         sx={muiDark}
-                        {...register("title", { required: "Título obrigatório" })}
+                        {...register("title", {
+                            required: "Título obrigatório",
+                        })}
                         error={!!errors.title}
                         helperText={errors.title?.message}
                     />
@@ -165,7 +181,12 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                         control={control}
                         rules={{ required: "Selecione um projeto" }}
                         render={({ field }) => (
-                            <FormControl fullWidth size="small" sx={muiDark} error={!!errors.projectId}>
+                            <FormControl
+                                fullWidth
+                                size="small"
+                                sx={muiDark}
+                                error={!!errors.projectId}
+                            >
                                 <InputLabel>Projeto *</InputLabel>
                                 <Select
                                     value={field.value}
@@ -210,16 +231,22 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                     value={field.value}
                                     MenuProps={menuPaper}
                                     onChange={field.onChange}
-                                    input={<OutlinedInput label="Responsáveis" />}
+                                    input={
+                                        <OutlinedInput label="Responsáveis" />
+                                    }
                                     renderValue={(selected) => (
                                         <div className="flex flex-wrap gap-1">
                                             {selected.map((uid) => (
                                                 <Chip
                                                     key={uid}
-                                                    label={usersMap[uid]?.name || uid}
+                                                    label={
+                                                        usersMap[uid]?.name ||
+                                                        uid
+                                                    }
                                                     size="small"
                                                     sx={{
-                                                        background: "rgba(25,202,104,0.15)",
+                                                        background:
+                                                            "rgba(25,202,104,0.15)",
                                                         color: "var(--color-brand-500)",
                                                         fontSize: 11,
                                                     }}
@@ -227,16 +254,19 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                             ))}
                                         </div>
                                     )}
-                            
                                 >
                                     {users.map((u) => (
-                                         <MenuItem key={u.id} value={u.id}>
+                                        <MenuItem key={u.id} value={u.id}>
                                             <Checkbox
-                                                checked={field.value.includes(u.id)}
+                                                checked={field.value.includes(
+                                                    u.id,
+                                                )}
                                                 size="small"
                                                 sx={{
                                                     color: "var(--color-brand-500)",
-                                                    "&.Mui-checked": { color: "var(--color-brand-500)" },
+                                                    "&.Mui-checked": {
+                                                        color: "var(--color-brand-500)",
+                                                    },
                                                 }}
                                             />
                                             <div className="flex items-center gap-2">
@@ -244,9 +274,11 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                                     name={u.name}
                                                     uid={u.id}
                                                     size={22}
-                                                    src={u.photo}               // URL da foto
+                                                    src={u.photo} // URL da foto
                                                 />
-                                                <span className="text-[13px]">{u.name}</span>
+                                                <span className="text-[13px]">
+                                                    {u.name}
+                                                </span>
                                             </div>
                                         </MenuItem>
                                     ))}
@@ -274,7 +306,11 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                             InputLabelProps={{ shrink: true }}
                             sx={muiDark}
                             {...register("endDate", {
-                                validate: (value, formValues) => !value || !formValues.startDate || value >= formValues.startDate || "Fim deve ser após início"
+                                validate: (value, formValues) =>
+                                    !value ||
+                                    !formValues.startDate ||
+                                    value >= formValues.startDate ||
+                                    "Fim deve ser após início",
                             })}
                         />
                     </div>
@@ -292,7 +328,7 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                             control={control}
                             label="Status"
                             map={STATUS_MAP}
-                        />       
+                        />
                     </div>
 
                     {/* Solução */}
@@ -315,7 +351,8 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                 Checklist
                             </span>
                             <span className="text-[10px] text-text-muted ml-auto">
-                                {checklistItems.filter((i) => i.done).length}/{checklistItems.length}
+                                {checklistItems.filter((i) => i.done).length}/
+                                {checklistItems.length}
                             </span>
                         </div>
 
@@ -328,12 +365,16 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                 >
                                     <Checkbox
                                         checked={item.done}
-                                        onChange={() => toggleChecklistItem(item.id)}
+                                        onChange={() =>
+                                            toggleChecklistItem(item.id)
+                                        }
                                         size="small"
                                         sx={{
                                             p: 0,
                                             color: "var(--color-text-muted)",
-                                            "&.Mui-checked": { color: "var(--color-brand-500)" },
+                                            "&.Mui-checked": {
+                                                color: "var(--color-brand-500)",
+                                            },
                                         }}
                                     />
                                     <span
@@ -347,7 +388,9 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                                     </span>
                                     <button
                                         type="button"
-                                        onClick={() => removeChecklistItem(item.id)}
+                                        onClick={() =>
+                                            removeChecklistItem(item.id)
+                                        }
                                         className="opacity-0 group-hover:opacity-100 text-error hover:text-error/80 transition-all cursor-pointer"
                                     >
                                         <MdDelete size={14} />
@@ -395,7 +438,12 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
                         disabled={loading}
                         className="px-5 py-2 rounded-xl text-[13px] font-bold bg-brand-500 hover:bg-brand-600 text-white transition-all cursor-pointer disabled:opacity-50 flex items-center gap-2"
                     >
-                        {loading && <CircularProgress size={13} sx={{ color: "white" }} />}
+                        {loading && (
+                            <CircularProgress
+                                size={13}
+                                sx={{ color: "white" }}
+                            />
+                        )}
                         {isEdit ? "Salvar alterações" : "Criar tarefa"}
                     </button>
                 </DialogActions>
@@ -404,4 +452,4 @@ function TaskForm({ open, onClose, task, users, usersMap, onSubmit, loading, pro
     );
 }
 
-export default memo(TaskForm)
+export default memo(TaskForm);

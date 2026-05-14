@@ -7,9 +7,9 @@ import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 import { useAppRouter } from "@/hooks/useAppRouter";
 import { auth, db, googleProvider } from "@/lib/firebaseConfig";
-import { useAuth } from "@/context/AuthContext";
 
 export default function GoogleLoginBtn() {
     const [loading, setLoading] = useState(false);
@@ -98,9 +98,11 @@ export default function GoogleLoginBtn() {
                 cursor-pointer
             "
         >
-            <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
+            <span
+                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
                              bg-linear-to-r from-brand-500/5 to-cyan-400/5
-                             transition-opacity duration-200" />
+                             transition-opacity duration-200"
+            />
 
             <FcGoogle size={20} className="shrink-0 relative z-10" />
             <span className="relative z-10">

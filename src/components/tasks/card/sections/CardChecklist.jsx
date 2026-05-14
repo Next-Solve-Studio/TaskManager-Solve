@@ -2,13 +2,16 @@ import { MdCheckCircleOutline, MdOutlineChecklist } from "react-icons/md";
 import { useTasks } from "@/context/TasksContext";
 
 export default function CardChecklist({ task }) {
-    const { updateChecklist } = useTasks()
+    const { updateChecklist } = useTasks();
     // Garante que checklist seja sempre um array
     const checklist = Array.isArray(task.checklist) ? task.checklist : [];
     // conta quantos itens do checklist estao como concluídos
     const doneCount = checklist.filter((i) => i.done).length;
     // calcula a porcentagem de conclusão
-    const progress = checklist.length > 0 ? Math.round((doneCount / checklist.length) * 100) : 0;
+    const progress =
+        checklist.length > 0
+            ? Math.round((doneCount / checklist.length) * 100)
+            : 0;
 
     // função para alterar estado de um item da checklist
     const toggleItem = async (id) => {
@@ -16,13 +19,12 @@ export default function CardChecklist({ task }) {
         const updated = checklist.map((item) =>
             item.id === id ? { ...item, done: !item.done } : item,
         );
-        try{
+        try {
             await updateChecklist(task.id, updated);
         } catch (err) {
-            console.error("Erro ao atualizar checklist: ", err)
-            toast.error("Erro ao atualizar checklist")
+            console.error("Erro ao atualizar checklist: ", err);
+            toast.error("Erro ao atualizar checklist");
         }
-        
     };
     return (
         <>
@@ -35,7 +37,9 @@ export default function CardChecklist({ task }) {
                                 {doneCount}/{checklist.length}
                             </span>
                         </div>
-                        <span className="text-[10px] text-text-muted">{progress}%</span>
+                        <span className="text-[10px] text-text-muted">
+                            {progress}%
+                        </span>
                     </div>
                     {/* Barra de progresso */}
                     <div className="w-full h-1 bg-border-subtle rounded-full overflow-hidden">
@@ -45,7 +49,7 @@ export default function CardChecklist({ task }) {
                         />
                     </div>
                     {/* Items do checklist (máx 3 visíveis) */}
-                    <div className="flex flex-col gap-2 max-h-28 overflow-y-auto scroll-hidden">
+                    <div className="flex flex-col gap-2 max-h-44 overflow-y-auto scroll-hidden">
                         {checklist.map((item, index) => (
                             <button
                                 key={item.id}
@@ -72,12 +76,11 @@ export default function CardChecklist({ task }) {
                                 >
                                     {item.text}
                                 </span>
-                            </button>     
+                            </button>
                         ))}
-
                     </div>
                 </div>
             )}
         </>
-    )
+    );
 }

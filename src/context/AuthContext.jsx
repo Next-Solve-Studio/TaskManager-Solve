@@ -103,7 +103,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     const register = async (name, email, password) => {
-    
         // dados do novo user
         const userData = {
             name: name.trim(),
@@ -119,7 +118,11 @@ export const AuthProvider = ({ children }) => {
         justLoggedIn.current = true; // deixa o onAuthStateChanged fazer o redirect
 
         // Função de registro, cria um novo usuário no Firebase Auth
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password,
+        );
 
         await setDoc(doc(db, "users", userCredential.user.uid), userData);
 
@@ -143,7 +146,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         justLoggedIn,
-        setJustLoggedIn
+        setJustLoggedIn,
     };
 
     return (

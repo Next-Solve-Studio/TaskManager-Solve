@@ -16,13 +16,13 @@ import { useForm } from "react-hook-form";
 import { MdClose } from "react-icons/md";
 import * as yup from "yup";
 import { useClients } from "@/context/ClientsContext";
-import { FormatPhone } from "@/utils/FormatPhone";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
+import { FormatPhone } from "@/utils/FormatPhone";
 
 const schema = yup.object().shape({
     name: yup.string().required("O nome é obrigatório"),
     email: yup.string().email("E-mail inválido"),
-    
+
     contato: yup
         .string()
         .required("O telefone é obrigatório")
@@ -71,7 +71,9 @@ export default function ClientForm({ isOpen, onClose, client }) {
             const cleanData = {
                 ...data,
                 contato: data.contato.replace(/\D/g, ""),
-                documento: data.documento ? data.documento.replace(/\D/g, "") : "",
+                documento: data.documento
+                    ? data.documento.replace(/\D/g, "")
+                    : "",
             };
             if (isEditing) {
                 await updateClient(client.id, cleanData);
@@ -169,7 +171,11 @@ export default function ClientForm({ isOpen, onClose, client }) {
                         value={FormatDocument(documentValue)}
                         onChange={(e) => {
                             // Seta o valor formatado no estado do form em tempo real
-                            setValue("documento", FormatDocument(e.target.value), { shouldValidate: true });
+                            setValue(
+                                "documento",
+                                FormatDocument(e.target.value),
+                                { shouldValidate: true },
+                            );
                         }}
                         error={!!errors.documento}
                         helperText={errors.documento?.message}

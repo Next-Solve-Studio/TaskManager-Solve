@@ -6,7 +6,7 @@ import { ptBR } from "date-fns/locale";
 import { useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
-import useIsMobile from "@/hooks/responsive/useIsMobile";
+// import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function CardScheduleEdit({
     dayKey,
@@ -16,12 +16,12 @@ export default function CardScheduleEdit({
     canEdit,
     onSave,
 }) {
-    const isMobile = useIsMobile();
+    // const isMobile = useIsMobile();
     const description = scheduleDoc?.days?.[dayKey]?.description || "";
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
     const [saving, setSaving] = useState(false);
-    const [expanded, setExpanded] = useState(false)
+    const [expanded, setExpanded] = useState(false);
     const textareaRef = useRef(null);
 
     // Sync quando descrição mudar externamente
@@ -60,7 +60,8 @@ export default function CardScheduleEdit({
     const todayDay = isToday(date);
 
     // Lógica para saber se o texto é longo o suficiente para precisar do botão "Ler tudo"
-    const isLongText = description.length > 50 || (description.match(/\n/g) || []).length > 3;
+    const isLongText =
+        description.length > 50 || (description.match(/\n/g) || []).length > 3;
 
     return (
         <div
@@ -76,7 +77,7 @@ export default function CardScheduleEdit({
                     <div className="flex items-center gap-2">
                         <span
                             className={`text-xs font-bold uppercase tracking-widest
-                            ${todayDay ? 'text-brand-500' : 'text-text-muted'}`}
+                            ${todayDay ? "text-brand-500" : "text-text-muted"}`}
                         >
                             {dayLabel}
                         </span>
@@ -93,7 +94,7 @@ export default function CardScheduleEdit({
                         </span>
                     </p>
                 </div>
-                
+
                 {/* Botão editar (só para o próprio usuário e se pode editar) */}
                 {canEdit && !editing && (
                     <button
@@ -116,7 +117,6 @@ export default function CardScheduleEdit({
                             rows={4}
                             placeholder="O que você fez hoje?"
                             className="w-full resize-none rounded-xl px-3 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none transition-all duration-150 bg-bg-card border border-brand-500/40 focus:border-brand-500"
-
                         />
                         <div className="flex flex-wrap items-center gap-2">
                             <button
@@ -150,19 +150,24 @@ export default function CardScheduleEdit({
                         <button
                             type="button"
                             className={`text-sm w-full text-start leading-relaxed whitespace-pre-wrap wrap-break-word transition-all duration-200 ${
-                                description ? "text-text-secondary" : "text-text-muted"
+                                description
+                                    ? "text-text-secondary"
+                                    : "text-text-muted"
                             } ${canEdit && !description ? "italic hover:text-brand-500" : ""} ${
                                 !expanded && description ? "line-clamp-4" : ""
                             }`}
                             onClick={() => {
                                 if (canEdit) {
-                                    setEditing(true); 
+                                    setEditing(true);
                                 } else if (description) {
                                     setExpanded(!expanded);
                                 }
                             }}
                         >
-                            {description || (canEdit ? "Clique em ✏️ para adicionar..." : "—")}
+                            {description ||
+                                (canEdit
+                                    ? "Clique em ✏️ para adicionar..."
+                                    : "—")}
                         </button>
 
                         {/* Só mostra 'Ler tudo' se tiver descrição e for grande */}
@@ -176,7 +181,6 @@ export default function CardScheduleEdit({
                             </button>
                         )}
                     </div>
-                    
                 )}
             </div>
         </div>

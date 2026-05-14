@@ -31,7 +31,7 @@ export default function ActivityFeed() {
                 id: doc.id,
                 ...doc.data(),
             }));
-            
+
             setActivities(logs);
             setLoading(false);
         });
@@ -43,8 +43,8 @@ export default function ActivityFeed() {
     }, []);
 
     // Lógica de renderização condicionaal
-    const renderActivityContent= ()=> {
-        if (loading) { 
+    const renderActivityContent = () => {
+        if (loading) {
             return (
                 <div className="py-10 flex flex-col items-center gap-2">
                     <div className="w-5 h-5 border-2 border-brand-500 border-t-transparent animate-spin rounded-full" />
@@ -52,7 +52,7 @@ export default function ActivityFeed() {
                         Carregando feed...
                     </p>
                 </div>
-            )
+            );
         }
 
         if (activities.length === 0) {
@@ -63,7 +63,7 @@ export default function ActivityFeed() {
                         Nenhuma atividade registrada ainda.
                     </p>
                 </div>
-            )
+            );
         }
 
         return (
@@ -71,10 +71,11 @@ export default function ActivityFeed() {
                 <div className="space-y-4">
                     {activities.map((log) => {
                         const timeAgo = log.timestamp
-                            ? formatDistanceToNow(
-                                log.timestamp.toDate(),
-                                { addSuffix: true, locale: ptBR },
-                            ) : "agora mesmo";
+                            ? formatDistanceToNow(log.timestamp.toDate(), {
+                                  addSuffix: true,
+                                  locale: ptBR,
+                              })
+                            : "agora mesmo";
 
                         return (
                             <div
@@ -106,7 +107,7 @@ export default function ActivityFeed() {
                 </div>
             </div>
         );
-    }
+    };
 
     return (
         <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4">
@@ -126,9 +127,7 @@ export default function ActivityFeed() {
                 </div>
             </div>
 
-            <div className="space-y-6">
-                {renderActivityContent()}
-            </div>
+            <div className="space-y-6">{renderActivityContent()}</div>
         </section>
     );
 }

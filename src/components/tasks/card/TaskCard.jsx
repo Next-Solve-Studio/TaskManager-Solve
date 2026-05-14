@@ -1,21 +1,21 @@
 import { memo } from "react";
-
-import CardHeader from "./sections/CardHeader";
-import CardFooter from "./sections/CardFooter";
 import CardChecklist from "./sections/CardChecklist";
+import CardFooter from "./sections/CardFooter";
+import CardHeader from "./sections/CardHeader";
 
-function TaskCard({ task, usersMap, onEdit, onDelete}) { 
-    
+function TaskCard({ task, usersMap, onEdit, onDelete }) {
     const assignedUsers = (task.assignedTo || [])
         .map((uid) => usersMap[uid])
-        .filter(Boolean)
+        .filter(Boolean);
 
     return (
-        <div className="bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 
+        <div
+            className="bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 
         hover:border-brand-500/20 hover:-translate-y-0.5 transition-all duration-200 select-none
-        max-w-130 ">
+        max-w-130 "
+        >
             {/* Header */}
-            <CardHeader task={task} onEdit={onEdit} onDelete={onDelete}/>
+            <CardHeader task={task} onEdit={onEdit} onDelete={onDelete} />
 
             {/* Descrição */}
             {task.description && (
@@ -27,12 +27,12 @@ function TaskCard({ task, usersMap, onEdit, onDelete}) {
             )}
 
             {/* Checklist progress */}
-            <CardChecklist task={task}/>
+            <CardChecklist task={task} />
 
             {/* Footer: responsáveis + datas */}
-            <CardFooter task={task} assignedUsers={assignedUsers}/>
+            <CardFooter task={task} assignedUsers={assignedUsers} />
         </div>
-    )
+    );
 }
 
 export default memo(TaskCard);

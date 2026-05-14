@@ -1,3 +1,5 @@
+import { addDays, format } from "date-fns";
+
 export const formatDateInput = (date) => {
     if (!date) return "";
 
@@ -7,7 +9,15 @@ export const formatDateInput = (date) => {
     // biome-ignore lint/suspicious/noGlobalIsNan: <>
     if (isNaN(d.getTime())) return "";
 
-    return d.toISOString().split("T")[0]; // yyyy-MM-dd
+    // console.log(d.toISOString().split("T")[0]);
+
+    return {
+        dateOrigin: d.toISOString().split("T")[0], // yyyy-MM-dd
+        dateFormatted: format(
+            addDays(d.toISOString().split("T")[0], 1),
+            "dd/MM/yyyy",
+        ),
+    };
 };
 
 export const parseDate = (date) => {

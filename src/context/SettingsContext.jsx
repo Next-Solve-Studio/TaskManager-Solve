@@ -30,7 +30,7 @@ export const SettingsProvider = ({ children }) => {
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.uid) return;
-        
+
         const systemDocRef = doc(db, "system_settings", "config");
         const unsubscribe = onSnapshot(systemDocRef, (docSnap) => {
             if (docSnap.exists()) {

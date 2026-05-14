@@ -81,11 +81,12 @@ export function ProjectForm({
                     status: project.status || "em_andamento",
                     priority: project.priority || "media",
                     developers: project.developers || [],
-                    startDate: formatDateInput(project.startDate),
+                    startDate: formatDateInput(project.startDate).dateOrigin,
                     expectedDeliveryDate: formatDateInput(
                         project.expectedDeliveryDate,
-                    ),
-                    deliveryDate: formatDateInput(project.deliveryDate),
+                    ).dateOrigin,
+                    deliveryDate: formatDateInput(project.deliveryDate)
+                        .dateOrigin,
                     techStack: Array.isArray(project.techStack)
                         ? project.techStack.join(", ")
                         : project.techStack || "",
@@ -104,14 +105,13 @@ export function ProjectForm({
     };
 
     const handleFormSubmit = (data) => {
-        
         const fixTimezone = (dateString) => {
             if (!dateString) return "";
-            // Cria a data adicionando 'T12:00:00' para garantir que, 
+            // Cria a data adicionando 'T12:00:00' para garantir que,
             // independente do fuso (-3, -4, etc), não mude de dia.
-            const d = new Date(`${dateString}T12:00:00`); 
+            const d = new Date(`${dateString}T12:00:00`);
             return d.toISOString(); // ou envie como objeto Date, dependendo do seu backend
-        }
+        };
 
         // função para enviar dados, e ja recebe eles validados pelo react hook form
         onSubmit({
