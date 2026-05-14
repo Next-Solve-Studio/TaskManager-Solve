@@ -53,6 +53,40 @@ export const logActivity = async (activityData) => {
         console.error("Erro ao registrar log de atividade:", error);
     }
 };
+/**
+ * Exclui logs de atividade mais antigos que o número de dias especificado.
+ * 
+ * @param {number} days - Número de dias para manter os logs (padrão 7)
+ */
+
+export const cleanOldLogs = async (days = 7) => {
+    try {
+        const logsRef = collection(db, "activity_logs");
+        
+        // Calcula a data limite (X dias atrás)
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - days);
+        const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
+
+        // Cria a query para buscar logs anteriores à data limite
+        const q = query(logsRef, where("timestamp", "<", cutoffTimestamp));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            return;
+        }
+
+        // Deleta cada documento encontrado
+        const deletePromises = querySnapshot.docs.map((document) => 
+            deleteDoc(doc(db, "activity_logs", document.id))
+        );
+
+        await Promise.all(deletePromises);
+        console.log(`${querySnapshot.size} logs antigos (mais de ${days} dias) foram removidos.`);
+    } catch (error) {
+        console.error("Erro ao limpar logs antigos:", error);
+    }
+};
 
 /**
  * Gera uma mensagem amigável para a atividade baseada nos dados do log.

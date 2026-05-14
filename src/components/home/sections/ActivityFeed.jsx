@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import { MdHistory, MdNotificationsNone } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { db } from "@/lib/firebaseConfig";
-import { getActivityMessage } from "@/utils/ActivityLogger";
+import { getActivityMessage, cleanOldLog } from "@/utils/ActivityLogger";
 
 export default function ActivityFeed() {
     const [activities, setActivities] = useState([]);
@@ -34,6 +34,9 @@ export default function ActivityFeed() {
             setActivities(logs);
             setLoading(false);
         });
+
+        // Limpa logs com mais de 7 dias ao carregar o feed
+        cleanOldLogs(7);
 
         return () => unsubscribe();
     }, []);
