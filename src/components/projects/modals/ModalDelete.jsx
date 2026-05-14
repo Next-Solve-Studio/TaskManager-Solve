@@ -21,13 +21,15 @@ export default function ModalDelete({
             onClose={() => !loading && onClose()}
             maxWidth="xs"
             fullWidth
-            PaperProps={{
-                sx: {
-                    background: "var(--color-bg-card)",
-                    backgroundImage: "none",
-                    border: "1px solid var(--color-border-main)",
-                    borderRadius: "16px",
-                },
+            slotProps={{
+                paper: {
+                    sx: {
+                        background: "var(--color-bg-card)",
+                        backgroundImage: "none",
+                        border: "1px solid var(--color-border-main)",
+                        borderRadius: "16px",
+                    },
+                }
             }}
         >
             <DialogTitle
@@ -42,11 +44,11 @@ export default function ModalDelete({
             </DialogTitle>
             <DialogContent sx={{ pt: 2 }}>
                 <p className="text-text-secondary text-sm leading-relaxed m-0">
-                    Tem certeza que deseja excluir{" "}
+                    {`Tem certeza que deseja excluir `}
                     <span className="text-text-primary font-bold">
                         "{project?.title}"
                     </span>
-                    ? Esta ação não pode ser desfeita.
+                    {`? Esta ação não pode ser desfeita.`}
                 </p>
             </DialogContent>
             <DialogActions sx={{ padding: "8px 24px 20px", gap: 1 }}>

@@ -33,14 +33,16 @@ export default function CardHeader({ task, onEdit, onDelete }) {
                     anchorEl={anchorEl}
                     open={Boolean(anchorEl)}
                     onClose={() => setAnchorEl(null)}
-                    PaperProps={{
-                        sx: {
-                            background: "var(--color-bg-card)",
-                            backgroundImage: "none",
-                            border: "1px solid var(--color-border-main)",
-                            borderRadius: "10px",
-                            boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
-                            minWidth: 140,
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                background: "var(--color-bg-card)",
+                                backgroundImage: "none",
+                                border: "1px solid var(--color-border-main)",
+                                borderRadius: "10px",
+                                boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+                                minWidth: 140,
+                            },
                         },
                     }}
                 >

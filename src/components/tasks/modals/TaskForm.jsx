@@ -120,14 +120,16 @@ function TaskForm({
             onClose={onClose}
             maxWidth="sm"
             fullWidth
-            PaperProps={{
-                sx: {
-                    background: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border-main2)",
-                    borderRadius: "18px",
-                    backgroundImage: "none",
-                    color: "var(--color-text-primary)",
-                },
+            slotProps={{
+                paper: {
+                    sx: {
+                        background: "var(--color-bg-card)",
+                        border: "1px solid var(--color-border-main2)",
+                        borderRadius: "18px",
+                        backgroundImage: "none",
+                        color: "var(--color-text-primary)",
+                    },
+                }
             }}
         >
             <DialogTitle sx={{ pb: 1 }}>

@@ -21,14 +21,16 @@ export default function TaskDeleteModal({
             onClose={onClose}
             maxWidth="xs"
             fullWidth
-            PaperProps={{
-                sx: {
-                    background: "var(--color-bg-card)",
-                    border: "1px solid var(--color-border-main2)",
-                    borderRadius: "18px",
-                    backgroundImage: "none",
-                    color: "var(--color-text-primary)",
-                },
+            slotProps={{
+                paper: {
+                    sx: {
+                        background: "var(--color-bg-card)",
+                        border: "1px solid var(--color-border-main2)",
+                        borderRadius: "18px",
+                        backgroundImage: "none",
+                        color: "var(--color-text-primary)",
+                    },
+                }
             }}
         >
             <DialogTitle>
@@ -43,11 +45,11 @@ export default function TaskDeleteModal({
             </DialogTitle>
             <DialogContent>
                 <p className="text-[13px] text-text-secondary leading-relaxed">
-                    Tem certeza que deseja excluir a tarefa{" "}
+                    {`Tem certeza que deseja excluir a tarefa `}
                     <span className="text-text-primary font-semibold">
                         &quot;{task?.title}&quot;
                     </span>
-                    ? Esta ação não pode ser desfeita.
+                    {` ? Esta ação não pode ser desfeita.`}
                 </p>
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 3, pt: 0, gap: 1 }}>

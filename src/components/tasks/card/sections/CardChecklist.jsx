@@ -56,7 +56,7 @@ export default function CardChecklist({ task }) {
                                 type="button"
                                 onClick={() => toggleItem(item.id)}
                                 className={`flex items-center gap-2 text-left group cursor-pointer pb-1.5
-                                    ${index !== checklist.length - 1 ? "border-b border-[#a1a1a15e]" : ""}
+                                    ${index == checklist.length - 1 ? "" : "border-b border-[#a1a1a15e]"}
                                 `}
                             >
                                 <MdCheckCircleOutline

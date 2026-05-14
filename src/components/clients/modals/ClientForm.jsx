@@ -109,6 +109,12 @@ export default function ClientForm({ isOpen, onClose, client }) {
         },
     };
 
+    const getButtonLabel = () => {
+        if (isSubmitting) return "Processando...";
+        if (isEditing) return "Salvar Alterações";
+        return "Criar Cliente";
+    };
+
     const contactValue = watch("contato");
     const documentValue = watch("documento");
 
@@ -118,15 +124,17 @@ export default function ClientForm({ isOpen, onClose, client }) {
             onClose={onClose}
             fullWidth
             maxWidth="sm"
-            PaperProps={{
-                sx: {
-                    backgroundColor: "var(--color-bg-card) !important",
-                    backgroundImage: "none !important",
-                    border: "1px solid var(--color-border-main)",
-                    borderRadius: "24px",
-                    color: "var(--color-text-primary)",
-                    boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-                },
+            slotProps={{
+                paper: {
+                    sx: {
+                        backgroundColor: "var(--color-bg-card) !important",
+                        backgroundImage: "none !important",
+                        border: "1px solid var(--color-border-main)",
+                        borderRadius: "24px",
+                        color: "var(--color-text-primary)",
+                        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
+                    },
+                }
             }}
         >
             <DialogTitle className="flex justify-between items-center py-6 px-8 border-b border-border-main">
@@ -220,25 +228,27 @@ export default function ClientForm({ isOpen, onClose, client }) {
                                 color: "var(--color-text-muted)",
                             },
                         }}
-                        SelectProps={{
-                            MenuProps: {
-                                PaperProps: {
-                                    sx: {
-                                        backgroundColor: "var(--color-bg-card)",
-                                        border: "1px solid var(--color-border-main)",
-                                        backgroundImage: "none",
-                                        color: "var(--color-text-primary)",
-                                        "& .MuiMenuItem-root": {
-                                            fontSize: "0.875rem",
-                                            "&:hover": {
-                                                backgroundColor:
-                                                    "rgba(25,202,104,0.1)",
-                                                color: "var(--color-brand-500)",
-                                            },
-                                            "&.Mui-selected": {
-                                                backgroundColor:
-                                                    "rgba(25,202,104,0.2)",
-                                                color: "var(--color-brand-500)",
+                        slotProps={{
+                            select: {
+                                MenuProps: {
+                                    slotProps: {
+                                        paper: {
+                                            sx: {
+                                                backgroundColor: "var(--color-bg-card)",
+                                                border: "1px solid var(--color-border-main)",
+                                                backgroundImage: "none",
+                                                color: "var(--color-text-primary)",
+                                                "& .MuiMenuItem-root": {
+                                                    fontSize: "0.875rem",
+                                                    "&:hover": {
+                                                        backgroundColor: "rgba(25,202,104,0.1)",
+                                                        color: "var(--color-brand-500)",
+                                                    },
+                                                    "&.Mui-selected": {
+                                                        backgroundColor: "rgba(25,202,104,0.2)",
+                                                        color: "var(--color-brand-500)",
+                                                    },
+                                                },
                                             },
                                         },
                                     },
@@ -288,11 +298,7 @@ export default function ClientForm({ isOpen, onClose, client }) {
                         },
                     }}
                 >
-                    {isSubmitting
-                        ? "Processando..."
-                        : isEditing
-                          ? "Salvar Alterações"
-                          : "Criar Cliente"}
+                    {getButtonLabel()}
                 </Button>
             </DialogActions>
         </Dialog>

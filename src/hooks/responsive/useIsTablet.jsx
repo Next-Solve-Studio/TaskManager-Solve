@@ -2,17 +2,17 @@
 import { useEffect, useState } from "react";
 
 function getIsMobile(breakpoint) {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
+    if (globalThis.window == "undefined") return false;
+    return globalThis.window.matchMedia(`(max-width: ${breakpoint}px)`).matches;
 }
 
 export default function useIsMobile(breakpoint = 1024) {
     const [isMobile, setIsMobile] = useState(() => getIsMobile(breakpoint));
 
     useEffect(() => {
-        if (typeof window === "undefined") return;
+        if (globalThis.window == "undefined") return;
 
-        const mediaQuery = window.matchMedia(`(max-width: ${breakpoint}px)`);
+        const mediaQuery = globalThis.window.matchMedia(`(max-width: ${breakpoint}px)`);
         const handleChange = (e) => setIsMobile(e.matches);
 
         setIsMobile(mediaQuery.matches);

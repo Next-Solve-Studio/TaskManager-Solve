@@ -59,14 +59,16 @@ export default function UserEditModal({ open, onClose, user }) {
             onClose={handleClose}
             maxWidth="xs"
             fullWidth
-            PaperProps={{
-                sx: {
-                    background: "var(--color-bg-card)",
-                    backgroundImage: "none",
-                    border: "1px solid var(--color-border-main)",
-                    borderRadius: "16px",
-                    boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
-                },
+            slotProps={{
+                paper: {
+                    sx: {
+                        background: "var(--color-bg-card)",
+                        backgroundImage: "none",
+                        border: "1px solid var(--color-border-main)",
+                        borderRadius: "16px",
+                        boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+                    },
+                }
             }}
         >
             <DialogTitle
