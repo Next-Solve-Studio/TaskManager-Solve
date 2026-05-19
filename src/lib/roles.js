@@ -68,6 +68,9 @@ export const PERMISSIONS = {
 
     // Configurações
     canManageSystemSettings: [ROLES.ADMIN],
+    
+    // Financeiro
+    canViewFinancials: [ROLES.ADMIN],
 
     // Agenda
     canViewAllUsersSchedule: [ROLES.ADMIN, ROLES.PROJECT_LEAD],

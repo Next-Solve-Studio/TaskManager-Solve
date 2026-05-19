@@ -26,4 +26,6 @@ export const projectSchema = yup.object({
         .nullable()
         .optional(),
     hosting: yup.string().optional(),
+    totalValue: yup.number().typeError("Deve ser um número").optional(),
+    paidValue: yup.number().typeError("Deve ser um número").optional(),
 });

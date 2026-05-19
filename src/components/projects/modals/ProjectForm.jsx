@@ -19,6 +19,7 @@ import {
 import { memo, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
+    MdAttachMoney,
     MdClose,
     MdCode,
     MdComputer,
@@ -30,6 +31,7 @@ import { Avatar } from "@/components/ui/AvatarBadge";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
+import CanDo from "@/components/auth/CanDo";
 
 export function ProjectForm({
     open,
@@ -56,6 +58,8 @@ export function ProjectForm({
         repositoryUrl: "",
         hosting: "",
         expectedDeliveryDate: "",
+        totalValue: 0,
+        paidValue: 0,
     };
 
     const {
@@ -92,6 +96,8 @@ export function ProjectForm({
                         : project.techStack || "",
                     repositoryUrl: project.repositoryUrl || "",
                     hosting: project.hosting || "",
+                    totalValue: project.totalValue,
+                    paidValue: project.paidValue,
                 });
             } else {
                 // se não, criação e limpa o form
@@ -230,6 +236,35 @@ export function ProjectForm({
                         size="small"
                         sx={muiDark}
                     />
+
+                    <CanDo permission="canViewFinancials">
+                        <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-brand-500/5 border border-brand-500/10">
+                            <div className="col-span-2 flex items-center gap-2 mb-1">
+                                <MdAttachMoney className="text-brand-500" size={18} />
+                                <span className="text-xs font-bold text-brand-500 uppercase tracking-wider">Informações Financeiras (Apenas ADM)</span>
+                            </div>
+                            <TextField
+                                label="Valor Total (R$)"
+                                type="number"
+                                {...register("totalValue")}
+                                error={Boolean(errors.totalValue)}
+                                helperText={errors.totalValue?.message}
+                                fullWidth
+                                size="small"
+                                sx={muiDark}
+                            />
+                            <TextField
+                                label="Valor Pago (R$)"
+                                type="number"
+                                {...register("paidValue")}
+                                error={Boolean(errors.paidValue)}
+                                helperText={errors.paidValue?.message}
+                                fullWidth
+                                size="small"
+                                sx={muiDark}
+                            />
+                        </div>
+                    </CanDo>
 
                     {/* Status + Priority */}
                     <div className="grid grid-cols-2 gap-3">

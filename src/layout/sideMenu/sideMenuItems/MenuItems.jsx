@@ -1,6 +1,7 @@
 "use client";
 
 import {
+    FiBarChart2,
     FiBriefcase,
     FiCalendar,
     FiGrid,
@@ -24,6 +25,12 @@ export const menuItems = [
         icon: FiUsers,
         label: "Usuários",
         href: "/users",
+        roles: [ADMIN],
+    },
+    {
+        icon: FiBarChart2,
+        label: "Análise de Dados",
+        href: "/analytics",
         roles: [ADMIN],
     },
     {

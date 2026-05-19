@@ -124,6 +124,8 @@ export const ProjectsProvider = ({ children }) => {
                 techStack: data.techStack || [],
                 repositoryUrl: data.repositoryUrl || "",
                 hosting: data.hosting || "",
+                totalValue: data.totalValue || 0,
+                paidValue: data.paidValue || 0,
                 createdBy: currentUser.uid,
                 createdByName:
                     currentUser.name || currentUser.displayName || "",
@@ -197,6 +199,8 @@ export const ProjectsProvider = ({ children }) => {
                 techStack: data.techStack || [],
                 repositoryUrl: data.repositoryUrl || "",
                 hosting: data.hosting || "",
+                totalValue: data.totalValue || 0,
+                paidValue: data.paidValue || 0,
                 lastModified: serverTimestamp(),
                 lastModifiedBy: currentUser.uid,
                 lastModifiedByName:
