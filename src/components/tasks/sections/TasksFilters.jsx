@@ -14,12 +14,12 @@ import {
     TextField,
     Tooltip,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AiOutlineClear } from "react-icons/ai";
 import { MdOutlineFilterList, MdSearch } from "react-icons/md";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { useAuth } from "@/context/AuthContext";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
-
 export default function TasksFilters({
     projects,
     users,
@@ -36,13 +36,21 @@ export default function TasksFilters({
     setSearchInput,
     setFilterMonth,
 }) {
-    const [showFilters, setShowFilters] = useState(false);
+    const [showFilters, setShowFilters] = useState(true);
+    const { currentUser } = useAuth();
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <>
+    useEffect(() => {
+        if (currentUser && filterAssignee === "all") {
+            setFilterAssignee("mine");
+        }
+    }, []);
 
     const clearFilters = () => {
         setFilterStatus("all");
         setFilterPriority("all");
         setFilterProject("all");
-        setFilterAssignee("all");
+        setFilterAssignee("mine");
         setFilterMonth("all");
         setSearchInput("");
     };
@@ -51,7 +59,7 @@ export default function TasksFilters({
         filterStatus !== "all" ||
         filterPriority !== "all" ||
         filterProject !== "all" ||
-        filterAssignee !== "all" ||
+        filterAssignee !== "mine" ||
         filterMonth !== "all";
 
     return (
