@@ -29,7 +29,7 @@ export const menuItems = [
     },
     {
         icon: FiBarChart2,
-        label: "Análise de Dados",
+        label: "Análise Geral",
         href: "/analytics",
         roles: [ADMIN],
     },
