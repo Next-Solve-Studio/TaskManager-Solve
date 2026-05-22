@@ -20,32 +20,9 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
         );
     }
 
-    return (
-        <div className="space-y-4">
-            <div className="grid grid-cols-12 px-8 mb-2">
-                <div className="col-span-5">
-                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                        Cliente / Identificação
-                    </p>
-                </div>
-                <div className="col-span-3 text-center">
-                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                        Contato
-                    </p>
-                </div>
-                <div className="col-span-2 text-center">
-                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                        Status
-                    </p>
-                </div>
-                <div className="col-span-2 text-right">
-                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                        Gerenciar
-                    </p>
-                </div>
-            </div>
-
-            {clients.length === 0 ? (
+    const handleClientRow = () => {
+        if (clients.length === 0) {
+            return (
                 <div className="bg-bg-card border border-border-main rounded-2xl py-20 text-center">
                     <FiBriefcase
                         size={48}
@@ -55,7 +32,9 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                         Nenhum cliente cadastrado.
                     </p>
                 </div>
-            ) : (
+            )
+        } else {
+            return (
                 clients.map((client) => (
                     <div
                         key={client.id}
@@ -113,7 +92,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                         {/* AÇÕES */}
                         <div className="col-span-2 flex justify-end gap-3">
                             <CanDo permission="canManageClients">
-                                <div className="flex items-center justify-start">
+                                <div className="flex items-center justify-end">
                                     <button
                                         type="button"
                                         onClick={(e) => onOpenMenu(e, client)}
@@ -128,6 +107,34 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                     </div>
                 ))
             )}
+        }
+
+    return (
+        <div className="space-y-4">
+            <div className="grid grid-cols-12 px-8 mb-2">
+                <div className="col-span-5">
+                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                        Cliente / Identificação
+                    </p>
+                </div>
+                <div className="col-span-3 text-center">
+                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                        Contato
+                    </p>
+                </div>
+                <div className="col-span-2 text-center">
+                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                        Status
+                    </p>
+                </div>
+                <div className="col-span-2 text-right">
+                    <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                        Ações
+                    </p>
+                </div>
+            </div>
+
+            {handleClientRow()}
         </div>
     );
 }
