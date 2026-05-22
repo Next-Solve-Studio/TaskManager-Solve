@@ -17,6 +17,8 @@ export function UserCard({ user, onEdit, onDelete }) {
         });
     }, [user.createdAt]);
 
+    const lastLogin = user.lastLoginAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
+
     return (
         <div className="bg-bg-card border border-border-main rounded-2xl p-4 flex flex-col gap-3 transition-all duration-200">
             {/* Top row: avatar + name/email + actions */}
@@ -120,12 +122,26 @@ export function UserCard({ user, onEdit, onDelete }) {
                     <RoleBadge role={user.role} />
                     <AuthBadge authMethod={user.authMethod} />
                 </div>
-
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <MdCalendarToday size={11} className="text-text-muted" />
-                    <span className="text-[11px] text-text-muted whitespace-nowrap">
-                        {formattedDate}
-                    </span>
+                
+                <div className="flex items-center gap-4 flex-wrap justify-center">
+                    <div className="flex flex-col items-center gap-1">
+                        <span className="text-[11px] text-text-muted">Últ. Login</span>
+                        <div className="flex items-center gap-1">
+                            <MdCalendarToday size={11} className="text-text-muted" />
+                            <span className="text-[11px] text-text-muted whitespace-nowrap">
+                                {lastLogin}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="flex flex-col items-center gap-1">
+                        <span className="text-[11px] text-text-muted">Entrada</span>
+                        <div className="flex items-center gap-1">
+                            <MdCalendarToday size={11} className="text-text-muted" />
+                            <span className="text-[11px] text-text-muted whitespace-nowrap">
+                                {formattedDate}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@ import {
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
 import { useUsers } from "@/context/UsersContext";
-import useIsMobile from "@/hooks/responsive/useIsMobile";
+import useIsTablet from "@/hooks/responsive/useIsTablet";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
 import UserRow from "./sections/UserRow";
@@ -25,7 +25,7 @@ export default function UsersMain() {
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
-    const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
     const [deletingUser, setDeletingUser] = useState(null);
     const [sortKey, setSortKey] = useState(null)
     const [sortDir, setSortDir] = useState("asc")
@@ -126,7 +126,7 @@ export default function UsersMain() {
             
         }
 
-        if (isMobile){
+        if (isTablet){
             return (
                 <UsersCards
                     users={filtered}
