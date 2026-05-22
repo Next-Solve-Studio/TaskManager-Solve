@@ -1,62 +1,19 @@
 // Botão para logar com Google Account
 "use client";
 
-import { serialize } from "cookie";
-import { signInWithPopup } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, setDoc } from "firebase/firestore";
-import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { useAppRouter } from "@/hooks/useAppRouter";
-import { auth, db, googleProvider } from "@/lib/firebaseConfig";
 
 export default function GoogleLoginBtn() {
-    const [loading, setLoading] = useState(false);
-    const router = useAppRouter();
-    const { setJustLoggedIn } = useAuth();
+    const { loginWithGoogle, loading } = useAuth();
 
-    async function handleGoogleLogin() {
-        setLoading(true);
 
+    const handleGoogleLogin = async () => {
         try {
-            setJustLoggedIn(true);
-            const result = await signInWithPopup(auth, googleProvider);
-            const user = result.user;
-            const token = await user.getIdToken();
-
-            //Define o cookie para o middleware usando a biblioteca 'cookie'
-            const cookieOptions = {
-                maxAge: 30 * 24 * 60 * 60, //30 dias de duração do cookie
-                path: "/", // o cookie é válido para todo o dommínio
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-            };
-            // biome-ignore lint/suspicious/noDocumentCookie: <>
-            document.cookie = serialize("__session", token, cookieOptions);
-
-            //verificar se o user já existe
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
-
-            //Verifica se é o primeiro usuário
-            const usersSnapshot = await getDocs(collection(db, "users"));
-            const isFirstUser = usersSnapshot.empty;
-            console.log(isFirstUser);
-            if (!userSnap.exists()) {
-                //se for um novo, cria o documento novo
-                await setDoc(userRef, {
-                    name: user.displayName,
-                    email: user.email,
-                    role: isFirstUser ? "administrador" : "desenvolvedor",
-                    photo: user.photoURL,
-                    createdAt: new Date(),
-                    authMethod: "google",
-                });
-            }
-            console.log(userRef);
-
-            router.goHome();
+            await loginWithGoogle();
+            // O redirecionamento é automático (justLoggedIn + onAuthStateChanged)
+            // Pode colocar um toast de boas-vindas se quiser
         } catch (error) {
             console.error(" ERRO DETALHADO NO LOGIN:", error);
             const messages = {
@@ -73,10 +30,8 @@ export default function GoogleLoginBtn() {
                 description:
                     messages[error.code] ?? "Tente novamente mais tarde.",
             });
-        } finally {
-            setLoading(false);
         }
-    }
+    };
 
     return (
         <button
@@ -100,8 +55,8 @@ export default function GoogleLoginBtn() {
         >
             <span
                 className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100
-                             bg-linear-to-r from-brand-500/5 to-cyan-400/5
-                             transition-opacity duration-200"
+                    bg-linear-to-r from-brand-500/5 to-cyan-400/5
+                    transition-opacity duration-200"
             />
 
             <FcGoogle size={20} className="shrink-0 relative z-10" />

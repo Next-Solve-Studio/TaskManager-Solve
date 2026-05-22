@@ -26,7 +26,7 @@ const schema = yup
     .required();
 
 export default function LoginForm({ setHaveAccount, allowRegistration }) {
-    const { login } = useAuth();
+    const { loginWithEmail } = useAuth();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
 
@@ -47,7 +47,7 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
         setLoading(true);
 
         try {
-            await login(data.email, data.password);
+            await loginWithEmail(data.email, data.password);
         } catch (error) {
             const messages = {
                 "auth/user-not-found":
