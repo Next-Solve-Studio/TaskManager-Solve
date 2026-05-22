@@ -16,8 +16,9 @@ import { useUsers } from "@/context/UsersContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
-import UserRow from "./UserRow";
+import UserRow from "./sections/UserRow";
 import UsersCards from "./usersCards/UsersCards";
+import SortIcon from "@/utils/SortIcon";
 
 export default function UsersMain() {
     const { users, loading } = useUsers();
@@ -26,12 +27,23 @@ export default function UsersMain() {
     const [editingUser, setEditingUser] = useState(null);
     const isMobile = useIsMobile();
     const [deletingUser, setDeletingUser] = useState(null);
+    const [sortKey, setSortKey] = useState(null)
+    const [sortDir, setSortDir] = useState("asc")
+
+    const handleSort = (key) => {
+        if (sortKey === key) {
+            setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+        } else {
+            setSortKey(key)
+            setSortDir("asc")
+        }
+    }
 
     const handleOpenEdit = useCallback((user) => setEditingUser(user), []);
     const handleOpenDelete = useCallback((user) => setDeletingUser(user), []);
 
     const filtered = useMemo(() => {
-        return users.filter((u) => {
+        const result = users.filter((u) => {
             if (filterRole !== "all" && u.role !== filterRole) return false;
             if (search) {
                 const q = search.toLowerCase();
@@ -42,7 +54,30 @@ export default function UsersMain() {
             }
             return true;
         });
-    }, [users, search, filterRole]);
+
+        if (sortKey) {
+            result.sort((a,b) =>{
+                let valA, valB
+                if (sortKey === "name") {
+                    valA =  a.name?.toLowerCase() ?? ""
+                    valB = b.name?.toLowerCase() ?? ""
+                } else if (sortKey === "role") {
+                    valA = a.role ?? "";
+                    valB = b.role ?? "";
+                } else if (sortKey === "createdAt") {
+                    valA = a.createdAt ?? "";
+                    valB = b.createdAt ?? "";
+                } else if (sortKey  === "lastLoginAt") {
+                    valA = a.lastLoginAt ?? "";
+                    valB = b.lastLoginAt ?? "";
+                }
+                if (valA < valB) return sortDir === "asc" ? -1 : 1
+                if (valA > valB) return sortDir === "asc" ?  1 : -1
+                return  0
+            })
+        }
+        return result 
+    }, [users, search, filterRole, sortKey, sortDir]);
 
     const stats = useMemo(
         () => ({
@@ -66,6 +101,115 @@ export default function UsersMain() {
         { value: ROLES.PROJECT_LEAD, label: ROLE_LABELS[ROLES.PROJECT_LEAD] },
         { value: ROLES.DEVELOPER, label: ROLE_LABELS[ROLES.DEVELOPER] },
     ];
+
+    const handleUserList = () => {
+        if (loading){
+            return(
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "60px 0",
+                        gap: 12,
+                    }}
+                >
+                    <CircularProgress size={24} style={{ color: "#19CA68" }} />
+                    <span style={{ color: "#6b7280", fontSize: 14 }}>
+                        Carregando usuários... <br />
+                        {users.length === 0
+                            ? "Nenhum usuário cadastrado ainda"
+                            : "Nenhum usuário encontrado"}
+                    </span>
+                </div>
+            )
+            
+        }
+
+        if (isMobile){
+            return (
+                <UsersCards
+                    users={filtered}
+                    onEdit={handleOpenEdit}
+                    onDelete={handleOpenDelete}
+                />
+            )
+        }
+
+        return (
+            <div
+                style={{ display: "flex", flexDirection: "column", gap: 6 }}
+            >
+                {/* Cabeçalho */}
+                <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
+                    <div></div>
+                    <button
+                        type="button"
+                        onClick={() => handleSort("name")}
+                        className="cursor-pointer select-none flex items-center bg-none border-none p-0"
+                    >
+                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                            Usuário
+                        </p>
+                        <SortIcon columnKey="name" sortKey={sortKey} sortDir={sortDir}/>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleSort("role")}
+                        className="cursor-pointer flex items-center p-0 select-none"
+                    >
+                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                            Cargo
+                        </p>
+                        <SortIcon columnKey="role" sortKey={sortKey} sortDir={sortDir}/>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleSort("lastLoginAt")}
+                        className="cursor-pointer select-none flex items-center bg-none border-none p-0"
+                    >
+                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                            último Login
+                        </p>
+                        <SortIcon columnKey="lastLoginAt" sortKey={sortKey} sortDir={sortDir}/>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleSort("createdAt")}
+                        className="cursor-pointer flex items-center p-0 select-none"
+                    >
+                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                            Entrada
+                        </p>
+                        <SortIcon columnKey="createdAt" sortKey={sortKey} sortDir={sortDir}/>
+                    </button>
+                    <div className="text-center">
+                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
+                            Ações
+                        </p>
+                    </div>
+                </div>
+
+                {/* Lista de Usuários */}
+                <div
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 6,
+                    }}
+                >
+                    {filtered.map((user) => (
+                        <UserRow
+                            key={user.id}
+                            user={user}
+                            onEdit={handleOpenEdit}
+                            onDelete={handleOpenDelete}
+                        />
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
@@ -103,9 +247,9 @@ export default function UsersMain() {
                         Usuários
                     </h1>
                     <p className="text-[13px] text-text-muted mt-1">
-                        {users.length} usuário{users.length !== 1 ? "s" : ""}{" "}
+                        {users.length} usuário{users.length === 1 ? "" : "s"}{" "}
                         cadastrado
-                        {users.length !== 1 ? "s" : ""}
+                        {users.length === 1 ? "" : "s"}
                     </p>
                 </div>
             </div>
@@ -224,83 +368,7 @@ export default function UsersMain() {
             </div>
 
             {/* ── Lista ── */}
-            {loading ? (
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "60px 0",
-                        gap: 12,
-                    }}
-                >
-                    <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    <span style={{ color: "#6b7280", fontSize: 14 }}>
-                        Carregando usuários... <br />
-                        {users.length === 0
-                            ? "Nenhum usuário cadastrado ainda"
-                            : "Nenhum usuário encontrado"}
-                    </span>
-                </div>
-            ) : isMobile ? (
-                <UsersCards
-                    users={filtered}
-                    onEdit={handleOpenEdit}
-                    onDelete={handleOpenDelete}
-                />
-            ) : (
-                <div
-                    style={{ display: "flex", flexDirection: "column", gap: 6 }}
-                >
-                    {/* Cabeçalho */}
-                    <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
-                        <div></div>
-                        <div>
-                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                                Usuário
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                                Cargo
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                                Acesso
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                                Entrada
-                            </p>
-                        </div>
-                        <div className="text-center">
-                            <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                                Ações
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* Lista de Usuários */}
-                    <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 6,
-                        }}
-                    >
-                        {filtered.map((user) => (
-                            <UserRow
-                                key={user.id}
-                                user={user}
-                                onEdit={handleOpenEdit}
-                                onDelete={handleOpenDelete}
-                            />
-                        ))}
-                    </div>
-                </div>
-            )}
+            {handleUserList()}
 
             <UserEditModal
                 open={Boolean(editingUser)}

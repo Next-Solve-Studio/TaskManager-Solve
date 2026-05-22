@@ -16,13 +16,14 @@ export default function UserRow({ user, onEdit, onDelete }) {
         });
     }, [user.createdAt]);
 
-    const authLabel = user.authMethod === "google" ? "Google" : "E-mail";
+    /* const authLabel = user.authMethod === "google" ? "Google" : "E-mail";
     const authColor =
         user.authMethod === "google" ? "#ea4335" : "var(--color-cyan-400)";
     const authBg =
         user.authMethod === "google"
             ? "rgba(234,67,53,0.1)"
-            : "rgba(34,211,238,0.1)";
+    //         : "rgba(34,211,238,0.1)";*/
+    const lastLogin = user.lastLoginAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
 
     return (
         <div
@@ -42,7 +43,7 @@ export default function UserRow({ user, onEdit, onDelete }) {
             </div>
 
             {/* Nome + Email */}
-            <div style={{ minWidth: 0 }}>
+            <div>
                 <p className="text-text-primary font-bold text-sm m-0 mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.name}
                 </p>
@@ -52,26 +53,14 @@ export default function UserRow({ user, onEdit, onDelete }) {
             </div>
 
             {/* Cargo */}
-            <div className="flex items-center justify-center">
+            <div className="flex items-center justify-start">
                 <RoleBadge role={user.role} />
             </div>
 
-            {/* Auth method */}
+            {/* último login */}
             <div className="flex items-center justify-center">
-                <span
-                    style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "3px 10px",
-                        borderRadius: 6,
-                        background: authBg,
-                        fontSize: 11,
-                        fontWeight: 600,
-                        color: authColor,
-                        whiteSpace: "nowrap",
-                    }}
-                >
-                    {authLabel}
+                <span className="text-[11px] text-text-muted whitespace-nowrap">
+                    {lastLogin}
                 </span>
             </div>
 
@@ -81,6 +70,8 @@ export default function UserRow({ user, onEdit, onDelete }) {
                     {formattedDate}
                 </span>
             </div>
+
+            
 
             {/* Ações */}
             <CanDo permission="canManageUsers">

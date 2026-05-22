@@ -51,7 +51,7 @@ export default function CardDevs({ project, usersMap }) {
                     </div>
                     <span className="text-[11px] text-text-secondary ml-1">
                         {developers.length} dev
-                        {developers.length !== 1 ? "s" : ""}
+                        {developers.length === 1 ? "" : "s"}
                     </span>
                 </div>
             )}
