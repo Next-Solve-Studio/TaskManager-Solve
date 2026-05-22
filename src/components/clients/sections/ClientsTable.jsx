@@ -1,18 +1,16 @@
 "use client";
 
-import { CircularProgress, IconButton, Tooltip } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { FiBriefcase } from "react-icons/fi";
 import {
-    MdDelete,
-    MdEdit,
     MdEmail,
     MdFingerprint,
+    MdMoreVert,
     MdPhone,
 } from "react-icons/md";
-import { useRole } from "@/hooks/useRole";
+import CanDo from "@/components/auth/CanDo";
 
-export default function ClientsTable({ clients, loading, onEdit, onDelete }) {
-    const { can } = useRole();
+export default function ClientsTable({ clients, loading, onOpenMenu }) {
 
     if (loading) {
         return (
@@ -114,52 +112,18 @@ export default function ClientsTable({ clients, loading, onEdit, onDelete }) {
 
                         {/* AÇÕES */}
                         <div className="col-span-2 flex justify-end gap-3">
-                            {can("canManageClients") && (
-                                <>
-                                    <Tooltip title="Editar">
-                                        <IconButton
-                                            onClick={() => onEdit(client)}
-                                            sx={{
-                                                color: "var(--color-cyan-400)",
-                                                backgroundColor:
-                                                    "rgba(34,211,238,0.05)",
-                                                border: "1px solid rgba(34,211,238,0.1)",
-                                                borderRadius: "10px",
-                                                p: 1,
-                                                "&:hover": {
-                                                    backgroundColor:
-                                                        "rgba(34,211,238,0.15)",
-                                                    borderColor:
-                                                        "var(--color-cyan-400)",
-                                                },
-                                            }}
-                                        >
-                                            <MdEdit size={18} />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Excluir">
-                                        <IconButton
-                                            onClick={() => onDelete?.(client)}
-                                            sx={{
-                                                color: "var(--color-error)",
-                                                backgroundColor:
-                                                    "rgba(239,68,68,0.05)",
-                                                border: "1px solid rgba(239,68,68,0.1)",
-                                                borderRadius: "10px",
-                                                p: 1,
-                                                "&:hover": {
-                                                    backgroundColor:
-                                                        "rgba(239,68,68,0.15)",
-                                                    borderColor:
-                                                        "var(--color-error)",
-                                                },
-                                            }}
-                                        >
-                                            <MdDelete size={18} />
-                                        </IconButton>
-                                    </Tooltip>
-                                </>
-                            )}
+                            <CanDo permission="canManageClients">
+                                <div className="flex items-center justify-start">
+                                    <button
+                                        type="button"
+                                        onClick={(e) => onOpenMenu(e, client)}
+                                        title="Ações"
+                                        className="bg-none border-none cursor-pointer p-1 flex rounded-md text-text-muted hover:text-text-primary transition-colors"
+                                    >
+                                        <MdMoreVert size={18} />
+                                    </button>
+                                </div>
+                            </CanDo>
                         </div>
                     </div>
                 ))

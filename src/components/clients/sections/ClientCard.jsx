@@ -1,17 +1,15 @@
 "use client";
 
-import { IconButton } from "@mui/material";
 import {
-    MdDelete,
-    MdEdit,
     MdEmail,
     MdFingerprint,
+    MdMoreVert,
     MdPhone,
 } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
 
-export default function ClientCard({ client, onEdit, onDelete }) {
+export default function ClientCard({ client, onOpenMenu }) {
     const isTablet = useIsTablet();
 
     return (
@@ -65,39 +63,15 @@ export default function ClientCard({ client, onEdit, onDelete }) {
 
                 {/* Action buttons */}
                 <CanDo permission="canManageClients">
-                    <div className="flex gap-1.5 shrink-0">
-                        <IconButton
-                            onClick={() => onEdit(client)}
-                            sx={{
-                                color: "var(--color-cyan-400)",
-                                backgroundColor: "rgba(34,211,238,0.05)",
-                                border: "1px solid rgba(34,211,238,0.1)",
-                                borderRadius: "10px",
-                                p: 1,
-                                "&:hover": {
-                                    backgroundColor: "rgba(34,211,238,0.15)",
-                                    borderColor: "var(--color-cyan-400)",
-                                },
-                            }}
+                    <div className="flex items-center justify-start">
+                        <button
+                            type="button"
+                            onClick={(e) => onOpenMenu(e, client)}
+                            title="Ações"
+                            className="bg-none border-none cursor-pointer p-1 flex rounded-md text-text-muted hover:text-text-primary transition-colors"
                         >
-                            <MdEdit size={18} />
-                        </IconButton>
-                        <IconButton
-                            onClick={() => onDelete(client)}
-                            sx={{
-                                color: "var(--color-error)",
-                                backgroundColor: "rgba(239,68,68,0.05)",
-                                border: "1px solid rgba(239,68,68,0.1)",
-                                borderRadius: "10px",
-                                p: 1,
-                                "&:hover": {
-                                    backgroundColor: "rgba(239,68,68,0.15)",
-                                    borderColor: "var(--color-error)",
-                                },
-                            }}
-                        >
-                            <MdDelete size={18} />
-                        </IconButton>
+                            <MdMoreVert size={18} />
+                        </button>
                     </div>
                 </CanDo>
             </div>
