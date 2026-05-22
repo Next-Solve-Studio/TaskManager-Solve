@@ -1,12 +1,12 @@
 "use client";
 import { useMemo } from "react";
-import { MdCalendarToday, MdDelete, MdEdit, MdEmail } from "react-icons/md";
+import { MdCalendarToday, MdEmail, MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { AuthBadge } from "../AuthBadge";
 
-export function UserCard({ user, onEdit, onDelete }) {
+export function UserCard({ user, onOpenMenu }) {
     const formattedDate = useMemo(() => {
         if (!user.createdAt) return "—";
         const date = user.createdAt?.toDate?.() ?? new Date(user.createdAt);
@@ -53,48 +53,14 @@ export function UserCard({ user, onEdit, onDelete }) {
 
                 {/* Action buttons */}
                 <CanDo permission="canManageUsers">
-                    <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-                        <button
-                            type="button"
-                            onClick={() => onEdit(user)}
-                            title="Editar cargo"
-                            style={{
-                                width: 34,
-                                height: 34,
-                                borderRadius: 10,
-                                background: "rgba(34,211,238,0.07)",
-                                border: "1px solid rgba(34,211,238,0.18)",
-                                color: "#22d3ee",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.15s",
-                            }}
-                        >
-                            <MdEdit size={15} />
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => onDelete(user)}
-                            title="Excluir usuário"
-                            style={{
-                                width: 34,
-                                height: 34,
-                                borderRadius: 10,
-                                background: "rgba(239,68,68,0.07)",
-                                border: "1px solid rgba(239,68,68,0.18)",
-                                color: "#ef4444",
-                                cursor: "pointer",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                transition: "all 0.15s",
-                            }}
-                        >
-                            <MdDelete size={15} />
-                        </button>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={(e) => onOpenMenu(e, user)}
+                        title="Ações"
+                        className="bg-none border-none cursor-pointer p-1 flex rounded-md text-text-muted hover:text-text-primary transition-colors shrink-0"
+                    >
+                        <MdMoreVert size={18} />
+                    </button>
                 </CanDo>
             </div>
 

@@ -3,7 +3,7 @@ import { CircularProgress } from "@mui/material";
 import { useUsers } from "@/context/UsersContext";
 import { UserCard } from "./UserCard";
 
-export default function UsersCards({ users, onEdit, onDelete }) {
+export default function UsersCards({ users, onOpenMenu }) {
     const { loading } = useUsers();
 
     if (loading) {
@@ -41,8 +41,7 @@ export default function UsersCards({ users, onEdit, onDelete }) {
                         <UserCard
                             key={user.id}
                             user={user}
-                            onEdit={onEdit}
-                            onDelete={onDelete}
+                            onOpenMenu={onOpenMenu}
                         />
                     ))}
                 </div>

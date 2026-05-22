@@ -1,11 +1,11 @@
 "use client";
 import { useMemo } from "react";
-import { MdDelete, MdEdit } from "react-icons/md";
+import { MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
 
-export default function UserRow({ user, onEdit, onDelete }) {
+export default function UserRow({ user, onOpenMenu }) {
     const formattedDate = useMemo(() => {
         if (!user.createdAt) return "—";
         const date = user.createdAt?.toDate?.() ?? new Date(user.createdAt);
@@ -75,72 +75,14 @@ export default function UserRow({ user, onEdit, onDelete }) {
 
             {/* Ações */}
             <CanDo permission="canManageUsers">
-                <div className="flex items-center justify-center gap-1.5">
+                <div className="flex items-center justify-center">
                     <button
                         type="button"
-                        onClick={() => onEdit(user)}
-                        title="Editar cargo"
-                        style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 8,
-                            background: "rgba(34,211,238,0.07)",
-                            border: "1px solid rgba(34,211,238,0.15)",
-                            color: "#22d3ee",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "all 0.15s",
-                            flexShrink: 0,
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(34,211,238,0.15)";
-                            e.currentTarget.style.borderColor =
-                                "rgba(34,211,238,0.35)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(34,211,238,0.07)";
-                            e.currentTarget.style.borderColor =
-                                "rgba(34,211,238,0.15)";
-                        }}
+                        onClick={(e) => onOpenMenu(e, user)}
+                        title="Ações"
+                        className="bg-none border-none cursor-pointer p-1 flex rounded-md text-text-muted hover:text-text-primary transition-colors"
                     >
-                        <MdEdit size={14} />
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => onDelete(user)}
-                        title="Excluir usuário"
-                        style={{
-                            width: 30,
-                            height: 30,
-                            borderRadius: 8,
-                            background: "rgba(239,68,68,0.07)",
-                            border: "1px solid rgba(239,68,68,0.15)",
-                            color: "#ef4444",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "all 0.15s",
-                            flexShrink: 0,
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(239,68,68,0.15)";
-                            e.currentTarget.style.borderColor =
-                                "rgba(239,68,68,0.35)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                                "rgba(239,68,68,0.07)";
-                            e.currentTarget.style.borderColor =
-                                "rgba(239,68,68,0.15)";
-                        }}
-                    >
-                        <MdDelete size={14} />
+                        <MdMoreVert size={18} />
                     </button>
                 </div>
             </CanDo>

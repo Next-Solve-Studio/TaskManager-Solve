@@ -1,11 +1,13 @@
 "use client";
 
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Menu, MenuItem } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import { AiOutlineClear } from "react-icons/ai";
 import {
     MdAdminPanelSettings,
     MdCode,
+    MdDelete,
+    MdEdit,
     MdPeople,
     MdSearch,
     MdSupervisorAccount,
@@ -29,6 +31,13 @@ export default function UsersMain() {
     const [deletingUser, setDeletingUser] = useState(null);
     const [sortKey, setSortKey] = useState(null)
     const [sortDir, setSortDir] = useState("asc")
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null)
+    const [menuUser, setMenuUser] = useState(null)
+
+    const handleOpenMenu = useCallback((event, user) => {
+        setMenuAnchorEl(event.currentTarget)
+        setMenuUser(user)
+    }, [])
 
     const handleSort = (key) => {
         if (sortKey === key) {
@@ -38,9 +47,6 @@ export default function UsersMain() {
             setSortDir("asc")
         }
     }
-
-    const handleOpenEdit = useCallback((user) => setEditingUser(user), []);
-    const handleOpenDelete = useCallback((user) => setDeletingUser(user), []);
 
     const filtered = useMemo(() => {
         const result = users.filter((u) => {
@@ -130,8 +136,8 @@ export default function UsersMain() {
             return (
                 <UsersCards
                     users={filtered}
-                    onEdit={handleOpenEdit}
-                    onDelete={handleOpenDelete}
+                    onOpenMenu ={handleOpenMenu}
+
                 />
             )
         }
@@ -202,8 +208,7 @@ export default function UsersMain() {
                         <UserRow
                             key={user.id}
                             user={user}
-                            onEdit={handleOpenEdit}
-                            onDelete={handleOpenDelete}
+                            onOpenMenu ={handleOpenMenu}
                         />
                     ))}
                 </div>
@@ -381,6 +386,53 @@ export default function UsersMain() {
                 onClose={() => setDeletingUser(null)}
                 user={deletingUser}
             />
+
+            <Menu
+                anchorEl={menuAnchorEl}
+                open={Boolean(menuAnchorEl)}
+                onClose={() => setMenuAnchorEl(null)}
+                slotProps={{
+                    paper: {
+                        sx: {
+                        background: "var(--color-bg-card)",
+                        backgroundImage: "none",
+                        border: "1px solid var(--color-border-main)",
+                        borderRadius: "10px",
+                        boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+                        minWidth: 140,
+                        },
+                    },
+                }}
+            >
+                <MenuItem
+                    onClick={() => {
+                        setMenuAnchorEl(null);
+                        setEditingUser(menuUser);
+                    }}
+                    sx={{
+                        color: "var(--color-text-primary)",
+                        fontSize: 13,
+                        gap: "8px",
+                        "&:hover": { backgroundColor: "var(--color-border-subtle)" },
+                    }}
+                >
+                <MdEdit size={15} className="text-cyan-400" /> Editar
+                </MenuItem>
+                <MenuItem
+                    onClick={() => {
+                        setMenuAnchorEl(null);
+                        setDeletingUser(menuUser);
+                    }}
+                    sx={{
+                        color: "var(--color-error)",
+                        fontSize: 13,
+                        gap: "8px",
+                        "&:hover": { backgroundColor: "var(--color-border-subtle)" },
+                    }}
+                >
+                <MdDelete size={15} /> Excluir
+                </MenuItem>
+            </Menu>
         </div>
     );
 }
