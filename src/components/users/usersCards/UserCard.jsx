@@ -17,7 +17,8 @@ export function UserCard({ user, onOpenMenu }) {
         });
     }, [user.createdAt]);
 
-    const lastLogin = user.lastLoginAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
+    // Exibe o acesso mais recente
+    const lastSeen = user.lastSeenAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
 
     return (
         <div className="bg-bg-card border border-border-main rounded-2xl p-4 flex flex-col gap-3 transition-all duration-200">
@@ -91,11 +92,11 @@ export function UserCard({ user, onOpenMenu }) {
                 
                 <div className="flex items-center gap-4 flex-wrap justify-center">
                     <div className="flex flex-col items-center gap-1">
-                        <span className="text-[11px] text-text-muted">Últ. Login</span>
+                        <span className="text-[11px] text-text-muted">Últ. Acesso</span>
                         <div className="flex items-center gap-1">
                             <MdCalendarToday size={11} className="text-text-muted" />
                             <span className="text-[11px] text-text-muted whitespace-nowrap">
-                                {lastLogin}
+                                {lastSeen}
                             </span>
                         </div>
                     </div>

@@ -175,7 +175,7 @@ export default function UsersMain() {
                         className="cursor-pointer select-none flex items-center bg-none border-none p-0"
                     >
                         <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            último Login
+                            Últ. Acesso
                         </p>
                         <SortIcon columnKey="lastLoginAt" sortKey={sortKey} sortDir={sortDir}/>
                     </button>

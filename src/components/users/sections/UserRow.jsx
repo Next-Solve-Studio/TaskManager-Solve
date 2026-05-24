@@ -23,7 +23,8 @@ export default function UserRow({ user, onOpenMenu }) {
         user.authMethod === "google"
             ? "rgba(234,67,53,0.1)"
     //         : "rgba(34,211,238,0.1)";*/
-    const lastLogin = user.lastLoginAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
+   // Exibe o acesso mais recente 
+    const lastSeen = user.lastSeenAt?.toDate?.()?.toLocaleDateString("pt-BR") ?? "—";
 
     return (
         <div
@@ -60,7 +61,7 @@ export default function UserRow({ user, onOpenMenu }) {
             {/* último login */}
             <div className="flex items-center justify-center">
                 <span className="text-[11px] text-text-muted whitespace-nowrap">
-                    {lastLogin}
+                    {lastSeen}
                 </span>
             </div>
 

@@ -23,6 +23,8 @@ import {
 import { useAppRouter } from "@/hooks/useAppRouter";
 import { auth, db } from "../lib/firebaseConfig";
 
+const ONE_HOUR = 60 * 60 * 1000;
+
 const AuthContext = createContext(); // Criação do contexto
 
 /**
@@ -62,6 +64,12 @@ export const AuthProvider = ({ children }) => {
     // Guarda dados do novo usuário
     const pendingUserData = useRef(null);
 
+    const shouldUpdateLastSeen = useCallback((lastSeenAt) => {
+        if (!lastSeenAt) return true;
+        const last = lastSeenAt?.toDate?.() ?? new Date(lastSeenAt);
+        return Date.now() - last.getTime() > ONE_HOUR;
+    })
+
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -76,8 +84,15 @@ export const AuthProvider = ({ children }) => {
                     userData = pendingUserData.current;
                     pendingUserData.current = null;
                 } else {
+                    const userRef = doc(db, "users", user.uid)
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     userData = userDoc.exists() ? userDoc.data() : {};
+
+                    if (shouldUpdateLastSeen(userData.lastSeenAt)) {
+                        const now = new Date()
+                        await updateDoc(userRef, {lastSeenAt: now})
+                        userData.lastSeenAt = now
+                    }
                 }
 
                 setCurrentUser({ ...user, ...userData }); // atualiza o estado com a informação recebida do firebase
@@ -95,7 +110,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(false);
         });
         return unsubscribe; //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
-    }, [setSessionCookie, router]);
+    }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
     /**
      * Verifica se o usuário é o primeiro cadastrado no Firestore.
@@ -114,11 +129,14 @@ export const AuthProvider = ({ children }) => {
     const handleUserDocument = async (user, extraData = {}) => {
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
+        const now = new Date();
 
         if (userSnap.exists()) {
-
             // Atualiza último login
-            await updateDoc(userRef, { lastLoginAt: new Date() });
+            await updateDoc(userRef, {
+                lastLoginAt: now,
+                lastSeenAt: now,
+            });
             return userSnap.data();
 
         } else {
@@ -129,8 +147,9 @@ export const AuthProvider = ({ children }) => {
                 email: user.email,
                 role: first ? "administrador" : "desenvolvedor",
                 photo: user.photoURL || null,
-                createdAt: new Date(),
-                lastLoginAt: new Date(),
+                createdAt: now,
+                lastLoginAt: now,
+                lastSeenAt: now,
                 authMethod: extraData.authMethod || "email",
             };
                 await setDoc(userRef, userData);
@@ -143,11 +162,12 @@ export const AuthProvider = ({ children }) => {
         justLoggedIn.current = true;
 
         // Recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
         // Salva o último login
         await updateDoc(doc(db, "users", userCredential.user.uid), {
             lastLoginAt: new Date(),
+            lastSeenAt: new Date(),
         })
     });
 
@@ -174,6 +194,7 @@ export const AuthProvider = ({ children }) => {
             role: "desenvolvedor",
             createdAt: new Date(),
             lastLoginAt: new Date(),
+            lastSeenAt: new Date(),
             authMethod: "email",
         };
 
