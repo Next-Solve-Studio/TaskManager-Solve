@@ -6,7 +6,7 @@ import {
     MdCheckCircle,
     MdErrorOutline,
 } from "react-icons/md";
-
+import { formatCurrency } from '@/utils/FormatCurrency';
 export default function FinancialKPIs({filteredProjects}) {
 
     // ── PROCESSAMENTO DE DADOS FINANCEIROS ──
@@ -25,9 +25,9 @@ export default function FinancialKPIs({filteredProjects}) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <StatCard icon={MdAttachMoney} label="Faturamento Previsto" value={financialStats.total} color="#19CA68" bg="#19CA680F" border="#19CA6826" />
-            <StatCard icon={MdCheckCircle} label="Receita Realizada" value={financialStats.paid} color="#22d3ee" bg="#22D3EE0F" border="rgba(34,211,238,0.15)" />
-            <StatCard icon={MdErrorOutline} label="Contas a Receber" value={financialStats.pending} color="#f59e0b" bg="rgba(245,158,11,0.06)" border="rgba(245,158,11,0.15)" />
+            <StatCard icon={MdAttachMoney} label="Faturamento Previsto" value={formatCurrency(financialStats.total)} color="#19CA68" bg="#19CA680F" border="#19CA6826" />
+            <StatCard icon={MdCheckCircle} label="Receita Realizada" value={formatCurrency(financialStats.paid)} color="#22d3ee" bg="#22D3EE0F" border="rgba(34,211,238,0.15)" />
+            <StatCard icon={MdErrorOutline} label="Contas a Receber" value={formatCurrency(financialStats.pending)} color="#f59e0b" bg="rgba(245,158,11,0.06)" border="rgba(245,158,11,0.15)" />
         </div>
     )
 }

@@ -1,5 +1,5 @@
 import { formatCurrency } from '@/utils/FormatCurrency';
-import React from 'react'
+
 import { MdTrendingUp } from 'react-icons/md';
 
 export default function FinancialDetails({filteredProjects}) {

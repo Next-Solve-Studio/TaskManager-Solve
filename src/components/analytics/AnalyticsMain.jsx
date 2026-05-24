@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { LoadingState } from "@/components/ui/LoadingState";
 import { useProjects } from "@/context/ProjectsContext";
 import { useTasks } from "@/context/TasksContext";
@@ -34,11 +34,11 @@ export default function AnalyticsMain() {
         }
         // Tenta fazer o parse de string ou timestamp numérico
         const parsed = new Date(dateVal);
-        return isNaN(parsed.getTime()) ? null : parsed;
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
     };
 
     // ── FUNÇÃO DE FILTRO TEMPORAL ──
-    const isWithinTimeFilter = (dateVal) => {
+    const isWithinTimeFilter = useCallback((dateVal) => {
         if (timeFilter === "all" || !dateVal) return true;
         
         const date = getDateObject(dateVal);
@@ -59,16 +59,16 @@ export default function AnalyticsMain() {
             return date.getFullYear() === now.getFullYear();
         }
         return true;
-    };
+    });
 
     // ── DADOS FILTRADOS (Usando startDate com fallback para createdAt) ──
     const filteredProjects = useMemo(() => {
         return projects.filter(p => isWithinTimeFilter(p.startDate || p.createdAt));
-    }, [projects, timeFilter]);
+    }, [projects, isWithinTimeFilter]);
 
     const filteredTasks = useMemo(() => {
         return tasks.filter(t => isWithinTimeFilter(t.startDate || t.createdAt));
-    }, [tasks, timeFilter]);
+    }, [tasks, isWithinTimeFilter]);
 
     if (loadingProjects || loadingTasks || loadingUsers) return <LoadingState />;
 
