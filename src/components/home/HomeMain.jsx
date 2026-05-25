@@ -111,32 +111,32 @@ export default function HomeMain() {
                     label="Projetos Concluídos"
                     value={counts.concluido}
                     color="#19CA68"
-                    bg="#19CA680F"
-                    border="#19CA6826"
+                    bg="rgba(25, 202, 105, 0.15)"
+                    border="rgba(25, 202, 104, 0.2)"
                 />
                 <StatCard
                     icon={MdOutlineLoop}
                     label="Em Andamento"
                     value={counts.em_andamento}
                     color="#22d3ee"
-                    bg="#22D3EE0F"
-                    border="rgba(34,211,238,0.15)"
+                    bg="rgba(34, 211, 238, 0.15)"
+                    border="rgba(34,211,238,0.2)"
                 />
                 <StatCard
                     icon={MdOutlineSupportAgent}
                     label="Em Suporte"
                     value={counts.suporte}
                     color="#a855f7"
-                    bg="rgba(167,139,250,0.06)"
-                    border="rgba(167,139,250,0.15)"
+                    bg="rgba(167,139,250,0.15)"
+                    border="rgba(167, 139, 250, 0.2)"
                 />
                 <StatCard
                     icon={MdTrendingUp}
                     label="Total de Projetos"
                     value={counts.total}
                     color="#60a5fa"
-                    bg="rgba(96,165,250,0.06)"
-                    border="rgba(96,165,250,0.15)"
+                    bg="rgba(96,165,250,0.15)"
+                    border="rgba(96,165,250,0.2)"
                 />
             </div>
 

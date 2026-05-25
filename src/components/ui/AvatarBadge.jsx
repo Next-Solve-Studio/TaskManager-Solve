@@ -4,7 +4,7 @@ export const AVATAR_COLORS = [
     "#19CA68",
     "#22d3ee",
     "#f59e0b",
-    "#a78bfa",
+    "#a855f7",
     "#ef4444",
     "#fb923c",
     "#34d399",

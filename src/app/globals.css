@@ -16,7 +16,7 @@
     /* Superfícies com transparência verde */
     --color-surface-green-dark: #1ad76f10;
     --color-surface-green-alt: #1ad76f20;
-    --color-surface-green-md: #1ad76f30;
+    --color-surface-green-md: #1AD76F04;
 
     /* ─── AZUL / CYAN (Accent) ──────────────────────────── */
     --color-cyan-50: #ecfeff;
@@ -108,7 +108,7 @@
 
 [data-theme="light"] {
     /* LIGHT THEME */
-    --bg-main: #e8e6e1;
+    --bg-main: #E0E0E0;
     --bg-card: #efede8;
     --bg-surface: #e2e0db;
     --bg-side: #f5f3ee;
