@@ -47,7 +47,7 @@ export const ProjectsProvider = ({ children }) => {
         [projects, visibleProjectsCount],
     );
     const hasMoreProjects = projects.length > visibleProjectsCount;
-    const loadMoreProjects = () => setVisibleProjectsCount((prev) => prev + 10);
+    const loadMoreProjects = useCallback(() => setVisibleProjectsCount((prev) => prev + 10));
 
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
@@ -209,7 +209,17 @@ export const ProjectsProvider = ({ children }) => {
             await updateDoc(doc(db, "projects", projectId), payload); // localiza o documento pelo caminho projects/projectId e aplica as alterações
 
             // Log de Atividade (Verifica se houve mudança de status)
-            if (prevStatus !== nextStatus) {
+            if (prevStatus === nextStatus) {
+                await logActivity({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || currentUser.displayName,
+                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    action: "update",
+                    resourceType: "project",
+                    resourceId: projectId,
+                    resourceName: payload.title,
+                });
+            } else {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
@@ -223,16 +233,6 @@ export const ProjectsProvider = ({ children }) => {
                         oldValue: prevStatus,
                         newValue: STATUS_MAP[nextStatus]?.label || nextStatus,
                     },
-                });
-            } else {
-                await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
-                    action: "update",
-                    resourceType: "project",
-                    resourceId: projectId,
-                    resourceName: payload.title,
                 });
             }
 
@@ -277,7 +277,7 @@ export const ProjectsProvider = ({ children }) => {
     );
 
     //Estados e funções disponíveis para os componentes filhos
-    const value = {
+    const value = useMemo(() => ({
         projects,
         users,
         usersMap,
@@ -293,7 +293,23 @@ export const ProjectsProvider = ({ children }) => {
         createProject,
         updateProject,
         deleteProject,
-    };
+    }), [
+        projects,
+        users,
+        usersMap,
+        clients,
+        clientMap,
+        projectMap,
+        loadingProjects,
+        loadingUsers,
+        loadingClients,
+        visibleProjects,
+        hasMoreProjects,
+        loadMoreProjects,
+        createProject,
+        updateProject,
+        deleteProject,
+    ]);
 
     return (
         <ProjectsContext.Provider value={value}>

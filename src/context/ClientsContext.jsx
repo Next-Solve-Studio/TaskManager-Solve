@@ -15,6 +15,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import { toast } from "sonner";
@@ -155,13 +156,13 @@ export const ClientsProvider = ({ children }) => {
         [currentUser],
     );
 
-    const value = {
+    const value = useMemo(()=>({
         clients,
         loading,
         createClient,
         updateClient,
         deleteClient,
-    };
+    }),[clients, loading, createClient, updateClient, deleteClient]);
 
     return (
         <ClientsContext.Provider value={value}>

@@ -13,6 +13,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import { toast } from "sonner";
@@ -60,12 +61,18 @@ export const UsersProvider = ({ children }) => {
         await deleteDoc(doc(db, "users", userId)); // remove o doc com o ID fornecido
     }, []);
 
-    const value = {
+    const value = useMemo(()=>({
         loadingUsers,
         users,
         updateUser,
         deleteUser,
-    };
+    }), 
+    [
+        loadingUsers,
+        users,
+        updateUser,
+        deleteUser,
+    ]);
 
     return (
         <UsersContext.Provider value={value}>{children}</UsersContext.Provider>

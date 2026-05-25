@@ -10,6 +10,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import { toast } from "sonner";
@@ -22,7 +23,7 @@ export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
     const { currentUser } = useAuth();
-    const [userSettings, _setUserSettings] = useState(null);
+    const [userSettings, setUserSettings] = useState(null);
     const [systemSettings, setSystemSettings] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -108,14 +109,15 @@ export const SettingsProvider = ({ children }) => {
         }
     }, []);
 
-    const value = {
+    const value = useMemo(()=>({
         userSettings,
+        setUserSettings,
         systemSettings,
         loading,
         updateProfile,
         changePassword,
         updateSystemSettings,
-    };
+    }), [userSettings, systemSettings, loading, updateProfile, changePassword, updateSystemSettings]);
 
     return (
         <SettingsContext.Provider value={value}>

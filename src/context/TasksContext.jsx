@@ -17,6 +17,7 @@ import {
     useCallback,
     useContext,
     useEffect,
+    useMemo,
     useState,
 } from "react";
 import { toast } from "sonner";
@@ -32,7 +33,6 @@ export const useTasks = () => useContext(TasksContext);
 
 export const TasksProvider = ({ children, projectId }) => {
     const { currentUser } = useAuth(); // dados do user atual
-
     const [tasks, setTasks] = useState([]);
     const [loadingTasks, setLoadingTasks] = useState(true);
 
@@ -144,7 +144,18 @@ export const TasksProvider = ({ children, projectId }) => {
             await updateDoc(doc(db, "tasks", taskId), payload);
 
             // caso o status recebido seja diferente do que estava antes, faz um log de mudança de status
-            if (prevStatus !== nextStatus) {
+            if (prevStatus === nextStatus) {
+                await logActivity({
+                    userId: currentUser.uid,
+                    userName: currentUser.name || currentUser.displayName,
+                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    action: "update",
+                    resourceType: "task",
+                    resourceId: taskId,
+                    resourceName: payload.title,
+                    details: { projectId: payload.projectId || null },
+                });
+            } else {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
@@ -159,17 +170,6 @@ export const TasksProvider = ({ children, projectId }) => {
                         newValue: nextStatus,
                         projectId: payload.projectId || null,
                     },
-                });
-            } else {
-                await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
-                    action: "update",
-                    resourceType: "task",
-                    resourceId: taskId,
-                    resourceName: payload.title,
-                    details: { projectId: payload.projectId || null },
                 });
             }
 
@@ -213,7 +213,7 @@ export const TasksProvider = ({ children, projectId }) => {
     );
 
     // Estados e funções disponíveis para os componentes filhos
-    const value = {
+    const value = useMemo(()=>({
         tasks,
         loadingTasks,
         visibleTasksCount,
@@ -222,7 +222,17 @@ export const TasksProvider = ({ children, projectId }) => {
         updateTask,
         deleteTask,
         updateChecklist,
-    };
+    }), 
+    [
+        tasks,
+        loadingTasks,
+        visibleTasksCount,
+        loadMoreTasks,
+        createTask,
+        updateTask,
+        deleteTask,
+        updateChecklist,
+    ]);
 
     return (
         <TasksContext.Provider value={value}>{children}</TasksContext.Provider>

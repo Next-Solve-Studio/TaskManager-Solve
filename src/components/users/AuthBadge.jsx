@@ -14,7 +14,7 @@ export function AuthBadge({ authMethod }) {
                     : "rgba(34,211,238,0.10)",
                 fontSize: 11,
                 fontWeight: 600,
-                color: isGoogle ? "#ea4335" : "#22d3ee",
+                color: isGoogle ? "var(--color-error)" : "var(--color-cyan-400)",
                 whiteSpace: "nowrap",
                 border: `1px solid ${isGoogle ? "rgba(234,67,53,0.20)" : "rgba(34,211,238,0.20)"}`,
             }}
