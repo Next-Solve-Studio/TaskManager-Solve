@@ -1,21 +1,17 @@
 import { MdGroup } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { ROLE_LABELS } from "@/lib/roles";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 
 export default function Team({ users, projects }) {
     return (
         <section className="p-5 rounded-2xl flex flex-col gap-3 bg-bg-card border border-border-main">
-            <div className="flex items-center justify-between mb-1">
-                <div>
-                    <h2 className="text-base font-bold text-text-primary">
-                        Equipe
-                    </h2>
-                    <p className="text-xs text-text-secondary mt-0.5">
-                        {users.length} membros
-                    </p>
-                </div>
-                <MdGroup className="text-text-muted text-xl" />
-            </div>
+            <DashboardHeader
+                title="Equipe"
+                subtitle={`${users.length} membros`}
+                icon={MdGroup}
+                iconColor="#19ca68"
+            />
 
             <div className="flex flex-col gap-2 overflow-y-auto max-h-64 pr-1 scroll-hidden">
                 {users.length === 0 && (

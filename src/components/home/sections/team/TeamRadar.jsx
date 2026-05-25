@@ -5,6 +5,7 @@ import { MdRadar } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ROLE_LABELS } from "@/lib/roles";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 
 const MAX_BAR = 6;
 
@@ -45,17 +46,12 @@ export function TeamRadar({ users, projects }) {
     return (
         <section className="rounded-2xl p-5 space-y-4 bg-bg-card border border-border-main">
             {/* cabeçalho */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <MdRadar className="text-indigo-400 text-xl" />
-                    <h2 className="text-base font-bold text-text-primary">
-                        Radar do Time
-                    </h2>
-                </div>
-                <span className="text-xs text-text-secondary">
-                    {devStats.length} devs
-                </span>
-            </div>
+            <DashboardHeader
+                title="Radar do Time"
+                subtitle={`${devStats.length} devs`}
+                icon={MdRadar}
+                iconColor="#818cf8"
+            />
 
             {/* grid de cards */}
             <div
@@ -137,7 +133,7 @@ export function TeamRadar({ users, projects }) {
                                 {summary[key]}
                             </span>{" "}
                             {label}
-                            {summary[key] !== 1 ? "s" : ""}
+                            {summary[key] === 1 ? "" : "s"}
                         </span>
                     </div>
                 ))}

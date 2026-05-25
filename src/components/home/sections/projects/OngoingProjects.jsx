@@ -3,21 +3,17 @@ import { MdOutlineTimer } from "react-icons/md";
 import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
 import { useProjects } from "@/context/ProjectsContext";
 import { toDate } from "@/utils/DashboardUtils";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 export default function OngoingProjects({ ongoingProjects, today }) {
     const { clientMap } = useProjects();
     return (
         <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
-            <div className="flex items-center justify-between mb-5">
-                <div>
-                    <h2 className="text-base font-bold text-text-primary">
-                        Projetos em Curso
-                    </h2>
-                    <p className="text-xs text-text-secondary mt-0.5">
-                        Status e prioridade
-                    </p>
-                </div>
-                <MdOutlineTimer className="text-text-muted text-xl" />
-            </div>
+            <DashboardHeader
+                title="Projetos em Curso"
+                subtitle="Status e prioridade"
+                icon={MdOutlineTimer}
+                iconColor="#22d3ee"
+            />
 
             <div className="flex flex-col gap-4 overflow-y-auto max-h-72 scroll-hidden p-3 pl-1">
                 {ongoingProjects.length === 0 ? (

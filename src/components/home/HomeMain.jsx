@@ -94,7 +94,8 @@ export default function HomeMain() {
     if (loadingProjects || loadingUsers) return <LoadingState />;
 
     return (
-        <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans">
+        <div className="relative min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans">
+            
             {/* ── HEADER ── */}
             <HomeHeader
                 counts={counts}
@@ -125,7 +126,7 @@ export default function HomeMain() {
                     icon={MdOutlineSupportAgent}
                     label="Em Suporte"
                     value={counts.suporte}
-                    color="#a78bfa"
+                    color="#a855f7"
                     bg="rgba(167,139,250,0.06)"
                     border="rgba(167,139,250,0.15)"
                 />

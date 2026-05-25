@@ -3,21 +3,17 @@ import { MdCalendarToday, MdOutlineFlag, MdOutlineTimer } from "react-icons/md";
 import { AVATAR_COLORS } from "@/components/ui/AvatarBadge";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { calcProgress, toDate } from "@/utils/DashboardUtils";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 
 export default function ActiveProjects({ activeProjects, today }) {
     return (
         <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
-            <div className="flex items-center justify-between mb-5">
-                <div>
-                    <h2 className="text-base font-bold text-text-primary">
-                        Projetos Ativos
-                    </h2>
-                    <p className="text-xs text-text-secondary mt-0.5">
-                        Início e previsão de entrega
-                    </p>
-                </div>
-                <MdOutlineFlag className="text-text-muted text-xl" />
-            </div>
+            <DashboardHeader
+                title="Projetos Ativos"
+                subtitle="Início e previsão de entrega"
+                icon={MdOutlineFlag}
+                iconColor="#19ca68"
+            />
 
             {activeProjects.length === 0 ? (
                 <p className="text-xs text-text-secondary text-center py-6">
