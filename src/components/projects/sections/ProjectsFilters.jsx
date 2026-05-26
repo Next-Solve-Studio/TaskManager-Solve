@@ -37,7 +37,7 @@ export default function ProjectsFilters({
                     value={searchInput}
                     onChange={(e) => onSearchChange(e.target.value)}
                     placeholder="Buscar projetos, clientes, tecnologias..."
-                    className="w-full bg-bg-surface border border-border-main rounded-lg p-[7px_10px_7px_32px] outline-none text-text-primary text-[13px] focus:border-brand-500 transition-colors"
+                    className="w-full bg-bg-side border border-border-main rounded-lg p-[7px_10px_7px_32px] outline-none text-text-primary text-[13px] focus:border-brand-500 transition-colors"
                 />
             </div>
 

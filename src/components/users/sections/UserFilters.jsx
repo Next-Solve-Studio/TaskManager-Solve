@@ -53,7 +53,7 @@ export default function UserFilters({ search, setSearch, filterRole, setFilterRo
                             key={rf.value}
                             type="button"
                             onClick={() => setFilterRole(rf.value)}
-                            className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer"
+                            className="px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all duration-150 cursor-pointer"
                             style={{
                                 background: active
                                     ? "rgba(25,202,104,0.15)"
