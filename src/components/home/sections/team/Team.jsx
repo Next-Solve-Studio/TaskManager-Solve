@@ -5,7 +5,7 @@ import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader
 
 export default function Team({ users, projects }) {
     return (
-        <section className="p-5 rounded-2xl flex flex-col gap-3 bg-bg-card border border-border-main">
+        <section className="p-5 rounded-2xl flex flex-col gap-3 bg-bg-card border border-border-main shadow-md">
             <DashboardHeader
                 title="Equipe"
                 subtitle={`${users.length} membros`}

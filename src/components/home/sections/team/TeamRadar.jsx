@@ -44,7 +44,7 @@ export function TeamRadar({ users, projects }) {
     );
 
     return (
-        <section className="rounded-2xl p-5 space-y-4 bg-bg-card border border-border-main">
+        <section className="rounded-2xl p-5 space-y-4 bg-bg-card border border-border-main shadow-md">
             {/* cabeçalho */}
             <DashboardHeader
                 title="Radar do Time"

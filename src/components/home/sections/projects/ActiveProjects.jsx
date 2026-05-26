@@ -7,7 +7,7 @@ import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader
 
 export default function ActiveProjects({ activeProjects, today }) {
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main shadow-md">
             <DashboardHeader
                 title="Projetos Ativos"
                 subtitle="Início e previsão de entrega"

@@ -110,7 +110,7 @@ export default function ActivityFeed() {
     };
 
     return (
-        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4">
+        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4 shadow-md">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <MdHistory className="text-brand-500 text-xl" />
