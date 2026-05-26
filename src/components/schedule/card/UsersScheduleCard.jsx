@@ -37,6 +37,18 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                     const hasContent = !!desc.trim();
                     const todayDay = isToday(date);
 
+                    const bgClass = hasContent && todayDay
+                        ? "bg-[rgba(25,202,104,0.12)]"
+                        : "bg-[var(--color-border-main)]";
+
+                    let borderClass = "border border-dashed border-[var(--color-border-main)]";
+
+                    if (todayDay) {
+                        borderClass = "border border-[rgba(25,202,104,0.25)]"; 
+                    } else if (hasContent) {
+                        borderClass = "border border-[var(--color-border-main)]"; 
+                    }
+                
                     return (
                         <div
                             key={key}
@@ -54,20 +66,10 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                                 {label.slice(0, 3)}
                             </span>
                             <div
-                                className="rounded-lg p-2 text-center"
-                                style={{
-                                    background: hasContent
-                                        ? todayDay
-                                            ? "rgba(25,202,104,0.12)"
-                                            : "var(--color-border-main)"
-                                        : "var(--color-border-main)",
-                                    border: todayDay
-                                        ? "1px solid rgba(25,202,104,0.25)"
-                                        : hasContent
-                                          ? "1px solid var(--color-border-main)"
-                                          : "1px dashed var(--color-border-main)",
-                                    minHeight: "60px",
-                                }}
+                                className={`
+                                    rounded-lg p-2 text-center min-h-15
+                                    ${bgClass} ${borderClass}
+                                `}
                             >
                                 <p className="text-[10px] text-text-secondary leading-tight line-clamp-3 text-left">
                                     {desc || (
