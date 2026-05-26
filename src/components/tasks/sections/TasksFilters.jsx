@@ -7,7 +7,6 @@ import {
     Collapse,
     FormControl,
     IconButton,
-    InputAdornment,
     InputLabel,
     MenuItem,
     Select,
@@ -73,24 +72,30 @@ export default function TasksFilters({
                     flexWrap: "wrap",
                 }}
             >
-                <TextField
-                    size="small"
+                <div
+                style={{
+                    position: "relative",
+                    flex: "1 1 200px",
+                    minWidth: 180,
+                }}
+            >
+                <MdSearch
+                    size={16}
+                    style={{
+                        position: "absolute",
+                        left: 10,
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        color: "var(--color-text-muted)",
+                    }}
+                />
+                <input
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Buscar tarefa, responsável, projeto..."
-                    sx={{ ...muiDark, flex: 1, minWidth: 250 }}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <MdSearch
-                                    size={20}
-                                    className="text-text-primary"
-                                />
-                            </InputAdornment>
-                        ),
-                        sx: { borderRadius: 3 },
-                    }}
+                    className="shadow-sm w-full bg-bg-card border border-border-main rounded-lg p-[12px_10px_12px_32px] outline-none text-text-primary text-[13px] focus:border-brand-500 transition-colors"
                 />
+            </div>
 
                 <Button
                     variant={showFilters ? "contained" : "outlined"}
@@ -99,7 +104,7 @@ export default function TasksFilters({
                     onClick={() => setShowFilters((v) => !v)}
                     startIcon={<MdOutlineFilterList />}
                     sx={{
-                        borderRadius: 3,
+                        borderRadius: 2,
                         textTransform: "none",
                         fontWeight: 600,
                         height: 40,
@@ -227,7 +232,7 @@ export default function TasksFilters({
                         size="small"
                         fullWidth
                         sx={muiDark}
-                        InputLabelProps={{ shrink: true }}
+                        slotProps={{ inputLabel: { shrink: true } }}
                         value={filterMonth === "all" ? "" : filterMonth}
                         onChange={(e) =>
                             setFilterMonth(e.target.value || "all")

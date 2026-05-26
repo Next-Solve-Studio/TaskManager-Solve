@@ -10,7 +10,7 @@ function TaskCard({ task, usersMap, onEdit, onDelete }) {
 
     return (
         <div
-            className="bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 
+            className="shadow-md bg-bg-card border border-border-main2 rounded-xl p-4 flex flex-col gap-3 
         hover:border-brand-500/20 hover:-translate-y-0.5 transition-all duration-200 select-none
         max-w-130 "
         >

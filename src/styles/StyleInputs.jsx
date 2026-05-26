@@ -1,7 +1,7 @@
 export const muiDark = {
     "& .MuiOutlinedInput-root": {
         color: "var(--color-text-primary)",
-        background: "var(--color-bg-surface)",
+        background: "var(--color-bg-side)",
         "& fieldset": { borderColor: "var(--color-border-subtle)" },
         "&:hover fieldset": { borderColor: "var(--color-surface-green-md)" },
         "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
