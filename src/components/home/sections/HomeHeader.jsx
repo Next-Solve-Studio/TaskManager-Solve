@@ -28,7 +28,7 @@ export default function HomeHeader({
                 <div className="flex items-center gap-2 mb-1">
                     <RiRocketLine className="text-brand-500 text-xl" />
                     <span className="text-xs font-semibold uppercase tracking-widest text-bg-hover2">
-                        Dashboard
+                        Visão Geral
                     </span>
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
