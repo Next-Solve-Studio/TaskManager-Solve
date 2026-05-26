@@ -8,12 +8,10 @@ import { useAuth } from "@/context/AuthContext";
 export default function GoogleLoginBtn() {
     const { loginWithGoogle, loading } = useAuth();
 
-
     const handleGoogleLogin = async () => {
         try {
             await loginWithGoogle();
             // O redirecionamento é automático (justLoggedIn + onAuthStateChanged)
-            // Pode colocar um toast de boas-vindas se quiser
         } catch (error) {
             console.error(" ERRO DETALHADO NO LOGIN:", error);
             const messages = {

@@ -157,15 +157,14 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                     error={!!errors.email}
                     helperText={errors.email?.message}
                     sx={fieldSx}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <MdOutlineEmail
-                                    color="var(--color-brand-500)"
-                                    size={19}
-                                />
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <MdOutlineEmail color="var(--color-brand-500)" size={19} />
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                 />
 
@@ -178,15 +177,17 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         error={!!errors.password}
                         helperText={errors.password?.message}
                         sx={fieldSx}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <IoMdLock
-                                        color="var(--color-brand-500)"
-                                        size={19}
-                                    />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <IoMdLock
+                                            color="var(--color-brand-500)"
+                                            size={19}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                         className="w-full"
                     />

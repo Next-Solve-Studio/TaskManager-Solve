@@ -162,15 +162,17 @@ export default function RegisterForm({ setHaveAccount }) {
                     helperText={errors.name?.message}
                     sx={fieldSx}
                     autoComplete="off"
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <AiOutlineUser
-                                    color="var(--color-brand-500)"
-                                    size={19}
-                                />
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <AiOutlineUser
+                                            color="var(--color-brand-500)"
+                                            size={19}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }
                     }}
                 />
 
@@ -183,15 +185,17 @@ export default function RegisterForm({ setHaveAccount }) {
                     error={!!errors.email}
                     helperText={errors.email?.message}
                     sx={fieldSx}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <MdOutlineEmail
-                                    color="var(--color-brand-500)"
-                                    size={19}
-                                />
-                            </InputAdornment>
-                        ),
+                    slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <MdOutlineEmail
+                                            color="var(--color-brand-500)"
+                                            size={19}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }
                     }}
                 />
 
@@ -205,15 +209,17 @@ export default function RegisterForm({ setHaveAccount }) {
                         error={!!errors.password}
                         helperText={errors.password?.message}
                         sx={fieldSx}
-                        InputProps={{
-                            startAdornment: (
-                                <InputAdornment position="start">
-                                    <IoMdLock
-                                        color="var(--color-brand-500)"
-                                        size={19}
-                                    />
-                                </InputAdornment>
-                            ),
+                        slotProps={{
+                            input: {
+                                startAdornment: (
+                                    <InputAdornment position="start">
+                                        <IoMdLock
+                                            color="var(--color-brand-500)"
+                                            size={19}
+                                        />
+                                    </InputAdornment>
+                                ),
+                            }
                         }}
                         className="w-full"
                     />
