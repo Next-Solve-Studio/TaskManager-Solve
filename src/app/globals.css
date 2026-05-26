@@ -88,7 +88,7 @@
 :root {
     /* DARK THEME (Padrão) */
     --bg-main: #0a0a0a;
-    --bg-card: #121212;
+    --bg-card: #151515;
     --bg-surface: #1a1a1a;
     --bg-side: #000000b6;
 
@@ -110,7 +110,7 @@
     /* LIGHT THEME */
     --bg-main: #EEF4FB;
     --bg-card: #ffffff;
-    --bg-surface: #e2e0db;
+    --bg-surface: #ececec;
     --bg-side: #f5f3ee;
 
     --theme-scheme: light;

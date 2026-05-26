@@ -40,18 +40,14 @@ export default function UsersFilter({
                 <button
                     type="button"
                     onClick={() => setFilterUserId("me")}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
-                    style={{
-                        background: isViewingMe
-                            ? "rgba(25,202,104,0.15)"
-                            : "var(--color-bg-surface)",
-                        border: isViewingMe
-                            ? "1px solid rgba(25,202,104,0.4)"
-                            : "1px solid var(--color-border-main)",
-                        color: isViewingMe
-                            ? "#19CA68"
-                            : "var(--color-text-secondary)",
-                    }}
+                    className={`
+                        shadow-sm cursor-pointer flex items-center gap-1.5 px-3 py-1.5 
+                        rounded-full text-sm font-medium transition-all duration-150
+                        ${isViewingMe
+                        ? "bg-green-500/15 border border-green-500/40 text-brand-500 hover:bg-brand-500/25 hover:border-brand-500/60"
+                        : "bg-bg-card border border-border-main text-text-secondary hover:bg-gray-100"
+                        }
+                    `}
                 >
                     <MdPerson size={15} />
                     Minha Agenda
@@ -61,18 +57,14 @@ export default function UsersFilter({
                     <button
                         type="button"
                         onClick={() => setFilterUserId("all")}
-                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150"
-                        style={{
-                            background: isViewingAll
-                                ? "rgba(34,211,238,0.12)"
-                                : "var(--color-bg-surface)",
-                            border: isViewingAll
-                                ? "1px solid rgba(34,211,238,0.35)"
-                                : "1px solid var(--color-bg-surface)",
-                            color: isViewingAll
-                                ? "#22d3ee"
-                                : "var(--color-text-secondary)",
-                        }}
+                        className={`
+                            shadow-sm flex items-center gap-1.5 px-3 py-1.5 rounded-full 
+                            text-sm font-medium transition-all duration-150
+                            ${isViewingAll
+                            ? "bg-cyan-400/12 border border-cyan-400/35 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50"
+                            : "bg-bg-card border border-border-main text-text-secondary hover:bg-gray-100"
+                            }
+                        `}
                     >
                         <MdGroup size={15} />
                         Todos
@@ -81,11 +73,11 @@ export default function UsersFilter({
                         <button
                             type="button"
                             onClick={() => setModalOpen(true)}
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 "
+                            className="shadow-sm flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 "
                             style={{
                                 background: selectedUser
                                     ? `${avatarColor(selectedUser.id)}20`
-                                    : "var(--color-bg-surface)",
+                                    : "var(--color-bg-card)",
                                 border: selectedUser
                                     ? `1px solid ${avatarColor(selectedUser.id)}60`
                                     : "1px solid var(--color-bg-surface)",
@@ -127,11 +119,11 @@ export default function UsersFilter({
                                             filterUserId === u.id ? "me" : u.id,
                                         )
                                     }
-                                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+                                    className="shadow-sm flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
                                     style={{
                                         background: selected
                                             ? `${color}20`
-                                            : "var(--color-bg-surface)",
+                                            : "var(--color-bg-card)",
                                         border: selected
                                             ? `1px solid ${color}60`
                                             : "1px solid var(--color-border-main)",

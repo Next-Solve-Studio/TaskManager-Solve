@@ -6,9 +6,9 @@ import { ptBR } from "date-fns/locale";
 import { useEffect, useRef, useState } from "react";
 import { MdCheck, MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
-// import useIsMobile from "@/hooks/responsive/useIsMobile";
 
-export default function CardScheduleEdit({
+
+export default function CardSchedule({
     dayKey,
     dayLabel,
     date,
@@ -16,7 +16,7 @@ export default function CardScheduleEdit({
     canEdit,
     onSave,
 }) {
-    // const isMobile = useIsMobile();
+
     const description = scheduleDoc?.days?.[dayKey]?.description || "";
     const [editing, setEditing] = useState(false);
     const [draft, setDraft] = useState(description);
@@ -65,10 +65,10 @@ export default function CardScheduleEdit({
 
     return (
         <div
-            className={`flex flex-col min-w-40 gap-2 p-4 rounded-2xl transition-all duration-200 group relative border overflow-hidden ${
+            className={`shadow-md flex flex-col min-w-40 gap-2 p-4 rounded-2xl transition-all duration-200 group relative border overflow-hidden ${
                 todayDay
                     ? "bg-brand-500/10 border-brand-500/30"
-                    : "bg-bg-surface border-border-main"
+                    : "bg-bg-card border-border-main"
             }`}
         >
             {/* Header do dia */}
@@ -100,7 +100,7 @@ export default function CardScheduleEdit({
                     <button
                         type="button"
                         onClick={() => setEditing(true)}
-                        className="opacity-0 lg:group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-bg-card text-text-muted"
+                        className="opacity-0 lg:group-hover:opacity-100 transition-opacity duration-150 p-1.5 rounded-lg hover:bg-bg-surface text-text-muted cursor-pointer"
                     >
                         <MdEdit size={15} />
                     </button>
@@ -138,7 +138,7 @@ export default function CardScheduleEdit({
                             <button
                                 type="button"
                                 onClick={handleCancel}
-                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 bg-bg-surface border border-border-main text-text-secondary hover:bg-bg-card"
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-150 bg-bg-card border border-border-main text-text-secondary hover:bg-bg-side"
                             >
                                 <MdClose size={13} />
                                 Cancelar

@@ -2,25 +2,24 @@
 
 import { CircularProgress, Menu, MenuItem } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
-import { AiOutlineClear } from "react-icons/ai";
 import {
     MdAdminPanelSettings,
     MdCode,
     MdDelete,
     MdEdit,
     MdPeople,
-    MdSearch,
     MdSupervisorAccount,
 } from "react-icons/md";
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
 import { useUsers } from "@/context/UsersContext";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
-import { ROLE_LABELS, ROLES } from "@/lib/roles";
+import { ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
-import UserRow from "./sections/UserRow";
 import UsersCards from "./usersCards/UsersCards";
-import SortIcon from "@/utils/SortIcon";
+import UserFilters from "./sections/UserFilters";
+import UserTable from "./sections/UserTable";
+import UsersHeader from "./sections/UsersHeader";
 
 export default function UsersMain() {
     const { users, loading } = useUsers();
@@ -95,19 +94,6 @@ export default function UsersMain() {
         [users],
     );
 
-    const hasFilters = search || filterRole !== "all";
-    const clearFilters = () => {
-        setSearch("");
-        setFilterRole("all");
-    };
-
-    const roleFilters = [
-        { value: "all", label: "Todos" },
-        { value: ROLES.ADMIN, label: ROLE_LABELS[ROLES.ADMIN] },
-        { value: ROLES.PROJECT_LEAD, label: ROLE_LABELS[ROLES.PROJECT_LEAD] },
-        { value: ROLES.DEVELOPER, label: ROLE_LABELS[ROLES.DEVELOPER] },
-    ];
-
     const handleUserList = () => {
         if (loading){
             return(
@@ -143,121 +129,20 @@ export default function UsersMain() {
         }
 
         return (
-            <div
-                style={{ display: "flex", flexDirection: "column", gap: 6 }}
-            >
-                {/* Cabeçalho */}
-                <div className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] gap-4 px-5 mb-2">
-                    <div></div>
-                    <button
-                        type="button"
-                        onClick={() => handleSort("name")}
-                        className="cursor-pointer select-none flex items-center bg-none border-none p-0"
-                    >
-                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            Usuário
-                        </p>
-                        <SortIcon columnKey="name" sortKey={sortKey} sortDir={sortDir}/>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleSort("role")}
-                        className="cursor-pointer flex items-center p-0 select-none"
-                    >
-                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            Cargo
-                        </p>
-                        <SortIcon columnKey="role" sortKey={sortKey} sortDir={sortDir}/>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleSort("lastLoginAt")}
-                        className="cursor-pointer select-none flex items-center bg-none border-none p-0"
-                    >
-                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            Últ. Acesso
-                        </p>
-                        <SortIcon columnKey="lastLoginAt" sortKey={sortKey} sortDir={sortDir}/>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => handleSort("createdAt")}
-                        className="cursor-pointer flex items-center p-0 select-none"
-                    >
-                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            Entrada
-                        </p>
-                        <SortIcon columnKey="createdAt" sortKey={sortKey} sortDir={sortDir}/>
-                    </button>
-                    <div className="text-center">
-                        <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">
-                            Ações
-                        </p>
-                    </div>
-                </div>
-
-                {/* Lista de Usuários */}
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 6,
-                    }}
-                >
-                    {filtered.map((user) => (
-                        <UserRow
-                            key={user.id}
-                            user={user}
-                            onOpenMenu ={handleOpenMenu}
-                        />
-                    ))}
-                </div>
-            </div>
+            <UserTable
+                filtered={filtered}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                handleOpenMenu={handleOpenMenu}
+                handleSort={handleSort}
+            />
         )
     }
 
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
             {/* ── Header ── */}
-            <div
-                style={{
-                    display: "flex",
-                    alignItems: "flex-start",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: 12,
-                }}
-                className="mb-5"
-            >
-                <div>
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 8,
-                            marginBottom: 4,
-                        }}
-                    >
-                        <MdPeople
-                            style={{
-                                color: "var(--color-brand-500)",
-                                fontSize: 18,
-                            }}
-                        />
-                        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
-                            Gestão de Usuários
-                        </span>
-                    </div>
-                    <h1 className="text-[26px] font-extrabold text-text-primary mt-2">
-                        Usuários
-                    </h1>
-                    <p className="text-[13px] text-text-muted mt-1">
-                        {users.length} usuário{users.length === 1 ? "" : "s"}{" "}
-                        cadastrado
-                        {users.length === 1 ? "" : "s"}
-                    </p>
-                </div>
-            </div>
+            <UsersHeader users={users}/>
 
             {/* ── Stats ── */}
             <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
@@ -296,81 +181,12 @@ export default function UsersMain() {
             </div>
 
             {/* ── Filters ── */}
-            <div className="flex flex-wrap gap-2.5 p-3.5 bg-bg-card border border-border-main rounded-[14px] items-center">
-                <div
-                    style={{
-                        position: "relative",
-                        flex: "1 1 200px",
-                        minWidth: 180,
-                    }}
-                >
-                    <MdSearch
-                        size={16}
-                        style={{
-                            position: "absolute",
-                            left: 10,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            color: "var(--color-text-muted)",
-                        }}
-                    />
-                    <input
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        placeholder="Buscar por nome ou e-mail..."
-                        className="w-full bg-bg-surface border border-border-main rounded-lg p-[7px_10px_7px_32px] outline-none text-text-primary text-[13px] focus:border-brand-500 transition-colors"
-                    />
-                </div>
-
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                    {roleFilters.map((rf) => {
-                        const active = filterRole === rf.value;
-                        return (
-                            <button
-                                key={rf.value}
-                                type="button"
-                                onClick={() => setFilterRole(rf.value)}
-                                className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 cursor-pointer"
-                                style={{
-                                    background: active
-                                        ? "rgba(25,202,104,0.15)"
-                                        : "var(--color-bg-surface)",
-                                    border: active
-                                        ? "1px solid rgba(25,202,104,0.35)"
-                                        : "1px solid var(--color-border-main)",
-                                    color: active
-                                        ? "var(--color-brand-500)"
-                                        : "var(--color-text-muted)",
-                                }}
-                            >
-                                {rf.label}
-                            </button>
-                        );
-                    })}
-                </div>
-
-                {hasFilters && (
-                    <button
-                        onClick={clearFilters}
-                        type="button"
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 4,
-                            background: "rgba(239,68,68,0.1)",
-                            border: "1px solid rgba(239,68,68,0.2)",
-                            borderRadius: 8,
-                            color: "#ef4444",
-                            padding: "6px 8px",
-                            cursor: "pointer",
-                            fontSize: 12,
-                            fontWeight: 600,
-                        }}
-                    >
-                        <AiOutlineClear className="text-xl" />
-                    </button>
-                )}
-            </div>
+            <UserFilters
+                search={search}
+                setSearch={setSearch}
+                filterRole={filterRole}
+                setFilterRole={setFilterRole}
+            />
 
             {/* ── Lista ── */}
             {handleUserList()}

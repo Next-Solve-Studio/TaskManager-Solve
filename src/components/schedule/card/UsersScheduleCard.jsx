@@ -10,7 +10,7 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
     };
 
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main">
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main shadow-md">
             {/* Header do card */}
             <div className="flex items-center gap-3 mb-4">
                 <Avatar name={user.name} uid={user.id} src={user.photo} />
@@ -40,7 +40,7 @@ export default function UserScheduleCard({ scheduleDoc, weekStart, users }) {
                     return (
                         <div
                             key={key}
-                            className="flex flex-col gap-1"
+                            className="flex flex-col gap-1 "
                             title={desc || label}
                         >
                             <span

@@ -8,7 +8,7 @@ import { Avatar } from "@/components/ui/AvatarBadge";
 import { useAuth } from "@/context/AuthContext";
 import { useSchedule, WEEK_DAYS } from "@/context/ScheduleContext";
 import { useUsers } from "@/context/UsersContext";
-import CardScheduleEdit from "./card/CardScheduleEdit";
+import CardSchedule from "./card/CardSchedule";
 import UserScheduleCard from "./card/UsersScheduleCard";
 import EmptyState from "./sections/EmptyState";
 import ScheduleHeader from "./sections/ScheduleHeader";
@@ -155,7 +155,7 @@ export default function ScheduleMain() {
                         {WEEK_DAYS.map(({ key, label }, i) => {
                             const date = addDays(weekStart, i);
                             return (
-                                <CardScheduleEdit
+                                <CardSchedule
                                     key={key}
                                     dayKey={key}
                                     dayLabel={label}

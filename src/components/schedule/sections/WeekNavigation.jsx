@@ -17,12 +17,12 @@ export default function WeekNavigation({
             <button
                 type="button"
                 onClick={goToPreviousWeek}
-                className="flex cursor-pointer items-center justify-center w-9 h-9 rounded-xl transition-all duration-150 hover:bg-bg-card bg-bg-surface border border-border-main text-text-secondary"
+                className="shadow-sm flex cursor-pointer items-center justify-center w-9 h-9 rounded-xl transition-all duration-150 hover:bg-bg-surface bg-bg-card border border-border-main text-text-secondary"
             >
                 <MdChevronLeft size={20} />
             </button>
 
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-surface border border-border-main">
+            <div className="shadow-sm select-none flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-card border border-border-main">
                 <MdCalendarMonth
                     size={15}
                     style={{
@@ -44,7 +44,7 @@ export default function WeekNavigation({
             <button
                 type="button"
                 onClick={goToNextWeek}
-                className="flex cursor-pointer items-center justify-center w-9 h-9 rounded-xl transition-all duration-150 hover:bg-bg-card bg-bg-surface border border-border-main text-text-secondary"
+                className="shadow-sm flex cursor-pointer items-center justify-center w-9 h-9 rounded-xl transition-all duration-150 hover:bg-bg-surface bg-bg-card border border-border-main text-text-secondary"
             >
                 <MdChevronRight size={20} />
             </button>

@@ -30,7 +30,7 @@ export default function UserRow({ user, onOpenMenu }) {
         <div
             className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] 
             gap-4 items-center px-5 py-3 bg-bg-card
-            rounded-xl border border-border-main
+            rounded-xl border border-border-main shadow-sm
             transition-[border-color_0.2s,transform_0.2s] hover:border-brand-500/30 group sm:hover:-translate-y-px"
         >
             {/* Avatar */}
