@@ -6,7 +6,7 @@ import { Avatar, avatarColor } from "@/components/ui/AvatarBadge";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import UserPickerModal from "../modals/UserPickerModal";
 
-export default function UsersFilter({
+export default function UsersFiltersSchedule({
     users,
     isViewingAll,
     isViewingMe,

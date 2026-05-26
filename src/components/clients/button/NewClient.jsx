@@ -8,7 +8,7 @@ export default function NewClient({ onCreate }) {
                     className="
                         relative inline-flex items-center gap-1.5
                         px-4.5 h-9.5 rounded-[7px]
-                        text-[13px] font-bold tracking-tight text-black
+                        text-[13px] font-bold tracking-tight text-white text-shadow-sm
                         bg-linear-to-br from-brand-500 to-brand-600
                         overflow-hidden cursor-pointer
                         transition-all duration-150

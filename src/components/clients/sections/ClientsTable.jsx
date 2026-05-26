@@ -38,7 +38,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                 clients.map((client) => (
                     <div
                         key={client.id}
-                        className="grid grid-cols-12 items-center bg-bg-card border border-border-main p-4 px-6 rounded-2xl transition-all duration-300 hover:border-brand-500/30 group"
+                        className="shadow-md grid grid-cols-12 items-center bg-bg-card border border-border-main p-4 px-6 rounded-2xl transition-all duration-300 hover:border-brand-500/30 group"
                     >
                         {/* IDENTIFICAÇÃO */}
                         <div className="col-span-5 flex items-center gap-4">
@@ -110,7 +110,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
         }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             <div className="grid grid-cols-12 px-8 mb-2">
                 <div className="col-span-5">
                     <p className="text-text-muted font-bold uppercase text-[11px] tracking-widest">

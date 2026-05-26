@@ -12,7 +12,7 @@ import CardSchedule from "./card/CardSchedule";
 import UserScheduleCard from "./card/UsersScheduleCard";
 import EmptyState from "./sections/EmptyState";
 import ScheduleHeader from "./sections/ScheduleHeader";
-import UsersFilter from "./sections/UsersFilter";
+import UsersFiltersSchedule from "./sections/UsersFilterSchedule";
 import WeekNavigation from "./sections/WeekNavigation";
 
 export default function ScheduleMain() {
@@ -85,7 +85,7 @@ export default function ScheduleMain() {
                 />
 
                 {/* Filtros de usuário */}
-                <UsersFilter
+                <UsersFiltersSchedule
                     users={users}
                     isViewingAll={isViewingAll}
                     isViewingMe={isViewingMe}
