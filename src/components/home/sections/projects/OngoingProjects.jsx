@@ -7,8 +7,16 @@ import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader
 export default function OngoingProjects({ ongoingProjects, today }) {
     const { clientMap } = useProjects();
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main overflow-hidden shadow-md
-            bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main"
+            style={{
+                boxShadow: `
+                    inset 0 0 40px rgba(0,0,0,0.06),
+                    inset 0 1px 0 rgba(255,255,255,0.06),
+                    0 0 10px rgba(34,211,238,0.07),
+                    0 4px 20px rgba(0,0,0,0.06)
+                `
+            }}
+        >
             <DashboardHeader
                 title="Projetos em Curso"
                 subtitle="Status e prioridade"

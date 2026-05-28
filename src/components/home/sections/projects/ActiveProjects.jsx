@@ -1,14 +1,23 @@
 import { differenceInDays, format } from "date-fns";
 import { MdCalendarToday, MdOutlineFlag, MdOutlineTimer } from "react-icons/md";
 import { AVATAR_COLORS } from "@/components/ui/AvatarBadge";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { calcProgress, toDate } from "@/utils/DashboardUtils";
-import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 
 export default function ActiveProjects({ activeProjects, today }) {
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main shadow-md
-             bg-gradient-to-br from-[var(--color-surface-cyan-md)] via-[var(--color-surface-cyan-dark)] to-[var(--color-bg-card)]">
+        <div
+            className="p-5 rounded-2xl bg-bg-card border border-border-main"
+            style={{
+                boxShadow: `
+                    inset 0 0 40px rgba(0,0,0,0.06),
+                    inset 0 1px 0 rgba(255,255,255,0.06),
+                    0 0 10px rgba(34,211,238,0.07),
+                    0 4px 20px rgba(0,0,0,0.06)
+                `
+            }}
+        >
             <DashboardHeader
                 title="Projetos Ativos"
                 subtitle="Início e previsão de entrega"

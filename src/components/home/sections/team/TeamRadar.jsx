@@ -44,8 +44,16 @@ export function TeamRadar({ users, projects }) {
     );
 
     return (
-        <section className="rounded-2xl p-5 space-y-4 bg-bg-card border border-border-main shadow-md
-             bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
+        <section className="rounded-2xl p-5 space-y-4 bg-bg-card border border-border-main"
+             style={{
+                boxShadow: `
+                    inset 0 0 40px rgba(0,0,0,0.06),
+                    inset 0 1px 0 rgba(255,255,255,0.06),
+                    0 0 10px rgba(34,211,238,0.07),
+                    0 4px 20px rgba(0,0,0,0.06)
+                `
+            }}
+        >
             {/* cabeçalho */}
             <DashboardHeader
                 title="Radar do Time"
@@ -67,7 +75,7 @@ export function TeamRadar({ users, projects }) {
                     return (
                         <div
                             key={user.id}
-                            className="flex flex-col gap-3 rounded-lg px-3 pt-3 pb-2.5 bg-bg-surface border
+                            className="shadow-sm flex flex-col gap-3 rounded-lg px-3 pt-3 pb-2.5 bg-bg-side border
                                 border-border-subtle hover:border-border-main sm:hover:-translate-y-0.75 transition-all group"
                         >
                             <div className="flex flex-col items-center text-center gap-1.5">

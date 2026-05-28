@@ -81,7 +81,7 @@ export default function ActivityFeed() {
                         return (
                             <div
                                 key={log.id}
-                                className="relative flex items-start gap-3 p-2 group hover:bg-bg-surface rounded-lg transition-colors "
+                                className=" relative flex items-start gap-3 p-2 group hover:bg-bg-side rounded-lg transition-colors "
                             >
                                 <div className="z-10 self-center">
                                     <Avatar
@@ -111,8 +111,16 @@ export default function ActivityFeed() {
     };
 
     return (
-        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4 shadow-md
-             bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
+        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4"
+             style={{
+                boxShadow: `
+                    inset 0 0 40px rgba(0,0,0,0.06),
+                    inset 0 1px 0 rgba(255,255,255,0.06),
+                    0 0 10px rgba(34,211,238,0.07),
+                    0 4px 20px rgba(0,0,0,0.06)
+                `
+            }}
+        >
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <MdHistory className="text-brand-500 text-xl" />

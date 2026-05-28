@@ -89,7 +89,7 @@
     /* DARK THEME (Padrão) */
     --bg-main: #09090b;
     --bg-card: #141417;       /* Zinc 900 custom sutil */
-;
+
     --bg-surface: #1a1a1a;
     --bg-side: #252525b6;
 
@@ -112,7 +112,7 @@
     --bg-main: #ECEFF3;
     --bg-card: #ffffff;
     --bg-surface: #E6E4E4;
-    --bg-side: #F2EFE9;
+    --bg-side: #F6F6F6;
 
     --theme-scheme: light;
 
