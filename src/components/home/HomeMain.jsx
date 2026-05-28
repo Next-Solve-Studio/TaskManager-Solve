@@ -105,7 +105,7 @@ export default function HomeMain() {
             />
 
             {/* ── STAT CARDS ── */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5 sm:gap-4">
                 <StatCard
                     icon={MdCheckCircle}
                     label="Projetos Concluídos"
@@ -113,6 +113,9 @@ export default function HomeMain() {
                     color="#19CA68"
                     bg="rgba(25, 202, 105, 0.15)"
                     border="rgba(25, 202, 104, 0.2)"
+                    badge={`${completionRate}%`}
+                    subtitle="Taxa de conclusão"
+                    progress={completionRate}
                 />
                 <StatCard
                     icon={MdOutlineLoop}
@@ -121,6 +124,9 @@ export default function HomeMain() {
                     color="#22d3ee"
                     bg="rgba(34, 211, 238, 0.15)"
                     border="rgba(34,211,238,0.2)"
+                    badge={nearDeadline.length > 0 ? `${nearDeadline.length} prazo próximo` : undefined}
+                    subtitle="projetos em progresso"
+                    progress={counts.total > 0 ? Math.round((counts.em_andamento / counts.total) * 100) : 0}
                 />
                 <StatCard
                     icon={MdOutlineSupportAgent}
@@ -128,7 +134,9 @@ export default function HomeMain() {
                     value={counts.suporte}
                     color="#a855f7"
                     bg="rgba(167,139,250,0.15)"
-                    border="rgba(167, 139, 250, 0.2)"
+                    border="rgba(167, 139, 250, 0.3)"
+                    subtitle="aguardando resolução"
+                    progress={counts.total > 0 ? Math.round((counts.suporte / counts.total) * 100) : 0}
                 />
                 <StatCard
                     icon={MdTrendingUp}
@@ -137,6 +145,9 @@ export default function HomeMain() {
                     color="#60a5fa"
                     bg="rgba(96,165,250,0.15)"
                     border="rgba(96,165,250,0.2)"
+                    badge={`${counts.em_andamento + counts.suporte} ativos`}
+                    subtitle="projetos cadastrados"
+                    progress={counts.total > 0 ? Math.round(((counts.em_andamento + counts.suporte) / counts.total) * 100) : 0}
                 />
             </div>
 

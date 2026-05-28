@@ -67,7 +67,8 @@ export default function ActivityFeed() {
         }
 
         return (
-            <div className="relative max-h-80 overflow-y-auto pr-2 scroll-hidden">
+            <div className="relative max-h-80 overflow-y-auto pr-2 scroll-hidden
+                ">
                 <div className="space-y-4">
                     {activities.map((log) => {
                         const timeAgo = log.timestamp
@@ -110,7 +111,8 @@ export default function ActivityFeed() {
     };
 
     return (
-        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4 shadow-md">
+        <section className="bg-bg-card border border-border-main rounded-2xl p-5 space-y-4 shadow-md
+             bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <MdHistory className="text-brand-500 text-xl" />

@@ -21,7 +21,8 @@ const LEGEND_ITEMS = [
 export default function ProjectsWeek({ weeklyData, today }) {
     const isMobile = useIsMobile();
     return (
-        <div className="xl:col-span-2 p-5 rounded-2xl bg-bg-card border border-border-main shadow-md">
+        <div className="xl:col-span-2 p-5 rounded-2xl bg-bg-card border border-border-main shadow-md
+            bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
             <div className="flex items-center flex-wrap justify-between mb-5">
                 <DashboardHeader
                     title="Projetos por Semana"

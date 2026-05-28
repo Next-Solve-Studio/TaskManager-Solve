@@ -7,13 +7,14 @@ import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader
 export default function OngoingProjects({ ongoingProjects, today }) {
     const { clientMap } = useProjects();
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main shadow-md">
+        <div className="p-5 rounded-2xl bg-bg-card border border-border-main overflow-hidden shadow-md
+            bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card">
             <DashboardHeader
                 title="Projetos em Curso"
                 subtitle="Status e prioridade"
                 icon={MdOutlineTimer}
                 iconColor="#22d3ee"
-            />
+            /> 
 
             <div className="flex flex-col gap-4 overflow-y-auto max-h-72 scroll-hidden p-3 pl-1">
                 {ongoingProjects.length === 0 ? (
@@ -35,7 +36,7 @@ export default function OngoingProjects({ ongoingProjects, today }) {
                         return (
                             <div
                                 key={proj.id}
-                                className="shadow-md flex items-start gap-3 p-3 rounded-xl transition-colors duration-150 hover:bg-bg-surface border border-border-subtle "
+                                className="shadow-md flex items-start gap-3 p-3 rounded-xl transition-colors duration-150 hover:bg-bg-side border border-border-subtle "
                             >
                                 <div className="flex-1 min-w-0 ">
                                     <div className="flex items-start justify-between gap-2">

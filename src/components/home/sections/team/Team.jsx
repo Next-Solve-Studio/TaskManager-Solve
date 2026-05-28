@@ -1,11 +1,14 @@
 import { MdGroup } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
-import { ROLE_LABELS } from "@/lib/roles";
 import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
+import { ROLE_LABELS } from "@/lib/roles";
 
 export default function Team({ users, projects }) {
     return (
-        <section className="p-5 rounded-2xl flex flex-col gap-3 bg-bg-card border border-border-main shadow-md">
+        <section
+            className="p-5 rounded-2xl flex flex-col gap-3 bg-bg-card border border-border-main shadow-md
+             bg-linear-to-br from-bg-card via-bg-surface/90 to-bg-card"
+        >
             <DashboardHeader
                 title="Equipe"
                 subtitle={`${users.length} membros`}
