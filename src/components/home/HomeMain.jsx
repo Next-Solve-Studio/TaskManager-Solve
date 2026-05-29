@@ -22,11 +22,13 @@ import { StatCard } from "./sections/StatCard";
 import Team from "./sections/team/Team";
 import { TeamRadar } from "./sections/team/TeamRadar";
 
+const ACTIVE_STATUSES = new Set(["em_andamento", "suporte"]); // Array constante que define quais status de projeto são considerados "ativos"
+
 export default function HomeMain() {
-    const { projects, loadingProjects } = useProjects(); // Retorna um objeto com a lista de projetos
+    const { projects, loadingProjects, clientMap } = useProjects(); // Retorna um objeto com a lista de projetos
     const { users, loadingUsers } = useUsers(); // lista de usuários
     const { can } = useRole();
-    const ACTIVE_STATUSES = ["em_andamento", "suporte"]; // Array constante que define quais status de projeto são considerados "ativos"
+    
 
     // csem dependências, today será criado apenas na primeira renderização, evitando cálculos desnecessários.
     const today = useMemo(() => new Date());
@@ -61,7 +63,7 @@ export default function HomeMain() {
                 return (
                     diff >= 0 &&
                     diff <= 10 &&
-                    ACTIVE_STATUSES.includes(p.status)
+                    ACTIVE_STATUSES.has(p.status)
                 );
             }),
         [projects, today],
@@ -71,7 +73,7 @@ export default function HomeMain() {
     const activeProjects = useMemo(
         () =>
             projects
-                .filter((p) => ACTIVE_STATUSES.includes(p.status))
+                .filter((p) => ACTIVE_STATUSES.has(p.status))
                 .slice(0, 5),
         [projects],
     );
@@ -113,6 +115,9 @@ export default function HomeMain() {
                     color="#19CA68"
                     bg="rgba(25, 202, 105, 0.15)"
                     border="rgba(25, 202, 104, 0.2)"
+                    status="concluido"
+                    projects={projects}
+                    clientMap={clientMap}
                     badge={`${completionRate}%`}
                     subtitle="Taxa de conclusão"
                     progress={completionRate}
@@ -124,6 +129,9 @@ export default function HomeMain() {
                     color="#22d3ee"
                     bg="rgba(34, 211, 238, 0.15)"
                     border="rgba(34,211,238,0.2)"
+                    status="em_andamento"
+                    projects={projects}
+                    clientMap={clientMap}
                     badge={nearDeadline.length > 0 ? `${nearDeadline.length} prazo próximo` : undefined}
                     subtitle="projetos em progresso"
                     progress={counts.total > 0 ? Math.round((counts.em_andamento / counts.total) * 100) : 0}
@@ -135,6 +143,9 @@ export default function HomeMain() {
                     color="#a855f7"
                     bg="rgba(167,139,250,0.15)"
                     border="rgba(167, 139, 250, 0.3)"
+                    status="suporte"
+                    projects={projects}
+                    clientMap={clientMap}
                     subtitle="aguardando resolução"
                     progress={counts.total > 0 ? Math.round((counts.suporte / counts.total) * 100) : 0}
                 />
@@ -145,6 +156,8 @@ export default function HomeMain() {
                     color="#60a5fa"
                     bg="rgba(96,165,250,0.15)"
                     border="rgba(96,165,250,0.2)"
+                    projects={projects}
+                    clientMap={clientMap}
                     badge={`${counts.em_andamento + counts.suporte} ativos`}
                     subtitle="projetos cadastrados"
                     progress={counts.total > 0 ? Math.round(((counts.em_andamento + counts.suporte) / counts.total) * 100) : 0}
