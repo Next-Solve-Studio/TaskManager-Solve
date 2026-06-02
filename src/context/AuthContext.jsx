@@ -10,7 +10,7 @@ import {
     GoogleAuthProvider,
     signOut,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, addDoc } from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -112,109 +112,96 @@ export const AuthProvider = ({ children }) => {
         return unsubscribe; //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
     }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
-    /**
-     * Verifica se o usuário é o primeiro cadastrado no Firestore.
-     * Retorna true se a coleção 'users' estiver vazia.
-     */
-    const isFirstUser = async () => {
-        const snapshot = await getDocs(collection(db, "users"));
-        return snapshot.empty;
-    };
-
-    /**
-     * Cria/atualiza o documento do usuário no Firestore após autenticação.
-     * Se for um novo usuário, define o papel como "administrador" se for o primeiro,
-     * caso contrário "desenvolvedor". Para logins subsequentes, apenas atualiza o lastLoginAt.
-     */
-    const handleUserDocument = async (user, extraData = {}) => {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        const now = new Date();
-
-        if (userSnap.exists()) {
-            // Atualiza último login
-            await updateDoc(userRef, {
-                lastLoginAt: now,
-                lastSeenAt: now,
-            });
-            return userSnap.data();
-
-        } else {
-
-            const first = await isFirstUser();
-            const userData = {
-                name: user.displayName || extraData.name || "",
-                email: user.email,
-                role: first ? "administrador" : "desenvolvedor",
-                photo: user.photoURL || null,
-                createdAt: now,
-                lastLoginAt: now,
-                lastSeenAt: now,
-                authMethod: extraData.authMethod || "email",
-            };
-                await setDoc(userRef, userData);
-                return userData;
-        }
-    };
-
     const loginWithEmail = useCallback(async (email, password) => {
-        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
         justLoggedIn.current = true;
-
-        // Recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        const userRef = doc(db, "users", userCredential.user.uid);
 
-        // Salva o último login
-        await updateDoc(doc(db, "users", userCredential.user.uid), {
+        await updateDoc(userRef, {
             lastLoginAt: new Date(),
             lastSeenAt: new Date(),
-        })
-    });
+        });
+    }, []);
+
 
     //Login Google
     const loginWithGoogle = useCallback(async() => {
         // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
         justLoggedIn.current = true;
-
         const provider = new GoogleAuthProvider();
-        // Recebe provider, chama a função do firebase, e se for bem-sucedido, redireciona para o home
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
 
-        // Salva dados pendentes para o onAuthStateChanged usar (evita leitura extra)
-        const userData = await handleUserDocument(user, { authMethod: "google" });
-        pendingUserData.current = userData;
-    })
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+        
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            await updateDoc(userRef, {
+                lastLoginAt: new Date(),
+                lastSeenAt: new Date(),
+            });
+            pendingUserData.current = { ...data };
+        } else {
+            // Se não existir, por padrão não vinculamos a empresa no Google Login direto
+            // a menos que seja um convite, mas para SaaS simplificado, vamos exigir cadastro
+            throw new Error("Usuário não encontrado. Por favor, realize o cadastro da sua empresa.");
+        }
+    }, []);
 
-    const register = useCallback(async (name, email, password) => {
-        // dados do novo user
+    // Função para registrar uma NOVA EMPRESA e seu primeiro Administrador
+    const registerCompany = useCallback(async (companyName, adminName, email, password) => {
+        justLoggedIn.current = true;
+
+        // 1. Criar a Empresa na coleção 'companies'
+        const companyRef = await addDoc(collection(db, "companies"), {
+            name: companyName,
+            createdAt: new Date(),
+            plan: "free", // exemplo de campo SaaS
+            status: "active",
+            
+        });
+
         const userData = {
-            name: name.trim(),
+            name: adminName.trim(),
             email,
-            role: "desenvolvedor",
+            role: "administrador",
+            companyId: companyRef.id, // Vínculo crucial para multi-tenancy
             createdAt: new Date(),
             lastLoginAt: new Date(),
             lastSeenAt: new Date(),
             authMethod: "email",
         };
 
-        // Cria o documento do usuário na coleção users do firestore
-        // Salva em memória ANTES do setDoc — onAuthStateChanged vai consumir isso
         pendingUserData.current = userData;
-        justLoggedIn.current = true; // deixa o onAuthStateChanged fazer o redirect
 
-        // Função de registro, cria um novo usuário no Firebase Auth
-        const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password,
-        );
-
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await setDoc(doc(db, "users", userCredential.user.uid), userData);
+
+        // Atualiza a empresa com o ID do dono
+        await updateDoc(companyRef, { ownerId: userCredential.user.uid });
 
         const token = await userCredential.user.getIdToken();
         setSessionCookie(token);
-    });
+    }, [setSessionCookie]);
+
+     // Função para registrar um NOVO FUNCIONÁRIO
+    const registerEmployee = useCallback(async (name, email, password, companyId) => {
+         // Esta função geralmente sera chamada por uma API Route para não deslogar o admin atual
+        const response = await fetch("/api/register-employee", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password, companyId }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Erro ao registrar funcionário");
+        }
+
+        return await response.json();
+    }, []);
 
     const logout = useCallback(async () => {
         try {
@@ -227,16 +214,16 @@ export const AuthProvider = ({ children }) => {
         }
     }, [setSessionCookie, router]);
 
-    const value = useMemo(()=>({
+    const value = useMemo(() => ({
         currentUser,
         loading,
         loginWithEmail,
         loginWithGoogle,
-        register,
+        registerCompany,
+        registerEmployee,
         logout,
-        justLoggedIn,
         setJustLoggedIn,
-    }),[currentUser, loginWithEmail,loading, loginWithGoogle, register, logout, setJustLoggedIn]);
+    }), [currentUser, loading, loginWithEmail, loginWithGoogle, registerCompany, registerEmployee, logout, setJustLoggedIn]);
 
     return (
         <AuthContext.Provider value={value}>

@@ -31,10 +31,18 @@ export const UsersProvider = ({ children }) => {
     const [loadingUsers, setLoadingUsers] = useState(true);
 
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
+        // só busca dados da empresa que o usuário estiver logado.
+        if (!currentUser?.companyId) {
+            setUsers([]);
+            setLoadingUsers(false);
+            return;
+        }
 
-        const q = query(collection(db, "users"), orderBy("createdAt", "desc"));
+        const q = query(
+            collection(db, "users"), 
+            where("companyId", "==", currentUser.companyId),
+            orderBy("createdAt", "desc")
+        );
 
         const unSubscribe = onSnapshot(
             //onSnapshot pois escuta mudanças na coleção users e atualiza automaticamente
@@ -51,7 +59,7 @@ export const UsersProvider = ({ children }) => {
         );
 
         return unSubscribe;
-    }, [currentUser]);
+    }, [currentUser?.companyId]);
 
     const updateUser = useCallback(async (userId, newRole) => {
         await updateDoc(doc(db, "users", userId), { role: newRole }); // localiza o documento e aplica o novo cargo

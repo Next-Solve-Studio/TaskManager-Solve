@@ -50,11 +50,16 @@ export const ProjectsProvider = ({ children }) => {
     const loadMoreProjects = useCallback(() => setVisibleProjectsCount((prev) => prev + 10));
 
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
-        // consulta que busca a collection projects, e ordena pela data de criação, do mais novo para o mais antigo
+        // só busca dados da empresa que o usuário estiver logado.
+         if (!currentUser?.companyId) {
+            setProjects([]);
+            setLoadingProjects(false);
+            return;
+        }
+        
         const q = query(
             collection(db, "projects"),
+            where("companyId", "==", currentUser.companyId),
             orderBy("createdAt", "desc"),
         );
 
@@ -74,41 +79,50 @@ export const ProjectsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser]);
+    }, [currentUser?.companyId]);
 
     useEffect(() => {
-        getDocs(collection(db, "users")) // busca todos os documentos da coleção users apenas uma vez
+        if (!currentUser?.companyId) {
+            setUsers([]);
+            setLoadingUsers(false);
+            return;
+        }
+
+        const q = query(collection(db, "users"), where("companyId", "==", currentUser.companyId));
+
+        getDocs(q)
             .then((snapshot) => {
-                //converte cada documento em um objeto com id e os dados e guarda no estado users
                 setUsers(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
             })
             .catch((error) => {
                 console.error("Erro ao carregar usuários:", error);
-                toast.error("Erro ao carregar usuários:", error);
             })
             .finally(() => setLoadingUsers(false));
-    }, []);
+    }, [currentUser?.companyId]);
 
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
+        if (!currentUser?.companyId) {
+            setClients([]);
+            setLoadingClients(false);
+            return;
+        }
 
-        getDocs(collection(db, "clients"))
+        const q = query(collection(db, "clients"), where("companyId", "==", currentUser.companyId));
+        getDocs(q)
             .then((snapshot) => {
-                setClients(
-                    snapshot.docs.map((d) => ({ id: d.id, ...d.data() })),
-                );
+                setClients(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
             })
             .catch((error) => {
                 console.error("Erro ao carregar clientes:", error);
-                toast.error("Erro ao carregar clientes:", error);
             })
             .finally(() => setLoadingClients(false));
-    }, [currentUser]);
+    }, [currentUser?.companyId]);
 
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
         async (data) => {
+            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+
             const payload = {
                 title: data.title,
                 description: data.description || "",
@@ -126,6 +140,7 @@ export const ProjectsProvider = ({ children }) => {
                 hosting: data.hosting || "",
                 totalValue: data.totalValue || 0,
                 paidValue: data.paidValue || 0,
+                companyId: currentUser.companyId,
                 createdBy: currentUser.uid,
                 createdByName:
                     currentUser.name || currentUser.displayName || "",
@@ -140,8 +155,8 @@ export const ProjectsProvider = ({ children }) => {
             // Log de Atividade
             await logActivity({
                 userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                userPhoto: currentUser.photo || currentUser.photoURL,
+                userName: currentUser.name,
+                companyId: currentUser.companyId,
                 action: "create",
                 resourceType: "project",
                 resourceId: ref.id,
@@ -213,6 +228,7 @@ export const ProjectsProvider = ({ children }) => {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
+                    companyId: currentUser.companyId,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "update",
                     resourceType: "project",
@@ -223,6 +239,7 @@ export const ProjectsProvider = ({ children }) => {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
+                    companyId: currentUser.companyId,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "status_change",
                     resourceType: "project",
@@ -250,6 +267,7 @@ export const ProjectsProvider = ({ children }) => {
             await logActivity({
                 userId: currentUser.uid,
                 userName: currentUser.name || currentUser.displayName,
+                companyId: currentUser.companyId,
                 userPhoto: currentUser.photo || currentUser.photoURL,
                 action: "delete",
                 resourceType: "project",

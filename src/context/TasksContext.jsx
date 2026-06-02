@@ -45,17 +45,26 @@ export const TasksProvider = ({ children, projectId }) => {
 
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
+         if (!currentUser?.companyId) {
+            setTasks([]);
+            setLoadingTasks(false);
+            return;
+        }
 
         const q = projectId
             ? // caso exista projectId, busca as tasks pelo id específico dele
-              query(
-                  collection(db, "tasks"),
-                  where("projectId", "==", projectId),
-                  orderBy("createdAt", "desc"),
-              )
+                query(
+                    collection(db, "tasks"),
+                    where("companyId", "==", currentUser.companyId),
+                    where("projectId", "==", projectId),
+                    orderBy("createdAt", "desc"),
+                )
             : // caso não exista, trás todos as tasks
-              query(collection(db, "tasks"), orderBy("createdAt", "desc"));
+                query(
+                    collection(db, "tasks"),
+                    where("companyId", "==", currentUser.companyId),
+                    orderBy("createdAt", "desc"),
+                );
 
         // abre uma conexão em tempo real com o firestore,Toda vez que projectId, será executada.
         const unsubscribe = onSnapshot(
@@ -72,11 +81,13 @@ export const TasksProvider = ({ children, projectId }) => {
         );
 
         return unsubscribe;
-    }, [projectId, currentUser]);
+    }, [projectId, currentUser?.companyId]);
 
     const createTask = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
         async (data) => {
+            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+
             const payload = {
                 title: data.title,
                 description: data.description || "",
@@ -88,6 +99,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 status: data.status || "em_andamento",
                 solution: data.solution || "",
                 checklist: data.checklist || [],
+                companyId: currentUser.companyId,
                 createdBy: currentUser.uid,
                 createdByName:
                     currentUser.name || currentUser.displayname || "",
@@ -106,6 +118,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 userName: currentUser.name || currentUser.displayName,
                 userPhoto: currentUser.photo || currentUser.photoURL,
                 action: "create",
+                companyId: currentUser.companyId,
                 resourceType: "task",
                 resourceId: ref.id,
                 resourceName: payload.title,
@@ -150,6 +163,7 @@ export const TasksProvider = ({ children, projectId }) => {
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "update",
+                    companyId: currentUser.companyId,
                     resourceType: "task",
                     resourceId: taskId,
                     resourceName: payload.title,
@@ -161,6 +175,7 @@ export const TasksProvider = ({ children, projectId }) => {
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "status_change",
+                    companyId: currentUser.companyId,
                     resourceType: "task",
                     resourceId: taskId,
                     resourceName: payload.title,
@@ -188,6 +203,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 userName: currentUser.name || currentUser.displayName,
                 userPhoto: currentUser.photo || currentUser.photoURL,
                 action: "delete",
+                companyId: currentUser.companyId,
                 resourceType: "task",
                 resourceId: task.id,
                 resourceName: task.title,
