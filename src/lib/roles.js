@@ -2,6 +2,7 @@ import {
     MdAdminPanelSettings,
     MdCode,
     MdSupervisorAccount,
+    MdStars,
 } from "react-icons/md";
 
 //Cargos
@@ -9,15 +10,25 @@ export const ROLES = {
     ADMIN: "administrador",
     DEVELOPER: "desenvolvedor",
     PROJECT_LEAD: "lider_de_projetos",
+    MASTER: "master"
 };
 //Rótulo de cargos
 export const ROLE_LABELS = {
     [ROLES.ADMIN]: "Administrador",
     [ROLES.DEVELOPER]: "Desenvolvedor",
     [ROLES.PROJECT_LEAD]: "Líder de Projetos",
+    [ROLES.MASTER]: "Master",
 };
 
 export const ROLES_STYLES = {
+    [ROLES.MASTER]: {
+        icon: MdStars,
+        color: "text-orange-400",
+        bg: "bg-orange-500/15",
+        border: "border-orange-500/30",
+        description:
+            "Dono da empresa. Acesso total ao sistema, faturamento e configurações da empresa.",
+    },
     [ROLES.ADMIN]: {
         icon: MdAdminPanelSettings,
         color: "text-brand-400",
@@ -49,35 +60,35 @@ export const ROLES_STYLES = {
  */
 
 export const PERMISSIONS = {
-    // Usuárioscan Assign TaskscanEditProjects
-    canManageUsers: [ROLES.ADMIN],
-    canViewUsers: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    // Usuários
+    canManageUsers: [ROLES.MASTER, ROLES.ADMIN],
+    canViewUsers: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Histórico de Atividades
-    canViewActivityHistorys: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canViewActivityHistorys: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Projetos
-    canCreateProjects: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canEditProjects: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canDeleteProjects: [ROLES.ADMIN],
-    canViewReports: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canCreateProjects: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canEditProjects: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canDeleteProjects: [ROLES.MASTER, ROLES.ADMIN],
+    canViewReports: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Clientes
-    canManageClients: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canViewClients: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canManageClients: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canViewClients: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
-    // Configurações
-    canManageSystemSettings: [ROLES.ADMIN],
+    // Configurações (Apenas Master e Admin)
+    canManageSystemSettings: [ROLES.MASTER, ROLES.ADMIN],
     
     // Financeiro
-    canViewFinancials: [ROLES.ADMIN],
+    canViewFinancials: [ROLES.MASTER, ROLES.ADMIN],
 
     // Agenda
-    canViewAllUsersSchedule: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canViewAllUsersSchedule: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Tarefas
-    canCreateTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
-    canEditTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
-    canCompleteTasks: [ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
-    canDeleteTasks: [ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canCreateTasks: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
+    canEditTasks: [ROLES.MASTER, ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
+    canCompleteTasks: [ROLES.MASTER, ROLES.ADMIN, ROLES.DEVELOPER, ROLES.PROJECT_LEAD],
+    canDeleteTasks: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 };

@@ -47,8 +47,9 @@ export default function ProfileSettings() {
             await updateProfile({ name: name.trim() });
             // Atualiza o baseName manualmente para o botão bloquear na hora
             setBaseName(name.trim());
-        } catch (_err) {
-            // Erro já tratado no contexto (toast)
+        } catch (error) {
+            toast.error("Erro ao atualizar perfil:", error)
+            console.error("Erro ao atualizar perfil:", erro)
         } finally {
             setIsSubmitting(false);
         }
@@ -113,9 +114,6 @@ export default function ProfileSettings() {
                     <div className="pt-1">
                         <RoleBadge role={currentUser?.role} />
                     </div>
-                    <p className="text-[11px] text-text-muted mt-2">
-                        Suas permissões são definidas pelo administrador.
-                    </p>
                 </div>
 
                 <div className="space-y-1">

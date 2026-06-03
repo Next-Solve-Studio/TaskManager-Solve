@@ -180,7 +180,7 @@ export const AuthProvider = ({ children }) => {
             const userData = {
                 name: adminName.trim(),
                 email,
-                role: "administrador",
+                role: "master",
                 companyId: companyRef.id, // Vínculo crucial para multi-tenancy
                 createdAt: new Date(),
                 lastLoginAt: new Date(),
