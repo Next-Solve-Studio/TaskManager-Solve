@@ -12,6 +12,13 @@ export const muiDark = {
             fontSize: 11,
         },
     },
+    "& input:-webkit-autofill": {
+        WebkitBoxShadow: "0 0 0 1000px var(--bg-surface) inset",
+        WebkitTextFillColor: "var(--text-primary)",
+        transition: "background-color 5000s ease-in-out 0s",
+        caretColor: "var(--text-primary)", // Mantém o cursor com a cor correta
+        borderRadius: "12px",
+    },
     "& .MuiInputLabel-root": { color: "var(--color-text-muted)" },
     "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
     "& .MuiFormHelperText-root": { color: "var(--color-error)" },

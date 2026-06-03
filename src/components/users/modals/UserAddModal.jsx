@@ -38,7 +38,12 @@ export default function UserAddModal({ open, onClose }) {
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
-        defaultValues: { role: ROLES.DEVELOPER },
+        defaultValues: { 
+            name: "",       
+            email: "",      
+            password: "",   
+            role: ROLES.DEVELOPER 
+        },
     });
 
     const handleClose = () => {
@@ -51,7 +56,7 @@ export default function UserAddModal({ open, onClose }) {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            const response = await fetch("/api/register-employee", {
+            const response = await fetch("/api/registerEmployee", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
