@@ -1,4 +1,3 @@
-
 # Bibliotecas instaladas:
  - Componentes:
      - @mui/material (Material-UI): Biblioteca de componentes prontos do Google Material Design.
@@ -6,38 +5,38 @@
 
  - React-icons: Coleção gigante de ícones de várias bibliotecas (FontAwesome, Feather, Bootstrap etc).
 
- - Sonner: Biblioteca de notificações (toasts), Após criar um projeto, aparece uma mensagem verde no canto da tela.
+ - Sonner: Biblioteca de notificações (toasts).
 
- - emailjs: Serviço que envia email direto do frontend, Quando um dev clica "Solicitar projeto", o gerente recebe email na hora.
+ - emailjs: Serviço que envia email direto do frontend.
 
- - date-fns: Biblioteca para manipular datas de forma simples, Ex: format(project.deadline, 'dd/MM/yyyy') mostra "25/03/2026".
+ - date-fns: Biblioteca para manipular datas de forma simples.
 
  - Firebase:
-   - firebase: Biblioteca para conectar com Firebase pelo navegador, Quando um dev muda o status do projeto, o Firebase atualiza em tempo real para o gerente.
-   - firebase-admin: Versão servidor do Firebase (roda nas API Routes do Next.js), A ação de promover alguém a admin só pode ser feita pelo backend com firebase-admin.
+   - firebase: Biblioteca para conectar com Firebase pelo navegador.
+   - firebase-admin: Versão servidor do Firebase (roda nas API Routes do Next.js).
 
- - react-hook-form: Biblioteca para gerenciar formulários de forma performática, Evita re-renders desnecessários e reduz código em ~70% comparado a usar useState.
+ - react-hook-form: Biblioteca para gerenciar formulários de forma performática.
 
- - yup: Biblioteca de validação de dados, Impedir que alguém crie projeto sem título ou com prazo no passado.
+ - yup: Biblioteca de validação de dados.
 
- - @hookform/resolvers: Conector que faz o react-hook-form funcionar com yup, Passa as regras do yup para o react-hook-form
+ - @hookform/resolvers: Conector que faz o react-hook-form funcionar com yup.
 
- - zustand: Gerenciador de estado global (mais simples que Redux), O nome do usuário aparece no canto da tela em qualquer página sem precisar buscar de novo.
+ - zustand: Gerenciador de estado global (se aplicável).
  - Autenticação:
    - jsonwebtoken: Biblioteca para criar e verificar tokens de autenticação
-   - cookie: Biblioteca para manipular cookies, Ex: Controlar os 20 dias de inatividade
+   - cookie: Biblioteca para manipular cookies
    - bcryptjs: Biblioteca para criptografar senhas
 
- - recharts: Biblioteca de gráficos para React, Um gráfico de barras mostrando quantos projetos foram finalizados em cada mês.
+ - recharts: Biblioteca de gráficos para React.
 
- - lodash: Biblioteca com funções úteis para manipular dados, debounce faz a busca só aparecer depois que o usuário para de digitar.
+ - lodash: Biblioteca com funções úteis para manipular dados.
 
- - uuid: Biblioteca para gerar IDs únicos
+ - uuid: Biblioteca para gerar IDs únicos.
 
 
- # Task Manager Solve
+# Task Manager Solve
 
-O **Task Manager Solve** é uma plataforma moderna de gerenciamento de projetos e tarefas, desenvolvida para facilitar a colaboração entre administradores, líderes de projetos e desenvolvedores. O sistema oferece uma interface intuitiva com dashboards em tempo real, controle de acesso baseado em funções (RBAC) e integração robusta com o ecossistema Firebase.
+O **Task Manager Solve** é uma plataforma moderna e **Multi-Tenant (SaaS)** de gerenciamento de projetos e tarefas, desenvolvida para facilitar a colaboração dentro de diferentes empresas. O sistema oferece uma interface intuitiva com dashboards, controle de acesso detalhado baseado em funções (RBAC), agenda da equipe, gestão de clientes e integração robusta em tempo real com o ecossistema Firebase.
 
 ---
 
@@ -49,7 +48,7 @@ O projeto utiliza as tecnologias mais recentes do ecossistema JavaScript para ga
 | :--- | :--- |
 | **Framework** | [Next.js 14+](https://nextjs.org/) (App Router) |
 | **Linguagem** | JavaScript (React) |
-| **Backend as a Service** | [Firebase](https://firebase.google.com/) (Auth & Firestore) |
+| **Backend as a Service** | [Firebase](https://firebase.google.com/) (Auth, Firestore) |
 | **Estilização** | [Tailwind CSS](https://tailwindcss.com/), [Material UI (MUI)](https://mui.com/) |
 | **Gerenciamento de Estado** | React Context API |
 | **Formulários e Validação** | [React Hook Form](https://react-hook-form.com/), [Yup](https://github.com/jquense/yup) |
@@ -62,71 +61,79 @@ O projeto utiliza as tecnologias mais recentes do ecossistema JavaScript para ga
 
 ## 📂 Arquitetura de Pastas
 
-A estrutura do projeto segue as melhores práticas do Next.js, organizando responsabilidades de forma clara:
+A estrutura do projeto segue as melhores práticas do Next.js (App Router), dividida por módulos (features):
 
 ```text
 src/
-├── app/                # Rotas e layouts da aplicação (App Router)
-│   ├── (main)/         # Grupo de rotas protegidas (Dashboard, Projetos, Usuários)
-│   ├── api/            # Endpoints de API (se aplicável)
-│   ├── login/          # Rota de autenticação
-│   └── globals.css     # Estilos globais e tokens de design Tailwind
-├── components/         # Componentes React reutilizáveis
-│   ├── auth/           # Componentes de autorização (CanDo, HasRole, ProtectedRoutes)
-│   ├── home/           # Componentes específicos da Dashboard
-│   ├── login/          # Formulários de Login e Registro
-│   ├── projects/       # Gestão de projetos (Cards, Modais, Configurações)
-│   └── users/          # Gestão de usuários e permissões
-├── context/            # Provedores de Contexto (Auth, Projects, Users)
-├── hooks/              # Hooks personalizados (ex: useRole)
-├── layout/             # Componentes de estrutura (SideMenu, Header, Footer)
-├── lib/                # Configurações de bibliotecas externas (Firebase, Roles)
-├── responsive/         # Utilitários para responsividade
-└── utils/              # Funções utilitários e helpers globais
+├── app/                # Rotas e layouts (App Router)
+│   ├── (main)/         # Rotas protegidas (analytics, clients, projects, schedule, settings, tasks, users)
+│   ├── api/            # API Routes (ex: registro de funcionário)
+│   ├── login/          # Rotas públicas (Login / Cadastro de Empresa)
+│   └── globals.css     # Estilos globais Tailwind
+├── components/         # Componentes React modularizados por feature
+│   ├── analytics/      # Gráficos e indicadores financeiros/status
+│   ├── auth/           # Controle de UI baseado em permissões (CanDo, HasRole)
+│   ├── clients/        # Gestão da carteira de clientes
+│   ├── home/           # Dashboard inicial (Feed, Stats)
+│   ├── login/          # Formulários de acesso
+│   ├── projects/       # Cadastro e acompanhamento de projetos
+│   ├── schedule/       # Controle de cronogramas e disponibilidade
+│   ├── settings/       # Configurações do sistema e perfil
+│   ├── tasks/          # Kanban/Listagem de tarefas
+│   ├── ui/             # Componentes base (Botões, Badges, Tooltips)
+│   └── users/          # Administração da equipe
+├── context/            # Provedores de Estado Global Multi-Tenant
+├── hooks/              # Custom Hooks (useRole, responsividade, debounce)
+├── layout/             # Estruturas da página (SideMenu, Header)
+├── lib/                # Configurações globais (Firebase, Matriz de Permissões/Roles)
+├── styles/             # Utilitários de estilização extras
+└── utils/              # Funções utilitárias (Formatadores, Exportadores, Activity Logger)
 ```
 
 ---
 
-## 🔐 Contextos e Autenticação
+## 🏢 Arquitetura Multi-Tenant & Contextos
 
-O projeto utiliza a **Context API** para gerenciar estados globais de forma eficiente:
+O sistema foi arquitetado para suportar múltiplas empresas (Tenants) simultaneamente e de forma segura. 
+O isolamento de dados é garantido injetando e validando o `companyId` da empresa em todas as operações do Firestore e na Context API.
 
-1.  **AuthContext**: Gerencia o ciclo de vida do usuário (Login, Registro, Logout) via Firebase Auth. Ele também persiste a sessão através de cookies e sincroniza os dados do usuário com o Firestore.
-2.  **ProjectsContext**: Responsável pelo CRUD de projetos em tempo real usando `onSnapshot` do Firestore. Centraliza a lógica de criação, atualização e exclusão de projetos.
-3.  **UsersContext**: Gerencia a listagem e modificação de perfis de usuários, permitindo que administradores alterem cargos ou removam contas.
-4.  **AppProviders**: Um agregador que envolve as rotas protegidas com os contextos necessários para o funcionamento do sistema.
+### Provedores de Estado:
+1. **AuthContext**: Gerencia sessão, persistência via cookies, login (E-mail/Google) e onboarding (criação da Empresa ou Funcionário). O `currentUser` contém o vínculo primordial com o `companyId`.
+2. **CompanyContext**: Dados e configurações gerais do Tenant (empresa atual logada).
+3. **UsersContext**: Gestão dos funcionários que pertencem **exclusivamente** à empresa atual.
+4. **ProjectsContext**: CRUD em tempo real de projetos. Filtra automaticamente os dados apenas do `companyId` ativo.
+5. **ClientsContext**: Gestão da carteira de clientes do Tenant.
+6. **TasksContext**: Quadro de tarefas e entregáveis vinculados aos projetos.
+7. **ScheduleContext**: Agenda e planejamento da capacidade produtiva da equipe.
 
 ---
 
-## 🛠️ Funcionamento Atual
+## 🛠️ Funcionalidades Principais
 
-Atualmente, o projeto funciona como um **MVP (Minimum Viable Product)** funcional com as seguintes características:
+### 1. Sistema de Permissões Avançado (RBAC)
+O acesso e as ações na UI/Banco são controlados por hierarquias dinâmicas (`src/lib/roles.js`):
+*   **Master (Dono)**: Controle total. Pode gerenciar a assinatura da empresa, ver faturamento, criar e excluir usuários livremente.
+*   **Administrador**: Gestão quase irrestrita da operação diária, gerenciando usuários, projetos, e acessando relatórios.
+*   **Líder de Projetos**: Focado no lado operacional; cria projetos, atribui tarefas, planeja a agenda e visualiza andamento.
+*   **Desenvolvedor**: Focado na execução; visualiza os projetos onde está alocado e gerencia o status das próprias tarefas.
 
-### 1. Sistema de Permissões (RBAC)
-O acesso é controlado por três níveis de hierarquia definidos em `src/lib/roles.js`:
-*   **Administrador**: Acesso total, incluindo gestão de usuários e exclusão de projetos.
-*   **Líder de Projetos**: Pode criar e editar projetos e visualizar relatórios.
-*   **Desenvolvedor**: Focado na visualização de projetos e execução de tarefas.
+### 2. Multi-Tenancy e Isolamento de Dados
+*   **Onboarding Simples**: Ao se registrar, o usuário cria sua **Empresa**, ganhando o cargo de `Master`.
+*   **Gestão de Equipe**: O Master/Admin pode convidar funcionários diretamente para a sua base, isolando totalmente as informações entre organizações.
+*   **Consultas Seguras**: O front-end blinda todas as requisições (`where("companyId", "==", currentUser.companyId)`), impedindo vazamento de dados entre empresas.
 
-### 2. Fluxo de Autenticação
-*   Suporte para login via **E-mail/Senha** e **Google Auth**.
-*   O primeiro usuário a se cadastrar no sistema recebe automaticamente o cargo de **Administrador**.
-*   Proteção de rotas tanto no cliente (via layouts) quanto no middleware (via cookies de sessão).
-
-### 3. Gestão de Projetos
-*   Listagem dinâmica com filtros por status, prioridade e desenvolvedor atribuído.
-*   Formulários validados com **Yup**, garantindo a integridade dos dados enviados ao Firestore.
-*   Atualização em tempo real: qualquer mudança no banco de dados é refletida instantaneamente na UI.
-
-### 4. Dashboard
-*   A tela inicial apresenta um resumo visual do status dos projetos e tarefas.
-*   **Nota**: Atualmente, a Dashboard utiliza dados simulados (*mock data*) para os gráficos e KPIs, servindo como modelo para a futura integração total com as queries do Firestore.
+### 3. Gestão Completa de Produção
+*   **Projetos & Clientes**: Vínculo direto de projetos com clientes cadastrados, com controle de faturamento, status e prazos.
+*   **Kanban / Tarefas**: Gestão da execução em nível granular.
+*   **Schedule (Agenda)**: Visualização da disponibilidade da equipe durante as semanas, melhorando o fluxo de alocação.
+*   **Analytics & Dashboard**: Visualização de KPIs da empresa, feed de atividades em tempo real e status financeiro.
+*   **Activity Logger**: Auditoria de ações gerando histórico do que foi feito, por quem e quando.
 
 ---
 
 ## 🎨 Design System
-O projeto utiliza um tema escuro (*Dark Mode*) personalizado via Tailwind CSS, com tokens de cores definidos para:
-*   **Brand**: Verde vibrante (`#19CA68`)
-*   **Accent**: Cyan (`#22d3ee`)
-*   **Status**: Cores semânticas para Sucesso, Aviso, Erro e Info.
-*   **Superfícies**: Camadas de cinza profundo e preto para uma interface profissional e de baixo cansaço visual.
+O projeto utiliza um tema escuro (*Dark Mode*) sofisticado via Tailwind CSS, com tokens de cores semânticos:
+*   **Brand / Sucesso**: Verde vibrante (`#19CA68`)
+*   **Accent / Informativo**: Cyan (`#22d3ee`) e Azul (`#3b82f6`)
+*   **Cargos (Roles)**: Cores específicas para rápida identificação visual (Laranja para Master, Verde para Admin, Cyan para Líder, Roxo para Dev).
+*   **Superfícies**: Múltiplas camadas de cinza profundo e preto, reduzindo o cansaço visual e garantindo contraste ideal.
