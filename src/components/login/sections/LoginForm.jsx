@@ -9,6 +9,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
+import ResetPassword from "./ResetPassword";
 
 const schema = yup.object({
     email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
@@ -129,7 +130,7 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         Quer cadastrar sua empresa? <span className="text-brand-500 font-semibold underline underline-offset-2">Criar agora</span>
                     </button>
                 )}
-
+                <ResetPassword/>
                 <button
                     type="submit"
                     disabled={loading}
