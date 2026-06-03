@@ -18,6 +18,7 @@ import { db } from "@/lib/firebaseConfig";
  * @param {string} activityData.userId - ID do usuário que realizou a ação
  * @param {string} activityData.userName - Nome do usuário
  * @param {string} activityData.userPhoto - Foto do usuário
+ * @param {string} activityData.companyId - ID da empresa
  * @param {'create' | 'update' | 'delete' | 'status_change'} activityData.action - Tipo de ação
  * @param {'project' | 'client' | 'user' | 'schedule'} activityData.resourceType - Tipo de recurso afetado
  * @param {string} activityData.resourceId - ID do recurso (ex: ID do projeto)
@@ -30,6 +31,7 @@ export const logActivity = async (activityData) => {
             userId,
             userName,
             userPhoto,
+            companyId,
             action,
             resourceType,
             resourceId,
@@ -46,12 +48,21 @@ export const logActivity = async (activityData) => {
             return;
         }
 
+        if (!userId || !action || !resourceType || !companyId) {
+            console.warn(
+                "Dados insuficientes para log de atividade (companyId é obrigatório):",
+                activityData,
+            );
+            return;
+        }
+
         const logsRef = collection(db, "activity_logs");
 
         await addDoc(logsRef, {
             userId,
             userName: userName || "Usuário desconhecido",
             userPhoto: userPhoto || null,
+            companyId,
             action,
             resourceType,
             resourceId,

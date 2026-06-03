@@ -7,6 +7,7 @@ import {
     orderBy,
     query,
     updateDoc,
+    where
 } from "firebase/firestore";
 import {
     createContext,
@@ -53,7 +54,8 @@ export const UsersProvider = ({ children }) => {
                 setLoadingUsers(false);
             },
             (error) => {
-                toast.error("Erro ao carregar usuário: ", error);
+                console.error("Erro ao ouvir users", error);
+                toast.error("Erro ao carregar users: ", error);
                 setLoadingUsers(false);
             },
         );

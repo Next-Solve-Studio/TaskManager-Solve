@@ -4,13 +4,20 @@
 import { serialize } from "cookie";
 import {
     createUserWithEmailAndPassword,
+    GoogleAuthProvider,
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signInWithPopup,
-    GoogleAuthProvider,
     signOut,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc, addDoc } from "firebase/firestore";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
+} from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -68,7 +75,7 @@ export const AuthProvider = ({ children }) => {
         if (!lastSeenAt) return true;
         const last = lastSeenAt?.toDate?.() ?? new Date(lastSeenAt);
         return Date.now() - last.getTime() > ONE_HOUR;
-    })
+    });
 
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
@@ -84,14 +91,14 @@ export const AuthProvider = ({ children }) => {
                     userData = pendingUserData.current;
                     pendingUserData.current = null;
                 } else {
-                    const userRef = doc(db, "users", user.uid)
+                    const userRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     userData = userDoc.exists() ? userDoc.data() : {};
 
                     if (shouldUpdateLastSeen(userData.lastSeenAt)) {
-                        const now = new Date()
-                        await updateDoc(userRef, {lastSeenAt: now})
-                        userData.lastSeenAt = now
+                        const now = new Date();
+                        await updateDoc(userRef, { lastSeenAt: now });
+                        userData.lastSeenAt = now;
                     }
                 }
 
@@ -114,8 +121,12 @@ export const AuthProvider = ({ children }) => {
 
     const loginWithEmail = useCallback(async (email, password) => {
         justLoggedIn.current = true;
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        
+        const userCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password,
+        );
+
         const userRef = doc(db, "users", userCredential.user.uid);
 
         await updateDoc(userRef, {
@@ -124,9 +135,8 @@ export const AuthProvider = ({ children }) => {
         });
     }, []);
 
-
     //Login Google
-    const loginWithGoogle = useCallback(async() => {
+    const loginWithGoogle = useCallback(async () => {
         // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
         justLoggedIn.current = true;
         const provider = new GoogleAuthProvider();
@@ -135,7 +145,7 @@ export const AuthProvider = ({ children }) => {
 
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
-        
+
         if (userSnap.exists()) {
             const data = userSnap.data();
             await updateDoc(userRef, {
@@ -146,62 +156,77 @@ export const AuthProvider = ({ children }) => {
         } else {
             // Se não existir, por padrão não vinculamos a empresa no Google Login direto
             // a menos que seja um convite, mas para SaaS simplificado, vamos exigir cadastro
-            throw new Error("Usuário não encontrado. Por favor, realize o cadastro da sua empresa.");
+            throw new Error(
+                "Usuário não encontrado. Por favor, realize o cadastro da sua empresa.",
+            );
         }
     }, []);
 
     // Função para registrar uma NOVA EMPRESA e seu primeiro Administrador
-    const registerCompany = useCallback(async (companyName, adminName, email, password) => {
-        justLoggedIn.current = true;
+    const registerCompany = useCallback(
+        async (companyName, adminName, email, password) => {
+            justLoggedIn.current = true;
 
-        // 1. Criar a Empresa na coleção 'companies'
-        const companyRef = await addDoc(collection(db, "companies"), {
-            name: companyName,
-            createdAt: new Date(),
-            plan: "free", // exemplo de campo SaaS
-            status: "active",
-            
-        });
+            // 1. Criar a Empresa na coleção 'companies'
+            const companyRef = await addDoc(collection(db, "companies"), {
+                name: companyName,
+                cnpj: cnpj,
+                endereco: endereco,
+                createdAt: new Date(),
+                plan: "free",
+                status: "active",
+            });
 
-        const userData = {
-            name: adminName.trim(),
-            email,
-            role: "administrador",
-            companyId: companyRef.id, // Vínculo crucial para multi-tenancy
-            createdAt: new Date(),
-            lastLoginAt: new Date(),
-            lastSeenAt: new Date(),
-            authMethod: "email",
-        };
+            const userData = {
+                name: adminName.trim(),
+                email,
+                role: "administrador",
+                companyId: companyRef.id, // Vínculo crucial para multi-tenancy
+                createdAt: new Date(),
+                lastLoginAt: new Date(),
+                lastSeenAt: new Date(),
+                authMethod: "email",
+            };
 
-        pendingUserData.current = userData;
+            pendingUserData.current = userData;
 
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password,
+            );
+            await setDoc(doc(db, "users", userCredential.user.uid), userData);
 
-        // Atualiza a empresa com o ID do dono
-        await updateDoc(companyRef, { ownerId: userCredential.user.uid });
+            // Atualiza a empresa com o ID do dono
+            await updateDoc(companyRef, { ownerId: userCredential.user.uid });
 
-        const token = await userCredential.user.getIdToken();
-        setSessionCookie(token);
-    }, [setSessionCookie]);
+            const token = await userCredential.user.getIdToken();
+            setSessionCookie(token);
+        },
+        [setSessionCookie],
+    );
 
-     // Função para registrar um NOVO FUNCIONÁRIO
-    const registerEmployee = useCallback(async (name, email, password, companyId) => {
-         // Esta função geralmente sera chamada por uma API Route para não deslogar o admin atual
-        const response = await fetch("/api/register-employee", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password, companyId }),
-        });
+    // Função para registrar um NOVO FUNCIONÁRIO
+    const registerEmployee = useCallback(
+        async (name, email, password, companyId) => {
+            // Esta função geralmente sera chamada por uma API Route para não deslogar o admin atual
+            const response = await fetch("/api/register-employee", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, email, password, companyId }),
+            });
 
-        if (!response.ok) {
-            const error = await response.json();
-            throw new Error(error.message || "Erro ao registrar funcionário");
-        }
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(
+                    error.message || "Erro ao registrar funcionário",
+                );
+            }
 
-        return await response.json();
-    }, []);
+            return await response.json();
+        },
+        [],
+    );
 
     const logout = useCallback(async () => {
         try {
@@ -214,16 +239,28 @@ export const AuthProvider = ({ children }) => {
         }
     }, [setSessionCookie, router]);
 
-    const value = useMemo(() => ({
-        currentUser,
-        loading,
-        loginWithEmail,
-        loginWithGoogle,
-        registerCompany,
-        registerEmployee,
-        logout,
-        setJustLoggedIn,
-    }), [currentUser, loading, loginWithEmail, loginWithGoogle, registerCompany, registerEmployee, logout, setJustLoggedIn]);
+    const value = useMemo(
+        () => ({
+            currentUser,
+            loading,
+            loginWithEmail,
+            loginWithGoogle,
+            registerCompany,
+            registerEmployee,
+            logout,
+            setJustLoggedIn,
+        }),
+        [
+            currentUser,
+            loading,
+            loginWithEmail,
+            loginWithGoogle,
+            registerCompany,
+            registerEmployee,
+            logout,
+            setJustLoggedIn,
+        ],
+    );
 
     return (
         <AuthContext.Provider value={value}>
