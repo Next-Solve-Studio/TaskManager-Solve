@@ -61,7 +61,8 @@ export const ROLES_STYLES = {
 
 export const PERMISSIONS = {
     // Usuários
-    canManageUsers: [ROLES.MASTER, ROLES.ADMIN],
+    canCreateUsers: [ROLES.MASTER],
+    canManageUsers: [ROLES.MASTER],
     canViewUsers: [ROLES.MASTER, ROLES.ADMIN, ROLES.PROJECT_LEAD],
 
     // Histórico de Atividades

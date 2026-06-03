@@ -1,6 +1,6 @@
 "use client";
 
-import { CircularProgress, Menu, MenuItem } from "@mui/material";
+import { CircularProgress, Menu, MenuItem, Button } from "@mui/material";
 import { useCallback, useMemo, useState } from "react";
 import {
     MdAdminPanelSettings,
@@ -9,10 +9,13 @@ import {
     MdEdit,
     MdPeople,
     MdSupervisorAccount,
+    MdAdd,
 } from "react-icons/md";
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
+import UserAddModal from "@/components/users/modals/UserAddModal";
 import { useUsers } from "@/context/UsersContext";
+import { useAuth } from "@/context/AuthContext";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
 import { ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
@@ -20,32 +23,35 @@ import UsersCards from "./usersCards/UsersCards";
 import UserFilters from "./sections/UserFilters";
 import UserTable from "./sections/UserTable";
 import UsersHeader from "./sections/UsersHeader";
+import CanDo from "../auth/CanDo";
 
 export default function UsersMain() {
-    const { users, loading } = useUsers();
+    const { users, loadingUsers } = useUsers();
+    const { currentUser } = useAuth();
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
     const isTablet = useIsTablet();
     const [deletingUser, setDeletingUser] = useState(null);
-    const [sortKey, setSortKey] = useState(null)
-    const [sortDir, setSortDir] = useState("asc")
-    const [menuAnchorEl, setMenuAnchorEl] = useState(null)
-    const [menuUser, setMenuUser] = useState(null)
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [sortKey, setSortKey] = useState(null);
+    const [sortDir, setSortDir] = useState("asc");
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const [menuUser, setMenuUser] = useState(null);
 
     const handleOpenMenu = useCallback((event, user) => {
-        setMenuAnchorEl(event.currentTarget)
-        setMenuUser(user)
-    }, [])
+        setMenuAnchorEl(event.currentTarget);
+        setMenuUser(user);
+    }, []);
 
     const handleSort = (key) => {
         if (sortKey === key) {
-            setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+            setSortDir((d) => (d === "asc" ? "desc" : "asc"));
         } else {
-            setSortKey(key)
-            setSortDir("asc")
+            setSortKey(key);
+            setSortDir("asc");
         }
-    }
+    };
 
     const filtered = useMemo(() => {
         const result = users.filter((u) => {
@@ -62,10 +68,10 @@ export default function UsersMain() {
 
         if (sortKey) {
             result.sort((a,b) =>{
-                let valA, valB
+                let valA, valB;
                 if (sortKey === "name") {
-                    valA =  a.name?.toLowerCase() ?? ""
-                    valB = b.name?.toLowerCase() ?? ""
+                    valA =  a.name?.toLowerCase() ?? "";
+                    valB = b.name?.toLowerCase() ?? "";
                 } else if (sortKey === "role") {
                     valA = a.role ?? "";
                     valB = b.role ?? "";
@@ -76,12 +82,12 @@ export default function UsersMain() {
                     valA = a.lastLoginAt ?? "";
                     valB = b.lastLoginAt ?? "";
                 }
-                if (valA < valB) return sortDir === "asc" ? -1 : 1
-                if (valA > valB) return sortDir === "asc" ?  1 : -1
-                return  0
-            })
+                if (valA < valB) return sortDir === "asc" ? -1 : 1;
+                if (valA > valB) return sortDir === "asc" ?  1 : -1;
+                return  0;
+            });
         }
-        return result 
+        return result;
     }, [users, search, filterRole, sortKey, sortDir]);
 
     const stats = useMemo(
@@ -95,27 +101,15 @@ export default function UsersMain() {
     );
 
     const handleUserList = () => {
-        if (loading){
+        if (loadingUsers){
             return(
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "60px 0",
-                        gap: 12,
-                    }}
-                >
+                <div className="flex items-center justify-center py-15 gap-3">
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    <span style={{ color: "#6b7280", fontSize: 14 }}>
-                        Carregando usuários... <br />
-                        {users.length === 0
-                            ? "Nenhum usuário cadastrado ainda"
-                            : "Nenhum usuário encontrado"}
+                    <span className="text-text-muted text-sm">
+                        Carregando usuários...
                     </span>
                 </div>
-            )
-            
+            );
         }
 
         if (isTablet){
@@ -123,9 +117,8 @@ export default function UsersMain() {
                 <UsersCards
                     users={filtered}
                     onOpenMenu ={handleOpenMenu}
-
                 />
-            )
+            );
         }
 
         return (
@@ -136,51 +129,91 @@ export default function UsersMain() {
                 handleOpenMenu={handleOpenMenu}
                 handleSort={handleSort}
             />
-        )
-    }
+        );
+    };
 
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
-            {/* ── Header ── */}
-            <UsersHeader users={users}/>
-
-            {/* ── Stats ── */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                <StatPill
-                    icon={MdPeople}
-                    label="Total"
-                    value={stats.total}
-                    color="#a78bfa"
-                    bg="rgba(167,139,250,0.1)"
-                    border="rgba(167,139,250,0.2)"
-                />
-                <StatPill
-                    icon={MdAdminPanelSettings}
-                    label="Admins"
-                    value={stats.admins}
-                    color="var(--color-brand-500)"
-                    bg="var(--color-surface-green-alt)"
-                    border="var(--color-surface-green-md)"
-                />
-                <StatPill
-                    icon={MdSupervisorAccount}
-                    label="Líderes"
-                    value={stats.leads}
-                    color="var(--color-cyan-400)"
-                    bg="var(--color-surface-cyan-alt)"
-                    border="var(--color-surface-cyan-md)"
-                />
-                <StatPill
-                    icon={MdCode}
-                    label="Devs"
-                    value={stats.devs}
-                    color="#6b7280"
-                    bg="rgba(75,75,75,0.15)"
-                    border="rgba(75,75,75,0.3)"
-                />
+            <div className="flex justify-between items-start flex-wrap gap-4">
+                <UsersHeader users={users}/>
+                {currentUser?.role === ROLES.ADMIN && (
+                    <Button
+                        variant="contained"
+                        startIcon={<MdAdd />}
+                        onClick={() => setIsAddModalOpen(true)}
+                        sx={{
+                            bgcolor: "var(--color-brand-500)",
+                            borderRadius: "12px",
+                            textTransform: "none",
+                            fontWeight: "bold",
+                            px: 3,
+                            py: 1.2,
+                            "&:hover": { bgcolor: "var(--color-brand-600)" }
+                        }}
+                    >
+                        Cadastrar Usuário
+                    </Button>
+                )}
             </div>
 
-            {/* ── Filters ── */}
+            <div className="flex justify-between items-center flex-wrap gap-4">
+                <div className="flex flex-wrap gap-2.5">
+                    <StatPill
+                        icon={MdPeople}
+                        label="Total"
+                        value={stats.total}
+                        color="#a78bfa"
+                        bg="rgba(167,139,250,0.1)"
+                        border="rgba(167,139,250,0.2)"
+                    />
+                    <StatPill
+                        icon={MdAdminPanelSettings}
+                        label="Admins"
+                        value={stats.admins}
+                        color="var(--color-brand-500)"
+                        bg="var(--color-surface-green-alt)"
+                        border="var(--color-surface-green-md)"
+                    />
+                    <StatPill
+                        icon={MdSupervisorAccount}
+                        label="Líderes"
+                        value={stats.leads}
+                        color="var(--color-cyan-400)"
+                        bg="var(--color-surface-cyan-alt)"
+                        border="var(--color-surface-cyan-md)"
+                    />
+                    <StatPill
+                        icon={MdCode}
+                        label="Devs"
+                        value={stats.devs}
+                        color="#6b7280"
+                        bg="rgba(75,75,75,0.15)"
+                        border="rgba(75,75,75,0.3)"
+                    />
+                </div>
+                <CanDo permission="canCreateUsers">
+                    <button
+                        variant="contained"
+                        onClick={() => setIsAddModalOpen(true)}
+                        type="button"
+                        className="
+                            relative inline-flex items-center gap-1.5
+                            px-4.5 h-9.5 rounded-[7px]
+                            text-[13px] font-bold tracking-tight text-white text-shadow-sm
+                            bg-linear-to-br from-brand-500 to-brand-600
+                            overflow-hidden cursor-pointer
+                            transition-all duration-150
+                            hover:-translate-y-0.5 hover:shadow-[0_6px_22px_rgba(25, 202, 104, 0.42)]
+                            active:scale-[0.97]
+                            shadow-[0_2px_10px_rgba(25,202,104,0.25)]
+                            max-w-50
+                        "
+                    >
+                        Cadastrar Usuário
+                    </button>
+                </CanDo>
+            </div>
+
             <UserFilters
                 search={search}
                 setSearch={setSearch}
@@ -188,8 +221,12 @@ export default function UsersMain() {
                 setFilterRole={setFilterRole}
             />
 
-            {/* ── Lista ── */}
             {handleUserList()}
+
+            <UserAddModal 
+                open={isAddModalOpen} 
+                onClose={() => setIsAddModalOpen(false)} 
+            />
 
             <UserEditModal
                 open={Boolean(editingUser)}
