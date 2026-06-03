@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
 import ResetPassword from "./ResetPassword";
+import { muiDark } from "@/styles/StyleInputs";
 
 const schema = yup.object({
     email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
@@ -40,19 +41,6 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
         }
     }
 
-    const fieldSx = {
-        width: "100%",
-        "& .MuiOutlinedInput-root": {
-            borderRadius: "12px",
-            color: "var(--text-primary)",
-            backgroundColor: "var(--bg-surface)",
-            "& fieldset": { borderColor: "var(--border-main2)" },
-            "&:hover fieldset": { borderColor: "var(--color-brand-500)" },
-            "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
-        },
-        "& .MuiInputLabel-root": { color: "var(--text-muted)" },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
-    };
 
     return (
         <div className="flex flex-col gap-8 w-full">
@@ -80,7 +68,7 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                     variant="outlined"
                     error={!!errors.email}
                     helperText={errors.email?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                     slotProps={{
                         input: {
                             startAdornment: (
@@ -100,7 +88,7 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                         type={seePassword ? "text" : "password"}
                         error={!!errors.password}
                         helperText={errors.password?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
                         className="w-full"
                         slotProps={{
                             input: {

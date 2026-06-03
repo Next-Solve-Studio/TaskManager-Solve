@@ -10,6 +10,7 @@ import { MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
+import { muiDark } from "@/styles/StyleInputs";
 
 // Schema de validação com Yup incluindo Empresa
 const schema = yup
@@ -67,21 +68,6 @@ export default function RegisterForm({ setHaveAccount }) {
         }
     }
 
-    const fieldSx = {
-        width: "100%",
-        "& .MuiOutlinedInput-root": {
-            borderRadius: "12px",
-            color: "var(--text-primary)",
-            backgroundColor: "var(--bg-surface)",
-            fontSize: "0.95rem",
-            "& fieldset": { borderColor: "var(--border-main2)" },
-            "&:hover fieldset": { borderColor: "var(--color-brand-500)" },
-            "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
-        },
-        "& .MuiInputLabel-root": { color: "var(--text-muted)" },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
-    };
-
     return (
         <div className="flex flex-col gap-8 w-full">
             <div className="flex flex-col gap-2">
@@ -108,7 +94,7 @@ export default function RegisterForm({ setHaveAccount }) {
                     variant="outlined"
                     error={!!errors.companyName}
                     helperText={errors.companyName?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                     slotProps={{
                         input: {
                             startAdornment: (
@@ -126,7 +112,7 @@ export default function RegisterForm({ setHaveAccount }) {
                     variant="outlined"
                     error={!!errors.name}
                     helperText={errors.name?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                     slotProps={{
                         input: {
                             startAdornment: (
@@ -144,7 +130,7 @@ export default function RegisterForm({ setHaveAccount }) {
                     variant="outlined"
                     error={!!errors.email}
                     helperText={errors.email?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                     slotProps={{
                         input: {
                             startAdornment: (
@@ -164,7 +150,7 @@ export default function RegisterForm({ setHaveAccount }) {
                         type={seePassword ? "text" : "password"}
                         error={!!errors.password}
                         helperText={errors.password?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
                         className="w-full"
                         slotProps={{
                             input: {
@@ -190,7 +176,7 @@ export default function RegisterForm({ setHaveAccount }) {
                     variant="outlined"
                     error={!!errors.cnpj}
                     helperText={errors.cnpj?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                 />
 
                 <TextField
@@ -199,7 +185,7 @@ export default function RegisterForm({ setHaveAccount }) {
                     variant="outlined"
                     error={!!errors.endereco}
                     helperText={errors.endereco?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                 />
                 <button
                     type="button"
