@@ -11,14 +11,14 @@ import {
     TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { IoMdLock } from "react-icons/io";
 import { MdAdd, MdClose, MdOutlineEmail, MdPerson } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
-import { menuPaper } from "@/styles/StyleInputs";
+import { menuPaper, muiDark } from "@/styles/StyleInputs";
 
 const schema = yup.object({
     name: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
@@ -35,6 +35,7 @@ export default function UserAddModal({ open, onClose }) {
         register,
         handleSubmit,
         reset,
+        control,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
@@ -79,20 +80,6 @@ export default function UserAddModal({ open, onClose }) {
         } finally {
             setLoading(false);
         }
-    };
-
-    const fieldSx = {
-        "& .MuiOutlinedInput-root": {
-            color: "var(--color-text-primary)",
-            backgroundColor: "var(--color-border-subtle)",
-            borderRadius: "12px",
-            "& fieldset": { borderColor: "var(--color-border-main)" },
-            "&:hover fieldset": { borderColor: "rgba(var(--color-brand-500-rgb), 0.3)" },
-            "&.Mui-focused fieldset": { borderColor: "var(--color-brand-500)" },
-        },
-        "& .MuiInputLabel-root": { color: "var(--color-text-muted)" },
-        "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
-        "& .MuiSvgIcon-root": { color: "var(--color-text-muted)" },
     };
 
     return (
@@ -166,7 +153,7 @@ export default function UserAddModal({ open, onClose }) {
                         label="Nome"
                         error={!!errors.name}
                         helperText={errors.name?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
                         slotProps={{
                             input: {
                                 startAdornment: (
@@ -183,7 +170,7 @@ export default function UserAddModal({ open, onClose }) {
                         label="E-mail"
                         error={!!errors.email}
                         helperText={errors.email?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
                         slotProps={{
                             input: {
                                 startAdornment: (
@@ -201,7 +188,7 @@ export default function UserAddModal({ open, onClose }) {
                         type="password"
                         error={!!errors.password}
                         helperText={errors.password?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
                         slotProps={{
                             input: {
                                 startAdornment: (
@@ -212,26 +199,32 @@ export default function UserAddModal({ open, onClose }) {
                             },
                         }}
                     />
-                    <TextField
-                        {...register("role")}
-                        select
-                        fullWidth
-                        label="Cargo"
-                        error={!!errors.role}
-                        helperText={errors.role?.message}
-                        sx={fieldSx}
-                        SelectProps={{ MenuProps: menuPaper }}
-                    >
-                        {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                            <MenuItem 
-                                key={value} 
-                                value={value}
-                                sx={{ fontSize: 13, color: "var(--color-text-primary)" }}
+                    <Controller
+                        name="role"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                select
+                                fullWidth
+                                label="Cargo"
+                                error={!!errors.role}
+                                helperText={errors.role?.message}
+                                sx={muiDark}
+                                SelectProps={{ MenuProps: menuPaper }}
                             >
-                                {label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
+                                {Object.entries(ROLE_LABELS).map(([value, label]) => (
+                                    <MenuItem 
+                                        key={value} 
+                                        value={value}
+                                        sx={{ fontSize: 13, color: "var(--color-text-primary)" }}
+                                    >
+                                        {label}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        )}
+                    />
                 </DialogContent>
 
                 <DialogActions
