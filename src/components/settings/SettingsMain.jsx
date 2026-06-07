@@ -73,7 +73,7 @@ export default function SettingsMain() {
                         }}
                     >
                         {tabs.map((tab) => (
-                            <Tab key={tab} icon={<tab.icon className="text-xl" />} label={tab.label} iconPosition="start" />
+                            <Tab key={tab.label} icon={<tab.icon className="text-xl" />} label={tab.label} iconPosition="start" />
                         ))}
                     </Tabs>
 

@@ -71,8 +71,8 @@ export const ScheduleProvider = ({ children }) => {
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
         if (!currentUser?.companyId) {
-            setProjects([]);
-            setLoadingProjects(false);
+            setSchedules([]);             // Corrigido
+            setLoadingSchedules(false);
             return;
         }
 
