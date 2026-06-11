@@ -47,12 +47,12 @@ export function StatCard({
     const exportButtons = () => {
         if (projects.length > 0) {
             return (
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2.5 mt-2 flex-wrap ">
                     <button
                         type="button"
                         onClick={handleExportPDF}
                         disabled={isExporting || value === 0}
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200"
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs max-w-40 font-medium transition-all duration-200"
                         style={{
                             background: `${color}15`,
                             color: color,
@@ -77,7 +77,7 @@ export function StatCard({
                         type="button"
                         onClick={handleExportExcel}
                         disabled={isExporting || value === 0}
-                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200"
+                        className="flex-1 flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs max-w-40 font-medium transition-all duration-200"
                         style={{
                             background: `${color}15`,
                             color: color,
