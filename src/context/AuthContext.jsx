@@ -164,7 +164,15 @@ export const AuthProvider = ({ children }) => {
 
     // Função para registrar uma NOVA EMPRESA e seu primeiro Administrador
     const registerCompany = useCallback(
-        async (companyName, adminName, email, password) => {
+        async (
+            companyName,
+            adminName,
+            email,
+            password,
+            plan = "FREE",
+            cnpj = "",
+            endereco = "",
+        ) => {
             justLoggedIn.current = true;
 
             // 1. Criar a Empresa na coleção 'companies'
@@ -173,7 +181,7 @@ export const AuthProvider = ({ children }) => {
                 cnpj: cnpj,
                 endereco: endereco,
                 createdAt: new Date(),
-                plan: "free",
+                plan,
                 status: "active",
             });
 
@@ -181,7 +189,7 @@ export const AuthProvider = ({ children }) => {
                 name: adminName.trim(),
                 email,
                 role: "master",
-                companyId: companyRef.id, // Vínculo crucial para multi-tenancy
+                companyId: companyRef.id,
                 createdAt: new Date(),
                 lastLoginAt: new Date(),
                 lastSeenAt: new Date(),
@@ -190,15 +198,42 @@ export const AuthProvider = ({ children }) => {
 
             pendingUserData.current = userData;
 
+            //  Criar usuário no Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 email,
                 password,
             );
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
-
-            // Atualiza a empresa com o ID do dono
             await updateDoc(companyRef, { ownerId: userCredential.user.uid });
+
+            //  Registrar licença na API (não bloqueia o cadastro se falhar)
+            try {
+                const response = await fetch("/api/register-company", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        companyId: companyRef.id,
+                        companyName,
+                        responsibleName: adminName,
+                        email,
+                        plan,
+                    }),
+                });
+
+                if (response.ok) {
+                    const { appKey, expiresAt } = await response.json();
+                    await updateDoc(companyRef, {
+                        appKey,
+                        licenseExpiresAt: expiresAt,
+                    });
+                }
+            } catch (err) {
+                console.error(
+                    "[auth] Licença não registrada (não crítico):",
+                    err,
+                );
+            }
 
             const token = await userCredential.user.getIdToken();
             setSessionCookie(token);
