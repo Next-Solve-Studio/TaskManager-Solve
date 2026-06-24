@@ -175,14 +175,54 @@ export const AuthProvider = ({ children }) => {
         ) => {
             justLoggedIn.current = true;
 
-            // 1. Criar a Empresa na coleção 'companies'
-            const companyRef = await addDoc(collection(db, "companies"), {
+            const companyRef = doc(collection(db, "companies"))
+            const companyId = companyRef.id
+            
+            //  Registrar licença na API (não bloqueia o cadastro se falhar)
+            let appKey, expiresAt
+            try {
+                const response = await fetch("/api/register-company", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        companyId,
+                        companyName,
+                        responsibleName: adminName,
+                        email,
+                        plan,
+                    }),
+                });
+
+                 if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(
+                        errorData.message ||
+                            `Erro na API: ${response.status}`
+                    );
+                }
+                const data = await response.json();
+                appKey = data.appKey;
+                expiresAt = data.expiresAt;
+
+            } catch (err) {
+                justLoggedIn.current = false;
+                console.error(
+                    "[auth] Licença não registrada (não crítico):",
+                    err,
+                );
+                throw err;
+            }
+
+            // Criar a Empresa na coleção 'companies'
+            await setDoc(companyRef, {
                 name: companyName,
                 cnpj: cnpj,
                 endereco: endereco,
                 createdAt: new Date(),
                 plan,
                 status: "active",
+                appKey,
+                licenseExpiresAt: expiresAt,
             });
 
             const userData = {
@@ -204,36 +244,9 @@ export const AuthProvider = ({ children }) => {
                 email,
                 password,
             );
+
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             await updateDoc(companyRef, { ownerId: userCredential.user.uid });
-
-            //  Registrar licença na API (não bloqueia o cadastro se falhar)
-            try {
-                const response = await fetch("/api/register-company", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        companyId: companyRef.id,
-                        companyName,
-                        responsibleName: adminName,
-                        email,
-                        plan,
-                    }),
-                });
-
-                if (response.ok) {
-                    const { appKey, expiresAt } = await response.json();
-                    await updateDoc(companyRef, {
-                        appKey,
-                        licenseExpiresAt: expiresAt,
-                    });
-                }
-            } catch (err) {
-                console.error(
-                    "[auth] Licença não registrada (não crítico):",
-                    err,
-                );
-            }
 
             const token = await userCredential.user.getIdToken();
             setSessionCookie(token);
