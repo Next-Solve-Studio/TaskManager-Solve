@@ -1,4 +1,4 @@
-import { useLicense } from "@/context/licenseApi";
+import { useLicense } from "@/context/LicenseApiContext";
 
 export default function LicenseGuard({ children }) {
     const { license, loading } = useLicense();

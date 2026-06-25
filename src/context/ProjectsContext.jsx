@@ -21,7 +21,7 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { STATUS_MAP } from "@/components/ui/StatusBadge";
+import { STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";

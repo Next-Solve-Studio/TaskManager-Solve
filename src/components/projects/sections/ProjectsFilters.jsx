@@ -1,7 +1,7 @@
 import { AiOutlineClear } from "react-icons/ai";
 import { MdSearch } from "react-icons/md";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import FilterSelect from "@/components/ui/FilterSelect";
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function ProjectsFilters({

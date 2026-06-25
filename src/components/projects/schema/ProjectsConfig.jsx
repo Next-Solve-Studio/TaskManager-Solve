@@ -1,6 +1,6 @@
 "use client";
 import * as yup from "yup";
-import { PRIORITY_MAP, STATUS_MAP } from "../../ui/StatusBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "../../ui/badges/StatusBadge";
 
 export const projectSchema = yup.object({
     // define um esquema que valida um objeto

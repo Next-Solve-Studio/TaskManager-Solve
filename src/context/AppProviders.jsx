@@ -1,7 +1,7 @@
 "use client";
 import { ClientsProvider } from "./ClientsContext";
 import { CompanyProvider } from "./CompanyContext";
-import { LicenseProvider } from "./licenseApi";
+import { LicenseProvider } from "./LicenseApiContext";
 import { ProjectsProvider } from "./ProjectsContext";
 import { ScheduleProvider } from "./ScheduleContext";
 import { TasksProvider } from "./TasksContext";

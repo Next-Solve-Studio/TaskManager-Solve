@@ -3,7 +3,7 @@ import { Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { MdDelete, MdEdit, MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
-import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
+import { PriorityBadge, StatusBadge } from "@/components/ui/badges/StatusBadge";
 
 export default function CardHeader({ task, onEdit, onDelete }) {
     const [anchorEl, setAnchorEl] = useState(false);

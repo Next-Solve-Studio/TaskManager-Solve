@@ -5,6 +5,7 @@ import { useState } from "react";
 import { FiSettings } from "react-icons/fi";
 import { MdPerson, MdSecurity, MdBusiness } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
+import { RiShieldKeyholeLine } from "react-icons/ri"; 
 import { useRole } from "@/hooks/useRole";
 import { useAuth } from "@/context/AuthContext";
 import ProfileSettings from "./sections/ProfileSettings";
@@ -12,6 +13,7 @@ import SecuritySettings from "./sections/SecuritySettings";
 import SettingsHeader from "./sections/SettingsHeader";
 import SystemSettings from "./sections/SystemSettings";
 import CompanySettings from "./sections/CompanySettings";
+import LicenseSettings   from "./sections/LicenseSettings";
 
 export default function SettingsMain() {
     const [activeTab, setActiveTab] = useState(0);
@@ -28,6 +30,7 @@ export default function SettingsMain() {
     // Se o usuário for o dono (master), adiciona a aba Empresa
     if (currentUser?.role === "master") {
         tabs.push({ label: "Empresa", icon: MdBusiness, component: <CompanySettings /> });
+        tabs.push({ label: "Licença",  icon: RiShieldKeyholeLine, component: <LicenseSettings /> });
     }
 
     // Se tiver permissão de sistema, adiciona a aba Sistema

@@ -16,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { AiOutlineClear } from "react-icons/ai";
 import { MdOutlineFilterList, MdSearch } from "react-icons/md";
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 export default function TasksFilters({
