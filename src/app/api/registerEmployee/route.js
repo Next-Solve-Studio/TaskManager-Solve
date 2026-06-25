@@ -27,14 +27,22 @@ if (!admin.apps.length) {
 }
 
 const db = admin.firestore();
+const auth = admin.auth(); 
 
 export async function POST(request) {
     try {
-        const { name, email, companyId, role, uid } = await request.json();
+        const { name, email, password, companyId, role } = await request.json();
         
-        if (!email || !companyId || !uid) {
+        if (!email || !companyId || !password) {
             return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
         }
+
+        //Cria o usuário no Firebase Auth — gera o UID real
+        const userRecord = await auth.createUser({
+            email,
+            password,
+            displayName: name?.trim(),
+        });
 
         const userData = {
             name: name.trim(),
@@ -47,12 +55,26 @@ export async function POST(request) {
             authMethod: "email",
         };
 
-        await db.collection("users").doc(uid).set(userData);
+         await db.collection("users").doc(userRecord.uid).set(userData);
 
-        return NextResponse.json({ message: "Usuário registrado com sucesso", user: userData }, { status: 201 });
+        return NextResponse.json(
+            { message: "Usuário registrado com sucesso", uid: userRecord.uid },
+            { status: 201 }
+        );
         
     } catch (error) {
         console.error("Erro na API de registro:", error);
+
+        if (error.code?.startsWith("auth/")) {
+            const messages = {
+                "auth/email-already-exists": "Este e-mail já está em uso.",
+                "auth/invalid-password": "A senha deve ter pelo menos 6 caracteres.",
+            };
+            return NextResponse.json(
+                { message: messages[error.code] ?? error.message },
+                { status: 400 }
+            );
+        }
         return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
     }
 }

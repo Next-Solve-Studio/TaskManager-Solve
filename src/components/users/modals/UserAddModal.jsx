@@ -19,6 +19,7 @@ import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const schema = yup.object({
     name: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
@@ -30,6 +31,7 @@ const schema = yup.object({
 export default function UserAddModal({ open, onClose }) {
     const { currentUser } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [seePassword, setSeePassword] = useState(false);
 
     const {
         register,
@@ -63,7 +65,6 @@ export default function UserAddModal({ open, onClose }) {
                 body: JSON.stringify({
                     ...data,
                     companyId: currentUser.companyId,
-                    uid: `temp_${Date.now()}`,
                 }),
             });
 
@@ -181,24 +182,33 @@ export default function UserAddModal({ open, onClose }) {
                             },
                         }}
                     />
-                    <TextField
-                        {...register("password")}
-                        fullWidth
-                        label="Senha"
-                        type="password"
-                        error={!!errors.password}
-                        helperText={errors.password?.message}
-                        sx={muiDark}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <IoMdLock className="text-brand-500" size={18} />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                    />
+                    <div className="flex w-full relative items-center">
+                        <TextField
+                            {...register("password")}
+                            fullWidth
+                            label="Senha"
+                            type={seePassword ? "text" : "password"}
+                            error={!!errors.password}
+                            helperText={errors.password?.message}
+                            sx={muiDark}
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <IoMdLock className="text-brand-500" size={18} />
+                                        </InputAdornment>
+                                    ),
+                                },
+                            }}
+                        />
+                        <button
+                            type="button"
+                            className="absolute right-3 text-text-muted hover:text-brand-500"
+                            onClick={() => setSeePassword(!seePassword)}
+                        >
+                            {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                        </button>
+                    </div>
                     <Controller
                         name="role"
                         control={control}
