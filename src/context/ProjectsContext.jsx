@@ -109,14 +109,19 @@ export const ProjectsProvider = ({ children }) => {
         }
 
         const q = query(collection(db, "clients"), where("companyId", "==", currentUser.companyId));
-        getDocs(q)
-            .then((snapshot) => {
+        const unsubscribe = onSnapshot(
+            q,
+            (snapshot) => {
                 setClients(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-            })
-            .catch((error) => {
+                setLoadingClients(false);
+            },
+            (error) => {
                 console.error("Erro ao carregar clientes:", error);
-            })
-            .finally(() => setLoadingClients(false));
+                setLoadingClients(false);
+            }
+        );
+
+        return unsubscribe;
     }, [currentUser?.companyId]);
 
     const createProject = useCallback(
