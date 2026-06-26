@@ -37,7 +37,9 @@ export default function ActivityFeed() {
         });
 
         // Limpa logs com mais de 2 dias ao carregar o feed
-        cleanOldLogs(2);
+        const LOG_RETENTION = { FREE: 7, BASIC: 15, PRO: 30, ADMIN: 3 };
+        const days = LOG_RETENTION[currentUser?.plan] ?? 7;
+        cleanOldLogs(currentUser?.companyId, days);
 
         return () => unsubscribe();
     }, []);

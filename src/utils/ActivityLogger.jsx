@@ -90,21 +90,18 @@ export const cleanOldLogs = async (days = 2) => {
         const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
 
         // Cria a query para buscar logs anteriores à data limite
-        const q = query(logsRef, where("timestamp", "<", cutoffTimestamp));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-            return;
-        }
-
-        // Deleta cada documento encontrado
-        const deletePromises = querySnapshot.docs.map((document) =>
-            deleteDoc(doc(db, "activity_logs", document.id)),
+        const q = query(
+            logsRef,
+            where("companyId", "==", companyId),
+            where("timestamp", "<", cutoffTimestamp)
         );
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) return;
 
-        await Promise.all(deletePromises);
-        console.log(
-            `${querySnapshot.size} logs antigos (mais de ${days} dias) foram removidos.`,
+        await Promise.all(
+            querySnapshot.docs.map((document) =>
+                deleteDoc(doc(db, "activity_logs", document.id))
+            )
         );
     } catch (error) {
         console.error("Erro ao limpar logs antigos:", error);
