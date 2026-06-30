@@ -33,7 +33,7 @@ const schema = yup
     })
     .required();
 
-export default function RegisterForm({ setHaveAccount }) {
+export default function RegisterForm({ setHaveAccount, onStepChange  }) {
     const { registerCompany } = useAuth();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
@@ -47,6 +47,11 @@ export default function RegisterForm({ setHaveAccount }) {
     } = useForm({
         resolver: yupResolver(schema),
     });
+
+    const changeStep = (n) => {
+        setStep(n);
+        onStepChange?.(n);
+    };
 
     async function onSubmit(data) {
         setLoading(true);
@@ -75,6 +80,7 @@ export default function RegisterForm({ setHaveAccount }) {
     if (step === 1) {
         return (
             <div className="flex flex-col gap-6 w-full">
+                <div className="w-full">
                 <PlanSelector
                     selected={selectedPlan}
                     onSelect={setSelectedPlan}
@@ -83,10 +89,10 @@ export default function RegisterForm({ setHaveAccount }) {
                 <div className="flex flex-col gap-3">
                     <button
                         type="button"
-                        onClick={() => setStep(2)}
-                        className="h-12 w-full rounded-xl font-bold text-base tracking-wide text-white
-                       bg-linear-to-r from-brand-600 to-brand-500
-                       shadow-[0_4px_24px_rgba(26,215,111,0.35)] cursor-pointer"
+                        onClick={() => changeStep(2)}
+                        className="h-12 w-full max-w-85 mx-auto rounded-xl font-bold text-base tracking-wide text-white 
+                       bg-linear-to-r bg-brand-600 hover:bg-brand-700 
+                       shadow-[0_4px_24px_rgba(26,215,111,0.25)] cursor-pointer transition-all duration-150 text-shadow-lg"
                     >
                         Continuar com{" "}
                         {selectedPlan === "FREE"
@@ -96,14 +102,15 @@ export default function RegisterForm({ setHaveAccount }) {
 
                     <button
                         type="button"
-                        className="text-sm text-text-muted hover:text-brand-500 transition-colors duration-150 text-center cursor-pointer"
+                        className="text-sm text-text-muted w-full max-w-45 mx-auto hover:text-brand-500 transition-colors duration-150 text-center cursor-pointer"
                         onClick={() => setHaveAccount(true)}
                     >
                         Já tem uma conta?{" "}
-                        <span className="text-brand-500 font-semibold underline underline-offset-2">
+                        <span className="text-brand-500 font-semibold underline underline-offset-2 ">
                             Entrar
                         </span>
                     </button>
+                </div>
                 </div>
             </div>
         );
@@ -115,7 +122,7 @@ export default function RegisterForm({ setHaveAccount }) {
             <div className="flex flex-col gap-2">
                 <button
                     type="button"
-                    onClick={() => setStep(1)}
+                    onClick={() => changeStep(1)}
                     className="flex items-center gap-2 text-xs text-text-muted hover:text-brand-500 transition-colors w-fit cursor-pointer"
                 >
                     <FaArrowLeft size={10} />
