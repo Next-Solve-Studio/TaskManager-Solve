@@ -30,9 +30,6 @@ export function LicenseProvider({ children }) {
 
             const result = await validateLicense(appKey);
             setLicense(result);
-
-            // setLicense({ valid: false, status: "EXPIRED", warning: null });
-            // return;
         } catch {
             setLicense((prev) => prev ?? { valid: false, status: "ERROR" });
         } finally {
