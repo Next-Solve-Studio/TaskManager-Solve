@@ -4,6 +4,23 @@ export async function POST(request) {
     try {
         const body = await request.json();
 
+        const { companyId, companyName, responsibleName, email } = body;
+
+        if (!companyId || !companyName || !responsibleName || !email) {
+            return NextResponse.json(
+                { error: "Campos obrigatórios faltando." },
+                { status: 400 }
+            );
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return NextResponse.json(
+                { error: "E-mail inválido." },
+                { status: 400 }
+            );
+        }
+
         const response = await fetch(
             `${process.env.LICENSE_API_URL}/api/public/register`,
             {

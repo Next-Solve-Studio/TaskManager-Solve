@@ -39,20 +39,8 @@ export const logActivity = async (activityData) => {
             details = {},
         } = activityData;
 
-        // Validação básica
-        if (!userId || !action || !resourceType) {
-            console.error(
-                "Dados insuficientes para log de atividade:",
-                activityData,
-            );
-            return;
-        }
-
         if (!userId || !action || !resourceType || !companyId) {
-            console.warn(
-                "Dados insuficientes para log de atividade (companyId é obrigatório):",
-                activityData,
-            );
+            console.warn("Dados insuficientes para log de atividade:", activityData);
             return;
         }
 
@@ -80,7 +68,12 @@ export const logActivity = async (activityData) => {
  * @param {number} days - Número de dias para manter os logs (padrão 2)
  */
 
-export const cleanOldLogs = async (days = 2) => {
+export const cleanOldLogs = async (companyId, days = 2 ) => {
+    if (!companyId) {
+        console.warn('cleanOldLogs chamada sem companyId');
+        return;
+    }
+
     try {
         const logsRef = collection(db, "activity_logs");
 
