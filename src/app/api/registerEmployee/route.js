@@ -8,12 +8,13 @@ const getPrivateKey = () => {
     
     // Substitui os \n literais por quebras de linha reais
     // O replace duplo cobre cenários diferentes do ambiente Node
-    return key.replaceAll('\n', '\n').replaceAll('"', ''); 
+    return key.replaceAll(String.raw`\n`, '\n').replaceAll('"', '');
+
 };
 
 // Inicializa o Admin SDK com a chave mestra
-if (!admin.apps.length) {
-    try {
+function getFirebaseAdmin() {
+    if (!admin.apps.length) {
         admin.initializeApp({
             credential: admin.credential.cert({
                 projectId: process.env.FIREBASE_PROJECT_ID,
@@ -21,20 +22,23 @@ if (!admin.apps.length) {
                 privateKey: getPrivateKey(),
             }),
         });
-    } catch (error) {
-        console.error("Erro na inicialização do Firebase Admin:", error);
     }
+    return {
+        db: admin.firestore(),
+        auth: admin.auth(),
+    };
 }
-
-const db = admin.firestore();
-const auth = admin.auth(); 
 
 export async function POST(request) {
     try {
+        const { db, auth } = getFirebaseAdmin();
+
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
 
-        if (!token) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+        if (!token) {
+            return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+        }
 
         let caller;
         try {
@@ -86,7 +90,7 @@ export async function POST(request) {
         });
 
         return NextResponse.json(
-            { message: "Usuário registrado com sucesso", uid: userRecord.uid },
+            { message: "Usuário registrado com sucesso.", uid: userRecord.uid },
             { status: 201 }
         );
         

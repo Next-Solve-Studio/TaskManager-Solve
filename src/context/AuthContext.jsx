@@ -256,12 +256,19 @@ export const AuthProvider = ({ children }) => {
 
     // Função para registrar um NOVO FUNCIONÁRIO
     const registerEmployee = useCallback(
-        async (name, email, password, companyId) => {
+        async (name, email, password, companyId, role) => {
+
+            const token = await auth.currentUser?.getIdToken();
+            if (!token) throw new Error("Usuário não autenticado.");
+
             // Esta função geralmente sera chamada por uma API Route para não deslogar o admin atual
-            const response = await fetch("/api/register-employee", {
+            const response = await fetch("/api/registerEmployee", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password, companyId }),
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name, email, password, companyId, role }),
             });
 
             if (!response.ok) {
