@@ -1,17 +1,14 @@
 // AuthContext.jsx
 "use client";
 
-import { serialize } from "cookie";
 import {
-    createUserWithEmailAndPassword,
     GoogleAuthProvider,
-    onAuthStateChanged,
+    onIdTokenChanged,
     signInWithEmailAndPassword,
     signInWithPopup,
     signOut,
 } from "firebase/auth";
 import {
-    addDoc,
     collection,
     doc,
     getDoc,
@@ -46,19 +43,16 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const router = useAppRouter(); // Inicia o hook de roteamento para que possamos usá-lo para redirecionar o usuário
 
-    const setSessionCookie = useCallback((token) => {
-        const cookieOptions = {
-            maxAge: 30 * 24 * 60 * 60, //30 dias de duração do cookie
-            path: "/", // o cookie é válido para o dommínio
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-        };
-        // biome-ignore lint/suspicious/noDocumentCookie: <>
-        document.cookie = serialize(
-            "__session",
-            token || "",
-            token ? cookieOptions : { ...cookieOptions, maxAge: -1 },
-        );
+    const setSessionCookie = useCallback(async (token) => {
+        if (token) {
+            await fetch("/api/auth/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token }),
+            });
+        } else {
+            await fetch("/api/auth/session", { method: "DELETE" });
+        }
     }, []);
 
     // indica que o login acabou de acontecer nesta sessão, Usamos ref para não causar re-render e evitar loop
@@ -79,13 +73,11 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            // o OnAuth... fica observando o estado de autenticação, retorna uma função unsubscribe
+        const unsubscribe = onIdTokenChanged(auth, async (user) => {
             if (user) {
                 const token = await user.getIdToken();
-                setSessionCookie(token);
+                await setSessionCookie(token);
 
-                // Busca dados do usuários
                 let userData;
                 if (pendingUserData.current) {
                     userData = pendingUserData.current;
@@ -102,15 +94,14 @@ export const AuthProvider = ({ children }) => {
                     }
                 }
 
-                setCurrentUser({ ...user, ...userData }); // atualiza o estado com a informação recebida do firebase
+                setCurrentUser({ ...user, ...userData });
 
-                // Isso garante que o currentUser já está populado antes do redirect,
                 if (justLoggedIn.current) {
                     justLoggedIn.current = false;
                     router.goHome();
                 }
             } else {
-                setSessionCookie(null);
+                await setSessionCookie(null);
                 setCurrentUser(null);
             }
 
@@ -121,6 +112,7 @@ export const AuthProvider = ({ children }) => {
 
     const loginWithEmail = useCallback(async (email, password) => {
         justLoggedIn.current = true;
+
         const userCredential = await signInWithEmailAndPassword(
             auth,
             email,
@@ -128,7 +120,6 @@ export const AuthProvider = ({ children }) => {
         );
 
         const userRef = doc(db, "users", userCredential.user.uid);
-
         await updateDoc(userRef, {
             lastLoginAt: new Date(),
             lastSeenAt: new Date(),

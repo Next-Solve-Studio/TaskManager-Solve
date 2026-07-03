@@ -1,40 +1,55 @@
 import { NextResponse } from "next/server";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
-export function proxy(request) {
+const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+
+const JWKS = createRemoteJWKSet(
+    new URL(
+        "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com"
+    )
+);
+
+async function verifyToken(token) {
+    await jwtVerify(token, JWKS, {
+        issuer: `https://securetoken.google.com/${PROJECT_ID}`,
+        audience: PROJECT_ID,
+    });
+}
+
+export async function proxy(request) {
     const { pathname } = request.nextUrl;
+    const sessionCookie = request.cookies.get("__session");
+    const token = sessionCookie?.value;
 
-    // Verificar se o user está tentando acessar a página de login
     if (pathname === "/login") {
+        if (token) {
+            try {
+                await verifyToken(token);
+                return NextResponse.redirect(new URL("/", request.url));
+            } catch {
+                // token inválido — deixa acessar o login normalmente
+            }
+        }
         return NextResponse.next();
     }
 
-    // Para rotas protegidas (como o home), verificar autenticação via cookie
-    // O firebase armazena a sessão em um cookie chamado '__session'
-    const sessionCookie = request.cookies.get("__session");
-
-    if (sessionCookie && pathname === "/login") {
-        return NextResponse.redirect(new URL("/", request.url));
+    if (!token) {
+        return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Se não houver sessão e o user tentar acessar uma rota protegida, redireciona para o lohin
-    if (!sessionCookie && pathname !== "/login") {
-        return NextResponse.redirect(new URL("/login", request.url));
+    try {
+        await verifyToken(token);
+    } catch {
+        const response = NextResponse.redirect(new URL("/login", request.url));
+        response.cookies.delete("__session");
+        return response;
     }
 
     return NextResponse.next();
 }
 
-// Configurar as rotas que o middleware deve proteger
 export const config = {
     matcher: [
-        /*
-         * Proteger todas as rotas exceto:
-         * - api (rotas de API)
-         * - _next/static (arquivos estáticos)
-         * - _next/image (otimização de imagens)
-         * - favicon.ico (favicon)
-         * - public (arquivos públicos)
-         */
         "/((?!api|_next/static|_next/image|favicon.ico|public).*)",
     ],
 };
