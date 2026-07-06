@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import admin from "firebase-admin";
+import { NextResponse } from "next/server";
 
 function getFirebaseAdmin() {
     if (!admin.apps.length) {
@@ -25,11 +25,15 @@ export async function POST(request) {
         const { token } = await request.json();
 
         if (!token || typeof token !== "string") {
-            return NextResponse.json({ error: "Token inválido." }, { status: 400 });
+            return NextResponse.json(
+                { error: "Token inválido." },
+                { status: 400 },
+            );
         }
 
-        // Verifica o token com Firebase Admin antes de setar o cookie
         const auth = getFirebaseAdmin();
+
+        // Verifica o token antes
         await auth.verifyIdToken(token);
 
         const response = NextResponse.json({ ok: true });
@@ -43,7 +47,10 @@ export async function POST(request) {
 
         return response;
     } catch {
-        return NextResponse.json({ error: "Token inválido ou expirado." }, { status: 401 });
+        return NextResponse.json(
+            { error: "Token inválido ou expirado." },
+            { status: 401 },
+        );
     }
 }
 
