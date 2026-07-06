@@ -2,6 +2,7 @@
 "use client";
 
 import {
+    createUserWithEmailAndPassword,
     GoogleAuthProvider,
     onIdTokenChanged,
     signInWithEmailAndPassword,
