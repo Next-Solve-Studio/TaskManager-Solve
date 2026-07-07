@@ -18,7 +18,8 @@ function getFirebaseAdmin() {
 }
 
 const SESSION_COOKIE = "__session";
-const THIRTY_DAYS = 30 * 24 * 60 * 60;
+const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
+const FOURTEEN_DAYS_S  = 14 * 24 * 60 * 60;
 
 export async function POST(request) {
     try {
@@ -34,14 +35,16 @@ export async function POST(request) {
         const auth = getFirebaseAdmin();
 
         // Verifica o token antes
-        await auth.verifyIdToken(token);
+        const sessionCookie = await auth.createSessionCookie(token, {
+            expiresIn: FOURTEEN_DAYS_MS,
+        });
 
         const response = NextResponse.json({ ok: true });
-        response.cookies.set(SESSION_COOKIE, token, {
+        response.cookies.set(SESSION_COOKIE, sessionCookie, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: THIRTY_DAYS,
+            maxAge: FOURTEEN_DAYS_S,
             path: "/",
         });
 
