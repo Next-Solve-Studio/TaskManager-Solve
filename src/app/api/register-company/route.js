@@ -24,6 +24,14 @@ export async function POST(request) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10_000);
 
+        if (!process.env.REGISTRATION_SECRET) {
+            console.error("[register-company] REGISTRATION_SECRET não configurado.");
+            return NextResponse.json(
+                { error: "Serviço indisponível." },
+                { status: 503 }
+            );
+        }
+
         try {
             const response = await fetch(
                 `${process.env.LICENSE_API_URL}/api/public/register`,
