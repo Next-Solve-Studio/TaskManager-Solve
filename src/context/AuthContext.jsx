@@ -241,7 +241,8 @@ export const AuthProvider = ({ children }) => {
             await updateDoc(companyRef, { ownerId: userCredential.user.uid });
 
             const token = await userCredential.user.getIdToken();
-            setSessionCookie(token);
+            await setSessionCookie(token);
+
         },
         [setSessionCookie],
     );
