@@ -30,7 +30,7 @@ export default function ProfileSettings() {
             setName(currentUser.name);
             setBaseName(currentUser.name);
         }
-    }, [currentUser]);
+    }, [currentUser?.uid]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
