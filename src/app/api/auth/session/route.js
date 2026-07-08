@@ -1,5 +1,5 @@
-import admin from "firebase-admin";
 import { NextResponse } from "next/server";
+import admin from "firebase-admin";
 
 function getFirebaseAdmin() {
     if (!admin.apps.length) {
@@ -18,42 +18,35 @@ function getFirebaseAdmin() {
 }
 
 const SESSION_COOKIE = "__session";
-const FOURTEEN_DAYS_MS = 14 * 24 * 60 * 60 * 1000;
-const FOURTEEN_DAYS_S  = 14 * 24 * 60 * 60;
+const THIRTY_DAYS = 30 * 24 * 60 * 60;
 
 export async function POST(request) {
     try {
         const { token } = await request.json();
 
         if (!token || typeof token !== "string") {
-            return NextResponse.json(
-                { error: "Token inválido." },
-                { status: 400 },
-            );
+            return NextResponse.json({ error: "Token inválido." }, { status: 400 });
         }
 
         const auth = getFirebaseAdmin();
 
-        // Verifica o token antes
-        const sessionCookie = await auth.createSessionCookie(token, {
-            expiresIn: FOURTEEN_DAYS_MS,
-        });
+        // Verifica se o token é legítimo antes de confiar nele
+        await auth.verifyIdToken(token);
 
+        // Armazena o próprio ID Token no cookie httpOnly
+        // O onIdTokenChanged no AuthContext renova automaticamente a cada ~1h
         const response = NextResponse.json({ ok: true });
-        response.cookies.set(SESSION_COOKIE, sessionCookie, {
+        response.cookies.set(SESSION_COOKIE, token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",
-            maxAge: FOURTEEN_DAYS_S,
+            maxAge: THIRTY_DAYS,
             path: "/",
         });
 
         return response;
     } catch {
-        return NextResponse.json(
-            { error: "Token inválido ou expirado." },
-            { status: 401 },
-        );
+        return NextResponse.json({ error: "Token inválido ou expirado." }, { status: 401 });
     }
 }
 
