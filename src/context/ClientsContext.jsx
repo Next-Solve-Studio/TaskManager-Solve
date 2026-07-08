@@ -9,6 +9,7 @@ import {
     query,
     serverTimestamp,
     updateDoc,
+    where,
 } from "firebase/firestore";
 import {
     createContext,
@@ -33,11 +34,16 @@ export const ClientsProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
+        // só busca dados da empresa que o usuário estiver logado.
+        if (!currentUser?.companyId) {
+            setClients([]);
+            setLoading(false);
+            return;
+        }
 
         const q = query(
             collection(db, "clients"),
+            where("companyId", "==", currentUser.companyId),
             orderBy("createdAt", "desc"),
         );
 
@@ -56,10 +62,12 @@ export const ClientsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser]);
+    }, [currentUser?.companyId]);
 
     const createClient = useCallback(
         async (data) => {
+            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+
             try {
                 const payload = {
                     name: data.name,
@@ -67,6 +75,7 @@ export const ClientsProvider = ({ children }) => {
                     contato: data.contato || "",
                     documento: data.documento || "", // Novo campo opcional
                     status: data.status || "active",
+                    companyId: currentUser.companyId,
                     createdBy: currentUser?.uid || "system",
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
@@ -77,6 +86,7 @@ export const ClientsProvider = ({ children }) => {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
+                    companyId: currentUser.companyId,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "create",
                     resourceType: "client",
@@ -113,6 +123,7 @@ export const ClientsProvider = ({ children }) => {
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
+                    companyId: currentUser.companyId,
                     action: "update",
                     resourceType: "client",
                     resourceId: clientId,
@@ -139,6 +150,7 @@ export const ClientsProvider = ({ children }) => {
                 await logActivity({
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
+                    companyId: currentUser.companyId,
                     userPhoto: currentUser.photo || currentUser.photoURL,
                     action: "delete",
                     resourceType: "client",

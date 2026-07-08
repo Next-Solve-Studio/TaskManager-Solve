@@ -1,20 +1,21 @@
 import { differenceInDays } from "date-fns";
 import { MdOutlineTimer } from "react-icons/md";
-import { PriorityBadge, StatusBadge } from "@/components/ui/StatusBadge";
+import { PriorityBadge, StatusBadge } from "@/components/ui/badges/StatusBadge";
+import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 import { useProjects } from "@/context/ProjectsContext";
 import { toDate } from "@/utils/DashboardUtils";
-import { DashboardHeader } from "@/components/ui/DashboardHeader/DashboardHeader";
 export default function OngoingProjects({ ongoingProjects, today }) {
     const { clientMap } = useProjects();
     return (
-        <div className="p-5 rounded-2xl bg-bg-card border border-border-main"
+        <div
+            className="p-5 rounded-2xl bg-bg-card border border-border-main"
             style={{
                 boxShadow: `
                     inset 0 0 40px rgba(0,0,0,0.06),
                     inset 0 1px 0 rgba(255,255,255,0.06),
                     0 0 10px rgba(34,211,238,0.07),
                     0 4px 20px rgba(0,0,0,0.06)
-                `
+                `,
             }}
         >
             <DashboardHeader
@@ -22,7 +23,7 @@ export default function OngoingProjects({ ongoingProjects, today }) {
                 subtitle="Status e prioridade"
                 icon={MdOutlineTimer}
                 iconColor="#22d3ee"
-            /> 
+            />
 
             <div className="flex flex-col gap-4 overflow-y-auto max-h-72 scroll-hidden p-3 pl-1">
                 {ongoingProjects.length === 0 ? (

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AppProviders from "@/context/AppProviders";
 import { useAuth } from "@/context/AuthContext";
+import LicenseGuard from "./LicenseGuard";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import Header from "@/layout/header/Header";
@@ -16,7 +17,7 @@ export default function MainLayout({ children }) {
     const { systemSettings, loading: settingsLoading } = useSettings();
     const isMobile = useIsMobile();
     const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
-        if (typeof window === "undefined") return false;
+        if (globalThis.window === undefined) return false;
         return window.innerWidth > 680;
     });
     const router = useRouter();
@@ -65,17 +66,19 @@ export default function MainLayout({ children }) {
 
     return (
         <AppProviders>
-            <div className="flex flex-col min-h-screen">
-                <Header onMenuClick={toggleSidebar} isMobile={isMobile} />
-                <div className="flex">
-                    <SideMenu
-                        isOpen={isSidebarOpen}
-                        onToggle={toggleSidebar}
-                        isMobile={isMobile}
-                    />
-                    <main className="w-full px-10">{children}</main>
+            <LicenseGuard>
+                <div className="flex flex-col min-h-screen">
+                    <Header onMenuClick={toggleSidebar} isMobile={isMobile} />
+                    <div className="flex">
+                        <SideMenu
+                            isOpen={isSidebarOpen}
+                            onToggle={toggleSidebar}
+                            isMobile={isMobile}
+                        />
+                        <main className="w-full px-10">{children}</main>
+                    </div>
                 </div>
-            </div>
+            </LicenseGuard>
         </AppProviders>
     );
 }

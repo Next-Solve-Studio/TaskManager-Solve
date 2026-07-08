@@ -14,10 +14,12 @@ import { MdHistory, MdNotificationsNone } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { db } from "@/lib/firebaseConfig";
 import { cleanOldLogs, getActivityMessage } from "@/utils/ActivityLogger";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ActivityFeed() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { currentUser } = useAuth();
 
     useEffect(() => {
         const q = query(
@@ -37,10 +39,12 @@ export default function ActivityFeed() {
         });
 
         // Limpa logs com mais de 2 dias ao carregar o feed
-        cleanOldLogs(2);
+        const LOG_RETENTION = { FREE: 7, BASIC: 15, PRO: 30, ADMIN: 3 };
+        const days = LOG_RETENTION[currentUser?.plan] ?? 7;
+        cleanOldLogs(currentUser?.companyId, days);
 
         return () => unsubscribe();
-    }, []);
+    }, [currentUser]);
 
     // Lógica de renderização condicionaal
     const renderActivityContent = () => {

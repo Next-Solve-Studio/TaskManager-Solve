@@ -4,38 +4,42 @@ import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineUser } from "react-icons/ai";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaBuilding, FaArrowLeft } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
-import GoogleLoginBtn from "./GoogleLoginBtn";
+import { muiDark } from "@/styles/StyleInputs";
+import PlanSelector from "./PlanSelector";
 
-// Schema de validação com Yup
 const schema = yup
     .object({
+        companyName: yup
+            .string()
+            .min(3, "Mínimo 3 caracteres")
+            .required("Obrigatório"),
+        cnpj: yup.string().optional(),
+        endereco: yup.string().optional(),
         name: yup
             .string()
-            .min(3, "O nome deve ter pelo menos 3 caracteres")
-            .required("O  nome é obrigatório"),
-        email: yup
-            .string()
-            .email("E-mail inválido")
-            .required("O e-mail é obrigatório"),
+            .min(3, "Mínimo 3 caracteres")
+            .required("Obrigatório"),
+        email: yup.string().email("E-mail inválido").required("Obrigatório"),
         password: yup
             .string()
-            .min(6, "A senha deve ter pelo 6 caracteres")
-            .required("A senha é obrigatória"),
+            .min(6, "Mínimo 6 caracteres")
+            .required("Obrigatório"),
     })
     .required();
 
-export default function RegisterForm({ setHaveAccount }) {
-    const { register: registerUser } = useAuth();
+export default function RegisterForm({ setHaveAccount, onStepChange  }) {
+    const { registerCompany } = useAuth();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
+    const [step, setStep] = useState(1); // 1 = selecionar plano, 2 = dados
+    const [selectedPlan, setSelectedPlan] = useState("FREE");
 
-    //Configuração do React hook form
     const {
         register,
         handleSubmit,
@@ -44,163 +48,165 @@ export default function RegisterForm({ setHaveAccount }) {
         resolver: yupResolver(schema),
     });
 
-    async function onSubmit(data) {
-        if (!data.name || !data.email || !data.password) {
-            toast.warning("Preencha todos os campos !");
-            return;
-        }
-        setLoading(true);
+    const changeStep = (n) => {
+        setStep(n);
+        onStepChange?.(n);
+    };
 
+    async function onSubmit(data) {
+        setLoading(true);
         try {
-            await registerUser(data.name, data.email, data.password);
-            toast.success("Conta criada com sucesso!", {
-                description: "Bem-vindo! Você já está logado.",
+            await registerCompany(
+                data.companyName,
+                data.name,
+                data.email,
+                data.password,
+                selectedPlan,
+                data.cnpj || "",
+                data.endereco || "",
+            );
+            toast.success("Empresa cadastrada com sucesso!", {
+                description: "Bem-vindo ao TaskManager!",
             });
         } catch (error) {
-            const messages = {
-                "auth/email-already-in-use": "Este e-mail já está cadastrado.",
-                "auth/weak-password":
-                    "A senha deve ter pelo menos 6 caracteres.",
-                "auth/invalid-email": "E-mail inválido.",
-            };
-
-            toast.error("Erro ao criar conta", {
-                description:
-                    messages[error.code] ?? "Tente novamente mais tarde.",
-            });
+            toast.error("Erro ao cadastrar. Tente novamente.");
+            console.error(error);
         } finally {
             setLoading(false);
         }
     }
 
-    const fieldSx = {
-        width: "100%",
-        "& .MuiOutlinedInput-root": {
-            borderRadius: "12px",
-            color: "var(--text-primary)",
-            backgroundColor: "var(--bg-surface)",
-            fontSize: "0.95rem",
-            transition: "box-shadow 0.2s ease",
-            "& fieldset": {
-                borderColor: "var(--border-main2)",
-                transition: "border-color 0.2s ease",
-            },
-            "&:hover fieldset": { borderColor: "var(--color-brand-500)" },
-            "&.Mui-focused fieldset": {
-                borderColor: "var(--color-brand-500)",
-                borderWidth: "1.5px",
-            },
-            "&.Mui-focused": {
-                boxShadow: "0 0 0 3px rgba(26, 215, 111, 0.12)",
-            },
-        },
-        "& .MuiInputLabel-root": {
-            color: "var(--text-muted)",
-            fontSize: "0.9rem",
-        },
-        "& .MuiInputLabel-root.Mui-focused": {
-            color: "var(--color-brand-500)",
-        },
-        "& .MuiFormHelperText-root": {
-            fontSize: "0.78rem",
-            marginLeft: "4px",
-        },
-        "& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active":
-            {
-                transition: "background-color 50000s ease-in-out 0s",
-                WebkitTextFillColor: "var(--text-primary) !important",
-                caretColor: "var(--text-primary)",
-            },
-    };
+    // STEP 1 — Seleção de plano
+    if (step === 1) {
+        return (
+            <div className="flex flex-col gap-6 w-full">
+                <div className="w-full">
+                <PlanSelector
+                    selected={selectedPlan}
+                    onSelect={setSelectedPlan}
+                />
 
-    return (
-        <div className="flex flex-col gap-8 w-full">
-            {/* Header */}
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3 mb-1">
-                    <div
-                        className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-400 to-brand-500
-                                    flex items-center justify-center
-                                    shadow-[0_0_20px_rgba(34,211,238,0.35)]"
+                <div className="flex flex-col gap-3">
+                    <button
+                        type="button"
+                        onClick={() => changeStep(2)}
+                        className="h-12 w-full max-w-85 mx-auto rounded-xl font-bold text-base tracking-wide text-white 
+                       bg-linear-to-r bg-brand-600 hover:bg-brand-700 
+                       shadow-[0_4px_24px_rgba(26,215,111,0.25)] cursor-pointer transition-all duration-150 text-shadow-lg"
                     >
-                        <AiOutlineUser size={18} color="white" />
+                        Continuar com{" "}
+                        {selectedPlan === "FREE"
+                            ? "Trial Grátis"
+                            : `Plano ${selectedPlan}`}
+                    </button>
+
+                    <button
+                        type="button"
+                        className="text-sm text-text-muted w-full max-w-45 mx-auto hover:text-brand-500 transition-colors duration-150 text-center cursor-pointer"
+                        onClick={() => setHaveAccount(true)}
+                    >
+                        Já tem uma conta?{" "}
+                        <span className="text-brand-500 font-semibold underline underline-offset-2 ">
+                            Entrar
+                        </span>
+                    </button>
+                </div>
+                </div>
+            </div>
+        );
+    }
+
+    // STEP 2 — Dados da empresa
+    return (
+        <div className="flex flex-col gap-6 w-full">
+            <div className="flex flex-col gap-2">
+                <button
+                    type="button"
+                    onClick={() => changeStep(1)}
+                    className="flex items-center gap-2 text-xs text-text-muted hover:text-brand-500 transition-colors w-fit cursor-pointer"
+                >
+                    <FaArrowLeft size={10} />
+                    Voltar — Plano {selectedPlan}
+                </button>
+
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-linear-to-br from-cyan-400 to-brand-500 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.35)]">
+                        <FaBuilding size={18} color="white" />
                     </div>
                     <span className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-400">
-                        Novo cadastro
+                        Nova Empresa
                     </span>
                 </div>
-                <h2 className="text-3xl font-black tracking-tight text-text-primary">
-                    Crie sua conta
+                <h2 className="text-2xl font-black tracking-tight text-text-primary">
+                    Dados da Empresa
                 </h2>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                    Preencha os dados abaixo para começar
-                </p>
             </div>
 
-            {/* Form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col gap-5"
+                className="flex flex-col gap-4"
             >
-                {/* Google login */}
-                <GoogleLoginBtn />
-
-                <div className="flex items-center gap-3 my-1">
-                    <div className="flex-1 h-px bg-border-main2" />
-                    <span className="text-xs font-medium text-text-muted uppercase tracking-widest px-1">
-                        ou
-                    </span>
-                    <div className="flex-1 h-px bg-border-main2" />
-                </div>
-
-                {/* Name field */}
+                <TextField
+                    {...register("companyName")}
+                    label="Nome da Empresa"
+                    variant="outlined"
+                    error={!!errors.companyName}
+                    helperText={errors.companyName?.message}
+                    sx={muiDark}
+                    slotProps={{
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <FaBuilding
+                                        color="var(--color-brand-500)"
+                                        size={19}
+                                    />
+                                </InputAdornment>
+                            ),
+                        },
+                    }}
+                />
                 <TextField
                     {...register("name")}
-                    label="Nome completo"
+                    label="Seu Nome (Administrador)"
                     variant="outlined"
                     error={!!errors.name}
                     helperText={errors.name?.message}
-                    sx={fieldSx}
-                    autoComplete="off"
+                    sx={muiDark}
                     slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <AiOutlineUser
-                                            color="var(--color-brand-500)"
-                                            size={19}
-                                        />
-                                    </InputAdornment>
-                                ),
-                            }
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <AiOutlineUser
+                                        color="var(--color-brand-500)"
+                                        size={19}
+                                    />
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                 />
-
-                {/* Email field */}
                 <TextField
                     {...register("email")}
-                    label="E-mail"
+                    label="E-mail Corporativo"
                     variant="outlined"
-                    type="email"
                     error={!!errors.email}
                     helperText={errors.email?.message}
-                    sx={fieldSx}
+                    sx={muiDark}
                     slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <MdOutlineEmail
-                                            color="var(--color-brand-500)"
-                                            size={19}
-                                        />
-                                    </InputAdornment>
-                                ),
-                            }
+                        input: {
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <MdOutlineEmail
+                                        color="var(--color-brand-500)"
+                                        size={19}
+                                    />
+                                </InputAdornment>
+                            ),
+                        },
                     }}
                 />
-
-                {/* Password field */}
-                <div className="flex w-full relative items-center">
+                <div className="relative flex items-center">
                     <TextField
                         {...register("password")}
                         label="Senha"
@@ -208,7 +214,8 @@ export default function RegisterForm({ setHaveAccount }) {
                         type={seePassword ? "text" : "password"}
                         error={!!errors.password}
                         helperText={errors.password?.message}
-                        sx={fieldSx}
+                        sx={muiDark}
+                        className="w-full"
                         slotProps={{
                             input: {
                                 startAdornment: (
@@ -219,13 +226,12 @@ export default function RegisterForm({ setHaveAccount }) {
                                         />
                                     </InputAdornment>
                                 ),
-                            }
+                            },
                         }}
-                        className="w-full"
                     />
                     <button
                         type="button"
-                        className="absolute right-3 text-text-muted hover:text-brand-500 transition-colors duration-150"
+                        className="absolute right-3 text-text-muted hover:text-brand-500"
                         onClick={() => setSeePassword(!seePassword)}
                     >
                         {seePassword ? (
@@ -235,45 +241,30 @@ export default function RegisterForm({ setHaveAccount }) {
                         )}
                     </button>
                 </div>
+                <TextField
+                    {...register("cnpj")}
+                    label="CNPJ (Opcional)"
+                    variant="outlined"
+                    sx={muiDark}
+                />
+                <TextField
+                    {...register("endereco")}
+                    label="Endereço (Opcional)"
+                    variant="outlined"
+                    sx={muiDark}
+                />
 
-                {/* Toggle login */}
-                <button
-                    type="button"
-                    className="text-sm text-text-muted hover:text-brand-500 transition-colors duration-150
-                               text-left cursor-pointer"
-                    onClick={() => setHaveAccount(true)}
-                >
-                    Já tem uma conta?{" "}
-                    <span className="text-brand-500 font-semibold underline underline-offset-2">
-                        Entrar agora
-                    </span>
-                </button>
-
-                {/* Submit button */}
                 <button
                     type="submit"
                     disabled={loading}
-                    className="
-                        relative overflow-hidden mt-2
-                        h-12 w-full rounded-xl
-                        font-bold text-base tracking-wide text-white
-                        bg-linear-to-r from-brand-600 to-brand-500
-                        shadow-[0_4px_24px_rgba(26,215,111,0.35)]
-                        sm:hover:shadow-[0_5px_28px_rgba(26,215,111,0.5)]
-                        sm:hover:brightness-100
-                        disabled:opacity-50 disabled:cursor-not-allowed
-                        active:scale-[0.98] transition-all duration-200
-                        cursor-pointer
-                    "
+                    className="h-12 w-full rounded-xl font-bold text-base tracking-wide text-white
+                     bg-linear-to-r from-brand-600 to-brand-500
+                     shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer"
                 >
-                    <span
-                        className="absolute inset-0 bg-linear-to-r from-white/0 via-white/10 to-white/0
-                                     -translate-x-full  sm:hover:translate-x-full transition-transform duration-700"
-                    />
                     {loading ? (
                         <CircularProgress size={22} color="inherit" />
                     ) : (
-                        "Criar conta"
+                        "Cadastrar Empresa"
                     )}
                 </button>
             </form>

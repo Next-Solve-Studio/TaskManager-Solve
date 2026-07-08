@@ -92,7 +92,7 @@ export default function UserEditModal({ open, onClose, user }) {
                             justifyContent: "center",
                         }}
                     >
-                        <MdEdit className={`text-cyan-400 text-[17px]`} />
+                        <MdEdit className={`text-brand-500 text-[17px]`} />
                     </div>
                     <span className="text-text-primary font-bold text-base">
                         Editar Cargo
@@ -219,8 +219,8 @@ export default function UserEditModal({ open, onClose, user }) {
                     style={{
                         background:
                             changed && !loading
-                                ? "linear-gradient(135deg, #22d3ee, #06b6d4)"
-                                : "rgba(34,211,238,0.2)",
+                                ? "linear-gradient(135deg, var(--color-brand-500), var(--color-brand-600))"
+                                : "var(--color-brand-500)",
                         border: "none",
                         borderRadius: 8,
                         color: changed ? "#000" : "#6b7280",
@@ -233,13 +233,13 @@ export default function UserEditModal({ open, onClose, user }) {
                         gap: 6,
                         boxShadow:
                             changed && !loading
-                                ? "0 4px 14px rgba(34,211,238,0.3)"
+                                ? "0 4px 14px var(--color-surface-green-alt)"
                                 : "none",
                         transition: "all 0.2s",
                     }}
                 >
                     {loading && (
-                        <CircularProgress size={13} style={{ color: "#000" }} />
+                        <CircularProgress size={13} style={{ color: "#fff" }} />
                     )}
                     Salvar Cargo
                 </button>

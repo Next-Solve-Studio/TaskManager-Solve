@@ -70,7 +70,11 @@ export const ScheduleProvider = ({ children }) => {
 
     useEffect(() => {
         // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
+        if (!currentUser?.companyId) {
+            setSchedules([]);             // Corrigido
+            setLoadingSchedules(false);
+            return;
+        }
 
         setLoadingSchedules(true);
 
@@ -81,6 +85,7 @@ export const ScheduleProvider = ({ children }) => {
             q = query(
                 collection(db, "schedules"),
                 where("weekKey", "==", weekKey),
+                where("companyId", "==", currentUser.companyId),
                 orderBy("userName", "asc"),
             );
         } else {
@@ -93,6 +98,7 @@ export const ScheduleProvider = ({ children }) => {
                 collection(db, "schedules"),
                 where("weekKey", "==", weekKey),
                 where("userId", "==", effectiveUserId),
+                where("companyId", "==", currentUser.companyId),
             );
         }
 
@@ -112,12 +118,13 @@ export const ScheduleProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser?.uid, weekKey, filterUserId]);
+    }, [currentUser?.uid, weekKey, filterUserId, currentUser?.companyId]);
 
     // callback para memorizar a função para que não seja recriada em toda renderização
     const saveDay = useCallback(
         async (dayKey, description, targetUserId) => {
             if (!currentUser?.uid) return;
+            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
 
             // se for passado targetUserId (ex: um admin editando agenda de outro), usa ele; senão usa o próprio
             const uid = targetUserId || currentUser.uid;
@@ -156,6 +163,7 @@ export const ScheduleProvider = ({ children }) => {
                     userId: currentUser.uid,
                     userName: currentUser.name || currentUser.displayName,
                     userPhoto: currentUser.photo || currentUser.photoURL,
+                    companyId: currentUser.companyId,
                     action: "update",
                     resourceType: "schedule",
                     resourceId: docId,

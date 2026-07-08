@@ -1,11 +1,11 @@
 "use client"
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
@@ -24,12 +24,13 @@ export const useCompany = () => {
 
 export const CompanyProvider = ({children}) => {
 
-    const { currentCompany } = useAuth();
+    const { currentUser } = useAuth();
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!currentCompany?.id) {
+        // Agora buscamos a empresa baseada no companyId do usuário logado
+        if (!currentUser?.companyId) {
             setCompany(null);
             setLoading(false);
             return;
@@ -37,7 +38,7 @@ export const CompanyProvider = ({children}) => {
 
         const loadCompany = async () => {
             try {
-                const companyDoc = await getDoc(doc(db, "companies", currentCompany.id));
+                const companyDoc = await getDoc(doc(db, "companies", currentUser.companyId));
                 if (companyDoc.exists()) {
                     setCompany({ id: companyDoc.id, ...companyDoc.data() });
                 }
@@ -49,14 +50,14 @@ export const CompanyProvider = ({children}) => {
         };
 
         loadCompany();
-    }, [currentCompany?.id]);
+    }, [currentUser?.companyId]);
 
     const updateCompany = useCallback(
         async (data) => {
-            if (!currentCompany?.id) return;
+            if (!currentUser?.companyId) return;
 
             try {
-                await updateDoc(doc(db, "companies", currentCompany.id), {
+                await updateDoc(doc(db, "companies", currentUser.companyId), {
                     ...data,
                     updatedAt: new Date(),
                 });
@@ -71,7 +72,7 @@ export const CompanyProvider = ({children}) => {
                 throw error;
             }
         },
-        [currentCompany?.id]
+        [currentUser?.companyId]
     );
 
     const value = useMemo(

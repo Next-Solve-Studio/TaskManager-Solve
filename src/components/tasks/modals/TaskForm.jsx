@@ -24,8 +24,8 @@ import {
     MdOutlineTaskAlt,
 } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { SelectController } from "@/components/ui/SelectController";
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 

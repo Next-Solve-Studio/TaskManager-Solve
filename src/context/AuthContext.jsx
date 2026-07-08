@@ -1,16 +1,21 @@
 // AuthContext.jsx
 "use client";
 
-import { serialize } from "cookie";
 import {
     createUserWithEmailAndPassword,
-    onAuthStateChanged,
+    GoogleAuthProvider,
+    onIdTokenChanged,
     signInWithEmailAndPassword,
     signInWithPopup,
-    GoogleAuthProvider,
     signOut,
 } from "firebase/auth";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import {
+    collection,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
+} from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -39,19 +44,16 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const router = useAppRouter(); // Inicia o hook de roteamento para que possamos usá-lo para redirecionar o usuário
 
-    const setSessionCookie = useCallback((token) => {
-        const cookieOptions = {
-            maxAge: 30 * 24 * 60 * 60, //30 dias de duração do cookie
-            path: "/", // o cookie é válido para o dommínio
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-        };
-        // biome-ignore lint/suspicious/noDocumentCookie: <>
-        document.cookie = serialize(
-            "__session",
-            token || "",
-            token ? cookieOptions : { ...cookieOptions, maxAge: -1 },
-        );
+    const setSessionCookie = useCallback(async (token) => {
+        if (token) {
+            await fetch("/api/auth/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token }),
+            });
+        } else {
+            await fetch("/api/auth/session", { method: "DELETE" });
+        }
     }, []);
 
     // indica que o login acabou de acontecer nesta sessão, Usamos ref para não causar re-render e evitar loop
@@ -68,42 +70,39 @@ export const AuthProvider = ({ children }) => {
         if (!lastSeenAt) return true;
         const last = lastSeenAt?.toDate?.() ?? new Date(lastSeenAt);
         return Date.now() - last.getTime() > ONE_HOUR;
-    })
+    });
 
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-            // o OnAuth... fica observando o estado de autenticação, retorna uma função unsubscribe
+        const unsubscribe = onIdTokenChanged(auth, async (user) => {
             if (user) {
                 const token = await user.getIdToken();
-                setSessionCookie(token);
+                await setSessionCookie(token);
 
-                // Busca dados do usuários
                 let userData;
                 if (pendingUserData.current) {
                     userData = pendingUserData.current;
                     pendingUserData.current = null;
                 } else {
-                    const userRef = doc(db, "users", user.uid)
+                    const userRef = doc(db, "users", user.uid);
                     const userDoc = await getDoc(doc(db, "users", user.uid));
                     userData = userDoc.exists() ? userDoc.data() : {};
 
                     if (shouldUpdateLastSeen(userData.lastSeenAt)) {
-                        const now = new Date()
-                        await updateDoc(userRef, {lastSeenAt: now})
-                        userData.lastSeenAt = now
+                        const now = new Date();
+                        await updateDoc(userRef, { lastSeenAt: now });
+                        userData.lastSeenAt = now;
                     }
                 }
 
-                setCurrentUser({ ...user, ...userData }); // atualiza o estado com a informação recebida do firebase
+                setCurrentUser({ ...user, ...userData });
 
-                // Isso garante que o currentUser já está populado antes do redirect,
                 if (justLoggedIn.current) {
                     justLoggedIn.current = false;
                     router.goHome();
                 }
             } else {
-                setSessionCookie(null);
+                await setSessionCookie(null);
                 setCurrentUser(null);
             }
 
@@ -112,109 +111,170 @@ export const AuthProvider = ({ children }) => {
         return unsubscribe; //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
     }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
-    /**
-     * Verifica se o usuário é o primeiro cadastrado no Firestore.
-     * Retorna true se a coleção 'users' estiver vazia.
-     */
-    const isFirstUser = async () => {
-        const snapshot = await getDocs(collection(db, "users"));
-        return snapshot.empty;
-    };
-
-    /**
-     * Cria/atualiza o documento do usuário no Firestore após autenticação.
-     * Se for um novo usuário, define o papel como "administrador" se for o primeiro,
-     * caso contrário "desenvolvedor". Para logins subsequentes, apenas atualiza o lastLoginAt.
-     */
-    const handleUserDocument = async (user, extraData = {}) => {
-        const userRef = doc(db, "users", user.uid);
-        const userSnap = await getDoc(userRef);
-        const now = new Date();
-
-        if (userSnap.exists()) {
-            // Atualiza último login
-            await updateDoc(userRef, {
-                lastLoginAt: now,
-                lastSeenAt: now,
-            });
-            return userSnap.data();
-
-        } else {
-
-            const first = await isFirstUser();
-            const userData = {
-                name: user.displayName || extraData.name || "",
-                email: user.email,
-                role: first ? "administrador" : "desenvolvedor",
-                photo: user.photoURL || null,
-                createdAt: now,
-                lastLoginAt: now,
-                lastSeenAt: now,
-                authMethod: extraData.authMethod || "email",
-            };
-                await setDoc(userRef, userData);
-                return userData;
-        }
-    };
-
     const loginWithEmail = useCallback(async (email, password) => {
-        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
         justLoggedIn.current = true;
 
-        // Recebe email e password, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-        // Salva o último login
-        await updateDoc(doc(db, "users", userCredential.user.uid), {
-            lastLoginAt: new Date(),
-            lastSeenAt: new Date(),
-        })
-    });
-
-    //Login Google
-    const loginWithGoogle = useCallback(async() => {
-        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
-        justLoggedIn.current = true;
-
-        const provider = new GoogleAuthProvider();
-        // Recebe provider, chama a função do firebase, e se for bem-sucedido, redireciona para o home
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        // Salva dados pendentes para o onAuthStateChanged usar (evita leitura extra)
-        const userData = await handleUserDocument(user, { authMethod: "google" });
-        pendingUserData.current = userData;
-    })
-
-    const register = useCallback(async (name, email, password) => {
-        // dados do novo user
-        const userData = {
-            name: name.trim(),
-            email,
-            role: "desenvolvedor",
-            createdAt: new Date(),
-            lastLoginAt: new Date(),
-            lastSeenAt: new Date(),
-            authMethod: "email",
-        };
-
-        // Cria o documento do usuário na coleção users do firestore
-        // Salva em memória ANTES do setDoc — onAuthStateChanged vai consumir isso
-        pendingUserData.current = userData;
-        justLoggedIn.current = true; // deixa o onAuthStateChanged fazer o redirect
-
-        // Função de registro, cria um novo usuário no Firebase Auth
-        const userCredential = await createUserWithEmailAndPassword(
+        const userCredential = await signInWithEmailAndPassword(
             auth,
             email,
             password,
         );
 
-        await setDoc(doc(db, "users", userCredential.user.uid), userData);
+        const userRef = doc(db, "users", userCredential.user.uid);
+        await updateDoc(userRef, {
+            lastLoginAt: new Date(),
+            lastSeenAt: new Date(),
+        });
+    }, []);
 
-        const token = await userCredential.user.getIdToken();
-        setSessionCookie(token);
-    });
+    //Login Google
+    const loginWithGoogle = useCallback(async () => {
+        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
+        justLoggedIn.current = true;
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            await updateDoc(userRef, {
+                lastLoginAt: new Date(),
+                lastSeenAt: new Date(),
+            });
+            pendingUserData.current = { ...data };
+        } else {
+            // Se não existir, por padrão não vinculamos a empresa no Google Login direto
+            // a menos que seja um convite, mas para SaaS simplificado, vamos exigir cadastro
+            throw new Error(
+                "Usuário não encontrado. Por favor, realize o cadastro da sua empresa.",
+            );
+        }
+    }, []);
+
+    // Função para registrar uma NOVA EMPRESA e seu primeiro Administrador
+    const registerCompany = useCallback(
+        async (
+            companyName,
+            adminName,
+            email,
+            password,
+            plan = "FREE",
+            cnpj = "",
+            endereco = "",
+        ) => {
+            justLoggedIn.current = true;
+
+            const companyRef = doc(collection(db, "companies"))
+            const companyId = companyRef.id
+            
+            //  Registrar licença na API (não bloqueia o cadastro se falhar)
+            let appKey, expiresAt
+            try {
+                const response = await fetch("/api/register-company", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        companyId,
+                        companyName,
+                        responsibleName: adminName,
+                        email,
+                        plan,
+                    }),
+                });
+
+                 if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(
+                        errorData.message ||
+                            `Erro na API: ${response.status}`
+                    );
+                }
+                const data = await response.json();
+                appKey = data.appKey;
+                expiresAt = data.expiresAt;
+
+            } catch (err) {
+                justLoggedIn.current = false;
+                console.error(
+                    "[auth] Licença não registrada (não crítico):",
+                    err,
+                );
+                throw err;
+            }
+
+            // Criar a Empresa na coleção 'companies'
+            await setDoc(companyRef, {
+                name: companyName,
+                cnpj: cnpj,
+                endereco: endereco,
+                createdAt: new Date(),
+                plan,
+                status: "active",
+                appKey,
+                licenseExpiresAt: expiresAt,
+            });
+
+            const userData = {
+                name: adminName.trim(),
+                email,
+                role: "master",
+                companyId: companyRef.id,
+                createdAt: new Date(),
+                lastLoginAt: new Date(),
+                lastSeenAt: new Date(),
+                authMethod: "email",
+            };
+
+            pendingUserData.current = userData;
+
+            //  Criar usuário no Firebase Auth
+            const userCredential = await createUserWithEmailAndPassword(
+                auth,
+                email,
+                password,
+            );
+
+            await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            await updateDoc(companyRef, { ownerId: userCredential.user.uid });
+
+            const token = await userCredential.user.getIdToken();
+            await setSessionCookie(token);
+
+        },
+        [setSessionCookie],
+    );
+
+    // Função para registrar um NOVO FUNCIONÁRIO
+    const registerEmployee = useCallback(
+        async (name, email, password, companyId, role) => {
+
+            const token = await auth.currentUser?.getIdToken();
+            if (!token) throw new Error("Usuário não autenticado.");
+
+            // Esta função geralmente sera chamada por uma API Route para não deslogar o admin atual
+            const response = await fetch("/api/registerEmployee", {
+                method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name, email, password, companyId, role }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(
+                    error.message || "Erro ao registrar funcionário",
+                );
+            }
+
+            return await response.json();
+        },
+        [],
+    );
 
     const logout = useCallback(async () => {
         try {
@@ -227,16 +287,28 @@ export const AuthProvider = ({ children }) => {
         }
     }, [setSessionCookie, router]);
 
-    const value = useMemo(()=>({
-        currentUser,
-        loading,
-        loginWithEmail,
-        loginWithGoogle,
-        register,
-        logout,
-        justLoggedIn,
-        setJustLoggedIn,
-    }),[currentUser, loginWithEmail,loading, loginWithGoogle, register, logout, setJustLoggedIn]);
+    const value = useMemo(
+        () => ({
+            currentUser,
+            loading,
+            loginWithEmail,
+            loginWithGoogle,
+            registerCompany,
+            registerEmployee,
+            logout,
+            setJustLoggedIn,
+        }),
+        [
+            currentUser,
+            loading,
+            loginWithEmail,
+            loginWithGoogle,
+            registerCompany,
+            registerEmployee,
+            logout,
+            setJustLoggedIn,
+        ],
+    );
 
     return (
         <AuthContext.Provider value={value}>

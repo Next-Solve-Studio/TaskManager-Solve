@@ -18,6 +18,7 @@ import { db } from "@/lib/firebaseConfig";
  * @param {string} activityData.userId - ID do usuário que realizou a ação
  * @param {string} activityData.userName - Nome do usuário
  * @param {string} activityData.userPhoto - Foto do usuário
+ * @param {string} activityData.companyId - ID da empresa
  * @param {'create' | 'update' | 'delete' | 'status_change'} activityData.action - Tipo de ação
  * @param {'project' | 'client' | 'user' | 'schedule'} activityData.resourceType - Tipo de recurso afetado
  * @param {string} activityData.resourceId - ID do recurso (ex: ID do projeto)
@@ -30,6 +31,7 @@ export const logActivity = async (activityData) => {
             userId,
             userName,
             userPhoto,
+            companyId,
             action,
             resourceType,
             resourceId,
@@ -37,12 +39,8 @@ export const logActivity = async (activityData) => {
             details = {},
         } = activityData;
 
-        // Validação básica
-        if (!userId || !action || !resourceType) {
-            console.error(
-                "Dados insuficientes para log de atividade:",
-                activityData,
-            );
+        if (!userId || !action || !resourceType || !companyId) {
+            console.warn("Dados insuficientes para log de atividade:", activityData);
             return;
         }
 
@@ -52,6 +50,7 @@ export const logActivity = async (activityData) => {
             userId,
             userName: userName || "Usuário desconhecido",
             userPhoto: userPhoto || null,
+            companyId,
             action,
             resourceType,
             resourceId,
@@ -69,7 +68,12 @@ export const logActivity = async (activityData) => {
  * @param {number} days - Número de dias para manter os logs (padrão 2)
  */
 
-export const cleanOldLogs = async (days = 2) => {
+export const cleanOldLogs = async (companyId, days = 2 ) => {
+    if (!companyId) {
+        console.warn('cleanOldLogs chamada sem companyId');
+        return;
+    }
+
     try {
         const logsRef = collection(db, "activity_logs");
 
@@ -79,21 +83,18 @@ export const cleanOldLogs = async (days = 2) => {
         const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
 
         // Cria a query para buscar logs anteriores à data limite
-        const q = query(logsRef, where("timestamp", "<", cutoffTimestamp));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-            return;
-        }
-
-        // Deleta cada documento encontrado
-        const deletePromises = querySnapshot.docs.map((document) =>
-            deleteDoc(doc(db, "activity_logs", document.id)),
+        const q = query(
+            logsRef,
+            where("companyId", "==", companyId),
+            where("timestamp", "<", cutoffTimestamp)
         );
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) return;
 
-        await Promise.all(deletePromises);
-        console.log(
-            `${querySnapshot.size} logs antigos (mais de ${days} dias) foram removidos.`,
+        await Promise.all(
+            querySnapshot.docs.map((document) =>
+                deleteDoc(doc(db, "activity_logs", document.id))
+            )
         );
     } catch (error) {
         console.error("Erro ao limpar logs antigos:", error);

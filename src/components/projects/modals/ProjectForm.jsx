@@ -26,12 +26,12 @@ import {
     MdOutlineRocketLaunch,
 } from "react-icons/md";
 import { RiGitBranchLine } from "react-icons/ri";
+import CanDo from "@/components/auth/CanDo";
 import { projectSchema } from "@/components/projects/schema/ProjectsConfig";
 import { Avatar } from "@/components/ui/AvatarBadge";
-import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/StatusBadge";
+import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
-import CanDo from "@/components/auth/CanDo";
 
 export function ProjectForm({
     open,
@@ -240,8 +240,13 @@ export function ProjectForm({
                     <CanDo permission="canViewFinancials">
                         <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-brand-500/5 border border-brand-500/10">
                             <div className="col-span-2 flex items-center gap-2 mb-1">
-                                <MdAttachMoney className="text-brand-500" size={18} />
-                                <span className="text-xs font-bold text-brand-500 uppercase tracking-wider">Informações Financeiras (Apenas ADM)</span>
+                                <MdAttachMoney
+                                    className="text-brand-500"
+                                    size={18}
+                                />
+                                <span className="text-xs font-bold text-brand-500 uppercase tracking-wider">
+                                    Informações Financeiras (Apenas ADM)
+                                </span>
                             </div>
                             <TextField
                                 label="Valor Total (R$)"
