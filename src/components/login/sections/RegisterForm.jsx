@@ -69,7 +69,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange  }) {
                 description: "Bem-vindo ao TaskManager!",
             });
         } catch (error) {
-            toast.error("Erro ao cadastrar. Tente novamente.");
+            toast.error(error.message || "Erro ao cadastrar. Tente novamente.");
             console.error(error);
         } finally {
             setLoading(false);
