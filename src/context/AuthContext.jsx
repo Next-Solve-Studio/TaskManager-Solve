@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
         if (!lastSeenAt) return true;
         const last = lastSeenAt?.toDate?.() ?? new Date(lastSeenAt);
         return Date.now() - last.getTime() > ONE_HOUR;
-    });
+    }, []);
 
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
@@ -112,19 +112,22 @@ export const AuthProvider = ({ children }) => {
     }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
     const loginWithEmail = useCallback(async (email, password) => {
+        try {
         justLoggedIn.current = true;
-
         const userCredential = await signInWithEmailAndPassword(
             auth,
             email,
             password,
         );
-
         const userRef = doc(db, "users", userCredential.user.uid);
         await updateDoc(userRef, {
             lastLoginAt: new Date(),
             lastSeenAt: new Date(),
         });
+    } catch (err) {
+        justLoggedIn.current = false;
+        throw err;
+    }
     }, []);
 
     //Login Google
