@@ -89,16 +89,25 @@ export const ProjectsProvider = ({ children }) => {
             return;
         }
 
-        const q = query(collection(db, "users"), where("companyId", "==", currentUser.companyId));
+        const q = query(
+            collection(db, "users"),
+            where("companyId", "==", currentUser.companyId),
+            orderBy("createdAt", "desc"),
+        );
 
-        getDocs(q)
-            .then((snapshot) => {
+        const unsubscribe = onSnapshot(
+            q,
+            (snapshot) => {
                 setUsers(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-            })
-            .catch((error) => {
+                setLoadingUsers(false);
+            },
+            (error) => {
                 console.error("Erro ao carregar usuários:", error);
-            })
-            .finally(() => setLoadingUsers(false));
+                setLoadingUsers(false);
+            }
+        );
+
+        return unsubscribe;
     }, [currentUser?.companyId]);
 
     useEffect(() => {
