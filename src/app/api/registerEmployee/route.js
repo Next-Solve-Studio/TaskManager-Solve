@@ -1,18 +1,26 @@
 import { NextResponse } from "next/server";
 import admin from "firebase-admin";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
-// Função para formatar a chave privada corretamente
+const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+const JWKS = createRemoteJWKSet(
+    new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
+);
+
+async function verifyFirebaseToken(token) {
+    const { payload } = await jwtVerify(token, JWKS, {
+        issuer: `https://securetoken.google.com/${PROJECT_ID}`,
+        audience: PROJECT_ID,
+    });
+    return { uid: payload.sub };
+}
+
 const getPrivateKey = () => {
     const key = process.env.FIREBASE_PRIVATE_KEY;
     if (!key) return undefined;
-    
-    // Substitui os \n literais por quebras de linha reais
-    // O replace duplo cobre cenários diferentes do ambiente Node
-    return key.replaceAll(String.raw`\n`, '\n').replaceAll('"', '');
-
+    return key.replaceAll(String.raw`\n`, "\n").replaceAll('"', "");
 };
 
-// Inicializa o Admin SDK com a chave mestra
 function getFirebaseAdmin() {
     if (!admin.apps.length) {
         admin.initializeApp({
@@ -31,8 +39,6 @@ function getFirebaseAdmin() {
 
 export async function POST(request) {
     try {
-        const { db, auth } = getFirebaseAdmin();
-
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
 
@@ -42,36 +48,32 @@ export async function POST(request) {
 
         let caller;
         try {
-            caller = await auth.verifyIdToken(token);
+            caller = await verifyFirebaseToken(token);
         } catch {
             return NextResponse.json({ message: "Token inválido." }, { status: 401 });
         }
 
+        const { db, auth } = getFirebaseAdmin();
         const { name, email, password, companyId, role } = await request.json();
-        
+
         if (!email || !companyId || !password) {
             return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
         }
 
-        // Busca o perfil do usuário que chamou a API
         const callerDoc = await db.collection("users").doc(caller.uid).get();
         const callerData = callerDoc.data();
 
-        // Garante que só pode criar funcionários na própria empresa
         if (!callerData || callerData.companyId !== companyId) {
             return NextResponse.json({ message: "Sem permissão para esta empresa." }, { status: 403 });
         }
 
-        // Só master pode criar usuários
         if (callerData.role !== "master") {
             return NextResponse.json({ message: "Apenas o master pode criar usuários." }, { status: 403 });
         }
 
-        // Impede que o role seja "master" via API (protege escalada de privilégio)
         const allowedRoles = ["administrador", "desenvolvedor", "lider_de_projetos"];
         const safeRole = allowedRoles.includes(role) ? role : "desenvolvedor";
 
-        //Cria o usuário no Firebase Auth — gera o UID real
         const userRecord = await auth.createUser({
             email,
             password,
@@ -93,7 +95,7 @@ export async function POST(request) {
             { message: "Usuário registrado com sucesso.", uid: userRecord.uid },
             { status: 201 }
         );
-        
+
     } catch (error) {
         console.error("Erro na API de registro:", error);
 
@@ -107,6 +109,7 @@ export async function POST(request) {
                 { status: 400 }
             );
         }
+
         return NextResponse.json({ message: "Erro interno do servidor" }, { status: 500 });
     }
 }

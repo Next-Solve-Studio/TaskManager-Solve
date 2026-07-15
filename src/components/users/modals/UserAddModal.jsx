@@ -29,7 +29,7 @@ const schema = yup.object({
 }).required();
 
 export default function UserAddModal({ open, onClose }) {
-    const { currentUser } = useAuth();
+    const { currentUser, registerEmployee } = useAuth();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
 
@@ -59,25 +59,19 @@ export default function UserAddModal({ open, onClose }) {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            const response = await fetch("/api/registerEmployee", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    ...data,
-                    companyId: currentUser.companyId,
-                }),
-            });
-
-            if (response.ok) {
-                toast.success("Usuário cadastrado com sucesso!");
-                reset();
-                onClose();
-            } else {
-                throw new Error("Erro ao cadastrar");
-            }
-        } catch (error) {
-            toast.error("Erro ao cadastrar usuário: ", error);
-            console.log("Erro ao cadastrar usuário: ", error);
+            await registerEmployee(
+                data.name,
+                data.email,
+                data.password,
+                currentUser.companyId,
+                data.role,
+            );
+            toast.success("Usuário cadastrado com sucesso!");
+            reset();
+            onClose();
+        } catch (err) {
+            toast.error(err.message || "Erro ao cadastrar usuário");
+            console.error("Erro ao cadastrar usuário:", err);
         } finally {
             setLoading(false);
         }
