@@ -22,8 +22,15 @@ export default function ActivityFeed() {
     const { currentUser } = useAuth();
 
     useEffect(() => {
+        if (!currentUser?.companyId) {
+            setActivities([]);
+            setLoading(false);
+            return;
+        }
+
         const q = query(
             collection(db, "activity_logs"),
+            where("companyId", "==", currentUser.companyId),
             orderBy("timestamp", "desc"),
             limit(10),
         );
