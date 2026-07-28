@@ -1,4 +1,6 @@
-import admin from "firebase-admin";
+import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
 const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
@@ -21,17 +23,18 @@ const getPrivateKey = () => {
 };
 
 export function getFirebaseAdmin() {
-    if (!admin.apps.length) {
-        admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: getPrivateKey(),
-            }),
-        });
-    }
+    const app = getApps().length
+        ? getApps()[0]
+        : initializeApp({
+              credential: cert({
+                  projectId: process.env.FIREBASE_PROJECT_ID,
+                  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                  privateKey: getPrivateKey(),
+              }),
+          });
+
     return {
-        db: admin.firestore(),
-        auth: admin.auth(),
+        db: getFirestore(app),
+        auth: getAuth(app),
     };
 }

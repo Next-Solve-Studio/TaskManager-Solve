@@ -2,13 +2,15 @@
 
 import { Box, Button, Switch, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
-import { MdDarkMode, MdEdit, MdLightMode } from "react-icons/md";
+import { MdDarkMode, MdDownload, MdEdit, MdLightMode } from "react-icons/md";
+import { toast } from "sonner";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import { useTheme } from "@/context/ThemeContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
+import { auth } from "@/lib/firebaseConfig";
 import { switchStyles } from "@/styles/StyleSwitch";
 
 export default function ProfileSettings() {
@@ -23,6 +25,7 @@ export default function ProfileSettings() {
     const [baseName, setBaseName] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [isExporting, setIsExporting] = useState(false)
 
     // Inicializa os estados quando o usuário for carregado
     useEffect(() => {
@@ -30,7 +33,7 @@ export default function ProfileSettings() {
             setName(currentUser.name);
             setBaseName(currentUser.name);
         }
-    }, [currentUser?.uid]);
+    }, [currentUser?.name]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -57,6 +60,46 @@ export default function ProfileSettings() {
 
     // Logica de bloqueio do botão
     const isDirty = name.trim() !== baseName;
+
+    const handleExportData = async () =>{
+        setIsExporting(true)
+        try {
+            const token = await auth.currentUser?.getIdToken()
+            
+            if (!token) throw new Error("Usuário não autenticado.")
+
+            const response = await fetch ("/api/lgpd/export-my-data", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            })
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({}));
+                throw new Error(err.message || "Erro ao exportar dados.");
+            }
+
+            const data = await response.json();
+            const blob = new Blob([JSON.stringify(data, null, 2)], {
+                type: "application/json",
+            });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            toast.success("Seus dados foram exportados com sucesso!");
+        } catch (error) {
+            console.error("Erro ao exportar dados:", error);
+            toast.error(error.message || "Erro ao exportar seus dados.");
+        } finally {
+            setIsExporting(false);
+        }
+    };
 
     return (
         <Box component="form" onSubmit={handleSubmit} className="space-y-8">
@@ -203,7 +246,56 @@ export default function ProfileSettings() {
                 >
                     {isSubmitting ? "Salvando..." : "Salvar Alterações"}
                 </Button>
+            </div> 
+
+            <div className="h-px bg-border-main w-full" />
+            <div className="space-y-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-text-muted">
+                    Privacidade e Dados (LGPD)
+                </span>
+                <div
+                    className={`p-5 bg-bg-card rounded-2xl border border-border-main flex items-center justify-between group hover:border-brand-500/30 transition-colors ${isTablet ? "flex-col gap-4" : "flex-row"}`}
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-brand-500/10 flex items-center justify-center">
+                            <MdDownload className="text-brand-500 text-xl" />
+                        </div>
+                        <div className="space-y-1">
+                            <p className="text-text-primary text-sm font-bold">
+                                Exportar meus dados
+                            </p>
+                            <p className="text-text-secondary text-xs">
+                                Baixe uma cópia de tudo que guardamos sobre
+                                você: perfil, atividades e agenda.
+                            </p>
+                        </div>
+                    </div>
+                    <Button
+                        type="button"
+                        variant="outlined"
+                        onClick={handleExportData}
+                        disabled={isExporting}
+                        startIcon={<MdDownload />}
+                        className={isMobile ? "w-full" : ""}
+                        sx={{
+                            borderColor: "var(--color-border-main)",
+                            color: "var(--color-text-primary)",
+                            textTransform: "none",
+                            borderRadius: "10px",
+                            fontWeight: 700,
+                            fontSize: "0.875rem",
+                            py: 1,
+                            px: 3,
+                            "&:hover": {
+                                borderColor: "var(--color-brand-500)",
+                            },
+                        }}
+                    >
+                        {isExporting ? "Exportando..." : "Exportar dados"}
+                    </Button>
+                </div>
             </div>
+            
         </Box>
     );
 }
