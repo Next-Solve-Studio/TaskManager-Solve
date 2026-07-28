@@ -138,43 +138,53 @@ export const exportProjectsToExcel = async (projects, fileName = "Relatório de 
             return;
         }
 
-        // Importação dinâmica do xlsx
-        const XLSX = await import("xlsx");
-
-        // Preparar dados
-        const data = projects.map((project) => ({
-            "Projeto": project.title || "—",
-            "Cliente": getClientName(project.client, clientMap),
-            "Status": project.status ? formatStatus(project.status) : "—",
-            "Prioridade": project.priority ? formatPriority(project.priority) : "—",
-            "Data Início": formatReportDate(project.startDate),
-            "Data Entrega": formatReportDate(project.expectedDeliveryDate),
-            "Valor Total": project.totalValue || 0,
-            "Valor Pago": project.paidValue || 0,
-            "Descrição": project.description || "—",
-        }));
+        // Importação dinâmica do exceljs
+        const { default: ExcelJS } = await import("exceljs");
 
         // Criar workbook
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Projetos");
+        const wb = new ExcelJS.Workbook();
+        const ws = wb.addWorksheet("Projetos");
 
-        // Ajustar largura das colunas
-        const colWidths = [
-            { wch: 25 },
-            { wch: 25 },
-            { wch: 15 },
-            { wch: 12 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 15 },
-            { wch: 40 },
+        ws.columns = [
+            { header: "Projeto", key: "projeto", width: 25 },
+            { header: "Cliente", key: "cliente", width: 25 },
+            { header: "Status", key: "status", width: 15 },
+            { header: "Prioridade", key: "prioridade", width: 12 },
+            { header: "Data Início", key: "dataInicio", width: 15 },
+            { header: "Data Entrega", key: "dataEntrega", width: 15 },
+            { header: "Valor Total", key: "valorTotal", width: 15 },
+            { header: "Valor Pago", key: "valorPago", width: 15 },
+            { header: "Descrição", key: "descricao", width: 40 },
         ];
-        ws["!cols"] = colWidths;
+
+        projects.forEach((project) => {
+            ws.addRow({
+                projeto: project.title || "—",
+                cliente: getClientName(project.client, clientMap),
+                status: project.status ? formatStatus(project.status) : "—",
+                prioridade: project.priority ? formatPriority(project.priority) : "—",
+                dataInicio: formatReportDate(project.startDate),
+                dataEntrega: formatReportDate(project.expectedDeliveryDate),
+                valorTotal: project.totalValue || 0,
+                valorPago: project.paidValue || 0,
+                descricao: project.description || "—",
+            });
+        });
 
         // Download
-        XLSX.writeFile(wb, `${fileName}.xlsx`);
+        const buffer = await wb.xlsx.writeBuffer();
+        const blob = new Blob([buffer], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${fileName}.xlsx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
         toast.success(`Relatório Excel gerado com sucesso!`);
     } catch (error) {
         console.error("Erro ao exportar Excel:", error);

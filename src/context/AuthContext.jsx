@@ -64,6 +64,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // Guarda dados do novo usuário
+    
     const pendingUserData = useRef(null);
 
     const shouldUpdateLastSeen = useCallback((lastSeenAt) => {
@@ -81,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 
                 let userData;
                 if (pendingUserData.current) {
-                    userData = pendingUserData.current;
+                    userData = await pendingUserData.current;
                     pendingUserData.current = null;
                 } else {
                     const userRef = doc(db, "users", user.uid);
@@ -147,7 +148,7 @@ export const AuthProvider = ({ children }) => {
                 lastLoginAt: new Date(),
                 lastSeenAt: new Date(),
             });
-            pendingUserData.current = { ...data };
+            pendingUserData.current = Promise.resolve({ ...data });
         } else {
             // Se não existir, por padrão não vinculamos a empresa no Google Login direto
             // a menos que seja um convite, mas para SaaS simplificado, vamos exigir cadastro
@@ -231,7 +232,10 @@ export const AuthProvider = ({ children }) => {
                 authMethod: "email",
             };
 
-            pendingUserData.current = userData;
+            let resolvePendingUserData;
+            pendingUserData.current = new Promise((resolve) => {
+                resolvePendingUserData = resolve;
+            });
 
             //  Criar usuário no Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(
@@ -242,6 +246,8 @@ export const AuthProvider = ({ children }) => {
 
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             await updateDoc(companyRef, { ownerId: userCredential.user.uid });
+
+            resolvePendingUserData(userData);
 
             const token = await userCredential.user.getIdToken();
             await setSessionCookie(token);
