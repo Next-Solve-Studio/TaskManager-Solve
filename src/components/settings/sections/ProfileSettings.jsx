@@ -52,7 +52,7 @@ export default function ProfileSettings() {
             setBaseName(name.trim());
         } catch (error) {
             toast.error("Erro ao atualizar perfil:", error)
-            console.error("Erro ao atualizar perfil:", erro)
+            console.error("Erro ao atualizar perfil:", error)
         } finally {
             setIsSubmitting(false);
         }
