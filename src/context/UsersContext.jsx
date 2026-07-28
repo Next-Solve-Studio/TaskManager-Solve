@@ -1,7 +1,6 @@
 "use client";
 import {
     collection,
-    deleteDoc,
     doc,
     onSnapshot,
     orderBy,
@@ -19,7 +18,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 
 const UsersContext = createContext(); // Contexto criado
 
@@ -67,8 +66,23 @@ export const UsersProvider = ({ children }) => {
         await updateDoc(doc(db, "users", userId), { role: newRole }); // localiza o documento e aplica o novo cargo
     }, []);
 
-    const deleteUser = useCallback(async (userId) => {
-        await deleteDoc(doc(db, "users", userId)); // remove o doc com o ID fornecido
+     const deleteUser = useCallback(async (userId) => {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Usuário não autenticado.");
+
+        const response = await fetch("/api/deleteEmployee", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ userId }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Erro ao excluir usuário");
+        }
     }, []);
 
     const value = useMemo(()=>({
