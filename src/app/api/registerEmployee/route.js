@@ -71,6 +71,37 @@ export async function POST(request) {
             return NextResponse.json({ message: "Apenas o master pode criar usuários." }, { status: 403 });
         }
 
+        const companyDoc = await db.collection("companies").doc(companyId).get();
+        const companyData = companyDoc.data();
+
+        if (!companyDoc.exists || companyData.status !== "active") {
+            return NextResponse.json(
+                { message: "Licença inativa ou expirada. Regularize o plano para adicionar usuários." },
+                { status: 403 }
+            );
+        }
+
+        // Ajuste os limites reais de cada plano aqui
+        const PLAN_USER_LIMITS = {
+            FREE: 3,
+            BASIC: 10,
+            PRO: 30,
+            ENTERPRISE: Infinity,
+        };
+        const userLimit = PLAN_USER_LIMITS[companyData.plan] ?? PLAN_USER_LIMITS.FREE;
+
+        const existingUsersSnap = await db
+            .collection("users")
+            .where("companyId", "==", companyId)
+            .get();
+
+        if (existingUsersSnap.size >= userLimit) {
+            return NextResponse.json(
+                { message: `Limite de usuários do plano ${companyData.plan} atingido (${userLimit}).` },
+                { status: 403 }
+            );
+        }
+
         const allowedRoles = ["administrador", "desenvolvedor", "lider_de_projetos"];
         const safeRole = allowedRoles.includes(role) ? role : "desenvolvedor";
 
