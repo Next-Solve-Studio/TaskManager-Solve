@@ -175,7 +175,7 @@ export const AuthProvider = ({ children }) => {
             const companyId = companyRef.id
             
             //  Registrar licença na API (não bloqueia o cadastro se falhar)
-            let appKey, expiresAt
+            let appKey, expiresAt, confirmedPlan;
             try {
                 const response = await fetch("/api/register-company", {
                     method: "POST",
@@ -199,6 +199,7 @@ export const AuthProvider = ({ children }) => {
                 const data = await response.json();
                 appKey = data.appKey;
                 expiresAt = data.expiresAt;
+                confirmedPlan = data.plan || "FREE";
 
             } catch (err) {
                 justLoggedIn.current = false;
@@ -215,7 +216,7 @@ export const AuthProvider = ({ children }) => {
                 cnpj: cnpj,
                 endereco: endereco,
                 createdAt: new Date(),
-                plan,
+                plan: confirmedPlan,
                 status: "active",
                 appKey,
                 licenseExpiresAt: expiresAt,
