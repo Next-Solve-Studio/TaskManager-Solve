@@ -4,6 +4,7 @@ import {
     collection,
     deleteDoc,
     doc,
+    getDocs,
     onSnapshot,
     orderBy,
     query,
@@ -11,6 +12,7 @@ import {
     updateDoc,
     where,
 } from "firebase/firestore";
+
 import {
     createContext,
     useCallback,
@@ -140,11 +142,23 @@ export const ClientsProvider = ({ children }) => {
         [currentUser],
     );
 
-    const deleteClient = useCallback(
+        const deleteClient = useCallback(
         async (client) => {
             try {
                 const clientId = client.id;
                 await deleteDoc(doc(db, "clients", clientId));
+
+                // Remove logs de atividade que referenciam este cliente (LGPD)
+                const logsQuery = query(
+                    collection(db, "activity_logs"),
+                    where("companyId", "==", currentUser.companyId),
+                    where("resourceType", "==", "client"),
+                    where("resourceId", "==", clientId),
+                );
+                const logsSnap = await getDocs(logsQuery);
+                await Promise.all(
+                    logsSnap.docs.map((logDoc) => deleteDoc(logDoc.ref)),
+                );
 
                 // Log de Atividade
                 await logActivity({
