@@ -48,5 +48,8 @@
         "core-js@3.49.0": true,
         "protobufjs@7.6.5": true,
         "sharp@0.34.5": true
+    },
+    "overrides": {
+        "jose": "4.15.9"
     }
 }
