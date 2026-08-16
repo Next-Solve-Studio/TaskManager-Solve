@@ -135,7 +135,7 @@ export const ScheduleProvider = ({ children }) => {
 
             try {
                 // cria o doc se não existir, ou atualiza os campos fornecidos
-                await setDoc(
+                 await setDoc(
                     docRef,
                     {
                         userId: uid,
@@ -143,6 +143,7 @@ export const ScheduleProvider = ({ children }) => {
                             currentUser.name ||
                             currentUser.displayName ||
                             "Usuário",
+                        companyId: currentUser.companyId,
                         weekKey,
                         weekStart: weekStart,
                     },
