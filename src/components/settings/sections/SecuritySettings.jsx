@@ -137,16 +137,34 @@ export default function SecuritySettings() {
                     startIcon={<MdLock />}
                     className={`${isMobile ? "w-full" : ""} shadow-lg shadow-brand-500/20`}
                     sx={{
-                        backgroundColor: "var(--color-brand-500)",
-                        "&:hover": {
-                            backgroundColor: "var(--color-brand-600)",
-                        },
-                        textTransform: "none",
+                        height: "44px",
+                        px: 3,
                         borderRadius: "12px",
                         fontWeight: 700,
-                        color: "black",
-                        py: 1.5,
-                        px: 4,
+                        fontSize: "0.875rem",
+                        textTransform: "none",
+                        color: "white",
+                        background: "linear-gradient(to right, var(--color-brand-700), var(--color-brand-600))",
+                        boxShadow: "0 4px 20px rgba(26, 215, 111, 0.3)",
+                        transition: "all 150ms ease-in-out",
+                        cursor: "pointer",
+                        "&:hover": {
+                            background: "linear-gradient(to right, var(--color-brand-700), var(--color-brand-600))",
+                            transform: "translateY(-2px)",
+                            boxShadow: "0 6px 24px rgba(26, 215, 111, 0.4)",
+                        },
+
+                        "&:active": {
+                            transform: "scale(0.97)",
+                        },
+
+                        "&.Mui-disabled": {
+                            opacity: 0.5,
+                            color: "white",
+                            cursor: "not-allowed",
+                            pointerEvents: "auto",
+                            boxShadow: "none", 
+                        }
                     }}
                 >
                     {isSubmitting ? "Alterando..." : "Alterar Senha"}
