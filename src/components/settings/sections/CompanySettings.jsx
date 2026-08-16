@@ -93,7 +93,7 @@ export default function CompanySettings() {
                     type="submit"
                     variant="contained"
                     disabled={isSubmitting || !isDirty}
-                    startIcon={<MdEdit className="text-white" />}
+                    startIcon={<MdEdit className="text-brand-500" />}
                     className={`${isMobile ? "w-full" : ""} shadow-lg shadow-brand-500/20`}
                     sx={{
                         backgroundColor: "var(--color-brand-500)",

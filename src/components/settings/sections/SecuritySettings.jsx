@@ -78,7 +78,7 @@ export default function SecuritySettings() {
             <div className="space-y-1.5">
                 <label
                     htmlFor="currentPassword"
-                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                    className="text-xs font-bold uppercase tracking-wider text-font-gray2 ml-1"
                 >
                     Senha Atual
                 </label>
@@ -96,7 +96,7 @@ export default function SecuritySettings() {
             <div className="space-y-1.5">
                 <label
                     htmlFor="newPassword"
-                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                    className="text-xs font-bold uppercase tracking-wider text-font-gray2 ml-1"
                 >
                     Nova Senha
                 </label>
@@ -114,7 +114,7 @@ export default function SecuritySettings() {
             <div className="space-y-1.5">
                 <label
                     htmlFor="confirmPassword"
-                    className="text-xs font-bold uppercase tracking-wider text-white/30 ml-1"
+                    className="text-xs font-bold uppercase tracking-wider text-font-gray2 ml-1"
                 >
                     Confirmar Nova Senha
                 </label>
