@@ -89,7 +89,7 @@ export default function ProfileSettings() {
             link.download = `meus-dados-${new Date().toISOString().slice(0, 10)}.json`;
             document.body.appendChild(link);
             link.click();
-            document.body.removeChild(link);
+            link.remove();
             URL.revokeObjectURL(url);
 
             toast.success("Seus dados foram exportados com sucesso!");

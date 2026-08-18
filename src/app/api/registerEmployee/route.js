@@ -32,7 +32,13 @@ export async function POST(request) {
         }
 
         if (callerData.role !== "master") {
-            return NextResponse.json({ message: "Apenas o master pode criar usuários." }, { status: 403 });
+            const permsDoc = await db.collection("role_permissions").doc(companyId).get()
+            const allowedRoles = permsDoc.exists ?
+                (permsDoc.data().permissions?.canCreateUsers ?? []) : []
+            if (!allowedRoles.includes(callerData.role)) {
+                return NextResponse.json({ message: "Sem permissão para criar usuários." }, { status: 403 });
+            }
+            
         }
 
         const companyDoc = await db.collection("companies").doc(companyId).get();

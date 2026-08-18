@@ -26,6 +26,7 @@ import {
     useState,
 } from "react";
 import { useAppRouter } from "@/hooks/useAppRouter";
+import {PERMISSIONS, ROLES} from "@/lib/roles"
 import { auth, db } from "../lib/firebaseConfig";
 
 const ONE_HOUR = 60 * 60 * 1000;
@@ -37,6 +38,15 @@ const AuthContext = createContext(); // Criação do contexto
  * basta simplesmente chamar useAuth()
  */
 export const useAuth = () => useContext(AuthContext);
+
+const buildDefaultPermissions = () => {
+
+    const result = {}
+    for (const [key, roles] of Object.entries(PERMISSIONS)) {
+        result [key] = roles.filter((r) => r !== ROLES.MASTER)
+    }
+    return result
+}
 
 export const AuthProvider = ({ children }) => {
     // Componente Provedor, vai "abraçar" toda a aplicação
@@ -246,6 +256,12 @@ export const AuthProvider = ({ children }) => {
             );
 
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
+            await setDoc(doc(db, "role_permissions", companyId), {
+                companyId,
+                permissions: buildDefaultPermissions(),
+                updatedAt: new Date(),
+                updatedBy: userCredential.user.uid,
+            })
             await updateDoc(companyRef, { ownerId: userCredential.user.uid });
 
             resolvePendingUserData(userData);

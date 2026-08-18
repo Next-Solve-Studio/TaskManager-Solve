@@ -3,9 +3,10 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { FiSettings } from "react-icons/fi";
-import { MdPerson, MdSecurity, MdBusiness } from "react-icons/md";
+import { MdPerson, MdSecurity, MdBusiness, MdLock } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
-import { RiShieldKeyholeLine } from "react-icons/ri"; 
+import { RiShieldKeyholeLine } from "react-icons/ri";
+import AccessControlSettings from "./sections/AccessControlSettings";
 import { useRole } from "@/hooks/useRole";
 import { useAuth } from "@/context/AuthContext";
 import ProfileSettings from "./sections/ProfileSettings";
@@ -29,8 +30,11 @@ export default function SettingsMain() {
 
     // Se o usuário for o dono (master), adiciona a aba Empresa
     if (currentUser?.role === "master") {
-        tabs.push({ label: "Empresa", icon: MdBusiness, component: <CompanySettings /> });
-        tabs.push({ label: "Licença",  icon: RiShieldKeyholeLine, component: <LicenseSettings /> });
+        tabs.push(
+            { label: "Empresa", icon: MdBusiness, component: <CompanySettings /> }, 
+            { label: "Licença",  icon: RiShieldKeyholeLine, component: <LicenseSettings /> }, 
+            { label: "Controle de Acesso", icon: MdLock, component: <AccessControlSettings /> }
+        );
     }
 
     // Se tiver permissão de sistema, adiciona a aba Sistema
