@@ -96,7 +96,7 @@ export default function ClientsMain() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
             <ClientsHeader />
 
             <ClientsStats handleOpenModal={handleOpenModal} clients={clients} />
