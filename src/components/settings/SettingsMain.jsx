@@ -6,7 +6,7 @@ import { FiSettings } from "react-icons/fi";
 import { MdPerson, MdSecurity, MdBusiness, MdLock } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { RiShieldKeyholeLine } from "react-icons/ri";
-import AccessControlSettings from "./sections/AccessControlSettings";
+import AccessControlSettings from "./sections/AcessControlSettings";
 import { useRole } from "@/hooks/useRole";
 import { useAuth } from "@/context/AuthContext";
 import ProfileSettings from "./sections/ProfileSettings";
