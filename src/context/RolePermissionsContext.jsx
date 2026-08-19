@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { toast } from "sonner";
 import { PERMISSIONS, ROLES } from "@/lib/roles";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const RolePermissionsContext = createContext()
 
@@ -39,7 +40,7 @@ export const RolePermissionsProvider = ({children}) => {
             },
             (error) => {
                 console.error("Erro ao carregar permissões da empresa: ", error);
-                toast.error("Erro ao carregar permissões da empresa !")
+                toast.error(getErrorMessage(error, "Erro ao carregar permissões da empresa"));
                 setPermissions(null)
                 setLoadingPermissions(false)
             },

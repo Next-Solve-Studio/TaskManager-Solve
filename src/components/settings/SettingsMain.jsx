@@ -47,7 +47,7 @@ export default function SettingsMain() {
     };
 
     return (
-        <Box className={isMobile ? "w-full" : "w-full max-w-4xl"}>
+        <Box className={isMobile ? "w-full" : "w-full max-w-6xl"}>
             <div className="space-y-6">
                 <SettingsHeader
                     title="Configurações"
@@ -64,10 +64,15 @@ export default function SettingsMain() {
                         variant="scrollable"
                         scrollButtons="auto"
                         allowScrollButtonsMobile
-                        className="border-b border-border-main bg-bg-surface"
+                        className="border-b border-border-main bg-bg-surface "
                         sx={{
+                            "& .MuiTabs-flexContainer": {
+                                width: "100%", 
+                            },
                             "& .MuiTab-root": {
                                 color: "var(--color-text-muted)",
+                                flex: 1, 
+                                maxWidth: "none",
                                 minHeight: isMobile ? 48 : 64,
                                 fontSize: isMobile ? "0.75rem" : "0.875rem",
                                 fontWeight: 600,

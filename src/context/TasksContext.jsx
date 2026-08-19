@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 //Criando o contexto
 const TasksContext = createContext();
@@ -75,7 +76,7 @@ export const TasksProvider = ({ children, projectId }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir tasks", error);
-                toast.error("Erro ao carregar tasks: ", error);
+                toast.error(getErrorMessage(error, "Erro ao carregar tarefas"));
                 setLoadingTasks(false);
             },
         );

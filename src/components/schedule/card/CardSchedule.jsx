@@ -1,5 +1,6 @@
 // Célula editável de um dia
 "use client";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 import { CircularProgress } from "@mui/material";
 import { format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -45,8 +46,9 @@ export default function CardSchedule({
             await onSave(dayKey, draft);
             setEditing(false);
             toast.success("Salvo!");
-        } catch {
-            toast.error("Erro ao salvar");
+        } catch (err) {
+            console.error(err)
+            toast.error(getErrorMessage(err, "Erro ao salvar"));
         } finally {
             setSaving(false);
         }

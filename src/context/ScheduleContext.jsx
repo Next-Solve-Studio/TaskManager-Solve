@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const ScheduleContext = createContext(); // contexto da agenda criado
 
@@ -113,7 +114,7 @@ export const ScheduleProvider = ({ children }) => {
             },
             (error) => {
                 console.error(error);
-                toast.error(`Erro ao carregar agenda: ${error.message}`);
+                toast.error(getErrorMessage(error, "Erro ao carregar agenda"));
                 setLoadingSchedules(false);
             },
         );
@@ -178,7 +179,7 @@ export const ScheduleProvider = ({ children }) => {
                 });
             } catch (err) {
                 console.error(err);
-                toast.error(`Erro ao salvar o dia: ${err.message}`);
+                toast.error(getErrorMessage(err, "Erro ao salvar o dia"));
                 throw err;
             }
         },

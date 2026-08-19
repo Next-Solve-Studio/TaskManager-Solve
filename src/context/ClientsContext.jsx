@@ -12,7 +12,7 @@ import {
     updateDoc,
     where,
 } from "firebase/firestore";
-
+import { getErrorMessage } from "@/utils/getErrorMessage";
 import {
     createContext,
     useCallback,
@@ -95,12 +95,11 @@ export const ClientsProvider = ({ children }) => {
                     resourceId: ref.id,
                     resourceName: payload.name,
                 });
-
                 toast.success("Cliente criado com sucesso");
                 return { id: ref.id, ...payload };
             } catch (error) {
                 console.error("Erro ao criar cliente:", error);
-                toast.error("Erro ao criar cliente");
+                toast.error(getErrorMessage(error, "Erro ao criar cliente"));
                 throw error;
             }
         },
@@ -135,7 +134,7 @@ export const ClientsProvider = ({ children }) => {
                 toast.success("Cliente atualizado com sucesso");
             } catch (error) {
                 console.error("Erro ao atualizar cliente:", error);
-                toast.error("Erro ao atualizar cliente");
+                toast.error(getErrorMessage(error, "Erro ao atualizar cliente"));
                 throw error;
             }
         },
@@ -175,7 +174,7 @@ export const ClientsProvider = ({ children }) => {
                 toast.success("Cliente excluído com sucesso");
             } catch (error) {
                 console.error("Erro ao excluir cliente:", error);
-                toast.error("Erro ao excluir cliente");
+                toast.error(getErrorMessage(error, "Erro ao excluir cliente"));
                 throw error;
             }
         },

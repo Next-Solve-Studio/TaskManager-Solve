@@ -6,6 +6,7 @@ import { MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import { useCompany } from "@/context/CompanyContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export default function CompanySettings() {
     const { company, updateCompany } = useCompany();
@@ -45,7 +46,8 @@ export default function CompanySettings() {
             setBaseData(formData);
             toast.success("Dados da empresa atualizados com sucesso!");
         } catch (error) {
-            toast.error("Erro ao atualizar empresa: ", error);
+            console.error(error);
+            toast.error(getErrorMessage(error, "Erro ao atualizar empresa"));
         } finally {
             setIsSubmitting(false);
         }
@@ -73,17 +75,17 @@ export default function CompanySettings() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1.5 md:col-span-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Nome da Empresa</label>
+                    <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Nome da Empresa</span>
                     <TextField fullWidth name="name" value={formData.name} onChange={handleChange} variant="outlined" sx={fieldSx} required />
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">CNPJ</label>
+                    <span className="text-xs font-bold uppercase tracking-wider text-text-muted">CNPJ</span>
                     <TextField fullWidth name="cnpj" value={formData.cnpj} onChange={handleChange} variant="outlined" placeholder="00.000.000/0000-00" sx={fieldSx} />
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-bold uppercase tracking-wider text-text-muted">Endereço</label>
+                    <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Endereço</span>
                     <TextField fullWidth name="endereco" value={formData.endereco} onChange={handleChange} variant="outlined" placeholder="Rua, Número, Cidade - UF" sx={fieldSx} />
                 </div>
             </div>

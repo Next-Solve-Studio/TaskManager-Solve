@@ -9,6 +9,7 @@ import TasksContent from "./sections/TasksContent";
 import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export default function TasksMain() {
     const {
@@ -58,7 +59,7 @@ export default function TasksMain() {
             setFormOpen(false);
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao salvar tarefa");
+            toast.error(getErrorMessage(err, "Erro ao salvar tarefa"));
         } finally {
             setSubmitting(false);
         }
@@ -74,7 +75,7 @@ export default function TasksMain() {
             setDeletingTask(null);
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao excluir tarefa");
+            toast.error(getErrorMessage(err, "Erro ao excluir tarefa"));
         } finally {
             setSubmitting(false);
         }

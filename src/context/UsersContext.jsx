@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const UsersContext = createContext(); // Contexto criado
 
@@ -54,7 +55,7 @@ export const UsersProvider = ({ children }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir users", error);
-                toast.error("Erro ao carregar users: ", error);
+                toast.error(getErrorMessage(error, "Erro ao carregar usuários"));
                 setLoadingUsers(false);
             },
         );

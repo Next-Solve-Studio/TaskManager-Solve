@@ -16,6 +16,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const SettingsContext = createContext();
 
@@ -58,7 +59,7 @@ export const SettingsProvider = ({ children }) => {
                 toast.success("Perfil atualizado com sucesso");
             } catch (error) {
                 console.error("Erro ao atualizar perfil:", error);
-                toast.error("Erro ao atualizar perfil");
+                toast.error(getErrorMessage(error, "Erro ao atualizar perfil"));
                 throw error;
             }
         },
@@ -84,7 +85,7 @@ export const SettingsProvider = ({ children }) => {
             if (error.code === "auth/wrong-password") {
                 toast.error("Senha atual incorreta");
             } else {
-                toast.error("Erro ao alterar senha");
+                toast.error(getErrorMessage(error, "Erro ao alterar senha"));
             }
             throw error;
         }
@@ -105,7 +106,7 @@ export const SettingsProvider = ({ children }) => {
             toast.success("Configurações do sistema atualizadas");
         } catch (error) {
             console.error("Erro ao atualizar configurações:", error);
-            toast.error("Erro ao atualizar configurações");
+            toast.error(getErrorMessage(error, "Erro ao atualizar configurações"));
             throw error;
         }
     }, []);

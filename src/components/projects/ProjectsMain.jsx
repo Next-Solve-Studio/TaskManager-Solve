@@ -11,6 +11,7 @@ import ProjectsFilters from "./sections/ProjectsFilters";
 import ProjectsGrid from "./sections/ProjectsGrid";
 import ProjectsHeader from "./sections/ProjectsHeader";
 import ProjectsStats from "./sections/ProjectsStats";
+import { getErrorMessage } from "@/utils/getErrorMessage";
 
 export default function ProjectsMain() {
     const {
@@ -109,7 +110,7 @@ export default function ProjectsMain() {
             setDialogOpen(false);
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao salvar projeto");
+            toast.error(getErrorMessage(err, "Erro ao salvar projeto"));
         } finally {
             setSubmitting(false);
         }
@@ -124,7 +125,7 @@ export default function ProjectsMain() {
             setDeletingProject(null);
         } catch (err) {
             console.error(err);
-            toast.error("Erro ao excluir projeto");
+            toast.error(getErrorMessage(err, "Erro ao excluir projeto"));
         } finally {
             setDeleting(false);
         }
