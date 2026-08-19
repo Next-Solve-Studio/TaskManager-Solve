@@ -35,6 +35,7 @@ export const RolePermissionsProvider = ({children}) => {
             q,
             (snapshot) => {
                 setPermissions(snapshot.exists() ? snapshot.data().permissions : null)
+                setLoadingPermissions(false);
             },
             (error) => {
                 console.error("Erro ao carregar permissões da empresa: ", error);
