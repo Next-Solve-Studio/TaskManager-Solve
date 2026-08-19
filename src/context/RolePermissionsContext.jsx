@@ -1,6 +1,6 @@
 "use client"
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { toast } from "sonner";
@@ -63,7 +63,7 @@ export const RolePermissionsProvider = ({children}) => {
             },
             { merge:true },
         )
-    }, [])
+    }, [currentUser.companyId, currentUser.role, currentUser.uid, permissions])
 
     const value = useMemo(
         () => ({
