@@ -3,7 +3,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
@@ -11,6 +10,7 @@ import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
 import ResetPassword from "./ResetPassword";
 import { muiDark } from "@/styles/StyleInputs";
+import ShowPassword from "@/components/ui/Buttons/ShowPassword";
 
 const schema = yup.object({
     email: yup.string().email("E-mail inválido").required("O e-mail é obrigatório"),
@@ -100,13 +100,7 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                             }
                         }}
                     />
-                    <button
-                        type="button"
-                        className="absolute right-3 text-text-muted hover:text-brand-500"
-                        onClick={() => setSeePassword(!seePassword)}
-                    >
-                        {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                    </button>
+                    <ShowPassword setSeePassword={setSeePassword} seePassword={seePassword}/>
                 </div>
 
                 {allowRegistration && (

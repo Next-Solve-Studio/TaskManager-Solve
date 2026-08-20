@@ -9,6 +9,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { muiDark } from "@/styles/StyleInputs";
+import { useState } from "react";
+import ShowPassword from "@/components/ui/Buttons/ShowPassword";
 
 const schema = yup.object().shape({
     currentPassword: yup.string().required("Senha atual é obrigatória"),
@@ -23,6 +25,9 @@ const schema = yup.object().shape({
 });
 
 export default function SecuritySettings() {
+    const [seePassword, setSeePassword] = useState(false)
+    const [seePassword2, setSeePassword2] = useState(false)
+    const [seePassword3, setSeePassword3] = useState(false)
     const { currentUser } = useAuth();
     const { changePassword } = useSettings();
     const isMobile = useIsMobile();
@@ -82,15 +87,18 @@ export default function SecuritySettings() {
                 >
                     Senha Atual
                 </label>
-                <TextField
-                    {...register("currentPassword")}
-                    type="password"
-                    error={!!errors.currentPassword}
-                    helperText={errors.currentPassword?.message}
-                    fullWidth
-                    variant="outlined"
-                    sx={muiDark}
-                />
+                <div className="flex w-full relative items-center">
+                    <TextField
+                        {...register("currentPassword")}
+                        type={seePassword ? "text" : "password"}
+                        error={!!errors.currentPassword}
+                        helperText={errors.currentPassword?.message}
+                        fullWidth
+                        variant="outlined"
+                        sx={muiDark}
+                    />
+                    <ShowPassword setSeePassword={setSeePassword} seePassword={seePassword}/>
+                </div>
             </div>
 
             <div className="space-y-1.5">
@@ -100,15 +108,18 @@ export default function SecuritySettings() {
                 >
                     Nova Senha
                 </label>
-                <TextField
-                    {...register("newPassword")}
-                    type="password"
-                    error={!!errors.newPassword}
-                    helperText={errors.newPassword?.message}
-                    fullWidth
-                    variant="outlined"
-                    sx={muiDark}
-                />
+                <div className="flex w-full relative items-center">
+                    <TextField
+                        {...register("newPassword")}
+                        type={seePassword2 ? "text" : "password"}
+                        error={!!errors.newPassword}
+                        helperText={errors.newPassword?.message}
+                        fullWidth
+                        variant="outlined"
+                        sx={muiDark}
+                    />
+                    <ShowPassword setSeePassword={setSeePassword2} seePassword={seePassword2}/>
+                </div>
             </div>
 
             <div className="space-y-1.5">
@@ -118,15 +129,18 @@ export default function SecuritySettings() {
                 >
                     Confirmar Nova Senha
                 </label>
-                <TextField
-                    {...register("confirmPassword")}
-                    type="password"
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword?.message}
-                    fullWidth
-                    variant="outlined"
-                    sx={muiDark}
-                />
+                <div className="flex w-full relative items-center">
+                    <TextField
+                        {...register("confirmPassword")}
+                        type={seePassword3 ? "text" : "password"}
+                        error={!!errors.confirmPassword}
+                        helperText={errors.confirmPassword?.message}
+                        fullWidth
+                        variant="outlined"
+                        sx={muiDark}
+                    />
+                    <ShowPassword setSeePassword={setSeePassword3} seePassword={seePassword3}/>
+                </div>
             </div>
 
             <div className="pt-4">
