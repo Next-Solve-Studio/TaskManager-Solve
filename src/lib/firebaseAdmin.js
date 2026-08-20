@@ -17,10 +17,14 @@ export async function verifyFirebaseToken(token) {
 }
 
 const getPrivateKey = () => {
+    if (process.env.FIREBASE_PRIVATE_KEY_B64) {
+        return Buffer.from(process.env.FIREBASE_PRIVATE_KEY_B64, "base64").toString("utf8");
+    }
     const key = process.env.FIREBASE_PRIVATE_KEY;
     if (!key) return undefined;
     return key.replaceAll(String.raw`\n`, "\n").replaceAll('"', "");
 };
+
 
 export function getFirebaseAdmin() {
     const app = getApps().length

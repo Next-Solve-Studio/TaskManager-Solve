@@ -12,7 +12,7 @@ export async function POST(request) {
 
         const { companyId, status, licenseExpiresAt, plan } = await request.json();
 
-        if (!companyId || !ALLOWED_STATUSES.has(status)) {
+        if (!companyId || !ALLOWED_STATUSES.includes(status)) {
             return NextResponse.json({ message: "Dados inválidos." }, { status: 400 });
         }
 
