@@ -1,13 +1,13 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { CircularProgress, InputAdornment, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { useState } from "react";
+import { CircularProgress, InputAdornment, TextField } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaArrowLeft, FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
 import { IoMdLock } from "react-icons/io";
-import { MdCheck, MdContentCopy, MdCreditCard, MdOutlineEmail } from "react-icons/md";
+import { MdCheck, MdContentCopy, MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { auth } from "@/lib/firebaseConfig";
@@ -24,39 +24,133 @@ const schema = yup.object({
     endereco: yup.string().optional(),
 }).required();
 
-function PixSuccess({ pixData }) {
+function PixSuccess({ pixData, appKey, onRefresh }) {
     const [copied, setCopied] = useState(false);
+    const [secondsLeft, setSecondsLeft] = useState(300);
+    const [refreshing, setRefreshing] = useState(false);
+    const [activated, setActivated] = useState(false);
+    const expired = secondsLeft <= 0;
+
+    useEffect(() => {
+        if (expired) return;
+        const id = setInterval(() => setSecondsLeft(s => s - 1), 1000);
+        return () => clearInterval(id);
+    }, [expired]);
+
+    useEffect(() => {
+        if (!appKey || activated) return;
+        const poll = async () => {
+            try {
+                const token = await auth.currentUser?.getIdToken();
+                if (!token) return;
+                const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                if (data.status === true) {
+                    setActivated(true);
+                    toast.success("Pagamento confirmado! Entrando no sistema...");
+                    setTimeout(() => { window.location.href = "/"; }, 2000);
+                }
+            } catch { /* ignora */ }
+        };
+        const id = setInterval(poll, 5000);
+        return () => clearInterval(id);
+    }, [appKey, activated]);
+
+    const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+    const ss = String(secondsLeft % 60).padStart(2, "0");
+
     const copy = () => {
         navigator.clipboard.writeText(pixData.qrCode ?? "");
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            const token = await auth.currentUser?.getIdToken();
+            const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (data.pixInfo) {
+                onRefresh(data.pixInfo);
+                setSecondsLeft(300);
+            } else {
+                toast.error("Nenhum pagamento PIX pendente encontrado.");
+            }
+        } catch {
+            toast.error("Erro ao atualizar QR Code.");
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    if (activated) {
+        return (
+            <div className="flex flex-col items-center gap-4 py-8">
+                <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center">
+                    <MdCheck size={28} className="text-brand-500" />
+                </div>
+                <p className="text-base font-bold text-text-primary">Pagamento confirmado!</p>
+                <p className="text-sm text-text-muted">Redirecionando para o sistema...</p>
+                <CircularProgress size={20} sx={{ color: "var(--color-brand-500)" }} />
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col gap-5 w-full">
             <div>
-                <h2 className="text-xl font-black text-text-primary">Pagamento PIX</h2>
-                <p className="text-sm text-text-muted">Escaneie ou copie o código para ativar sua licença</p>
+                <h2 className="text-xl font-black text-text-primary">QR Code PIX</h2>
+                <p className="text-sm text-text-muted">Sua licença ativa automaticamente após o pagamento</p>
             </div>
-            <div className="flex flex-col gap-4 items-start">
-                {pixData.qrCodeImage && (
-                    <img src={`data:image/png;base64,${pixData.qrCodeImage}`} alt="QR Code PIX"
-                        className="w-40 h-40 rounded-xl border border-border-main mx-auto" />
-                )}
-                <div className="w-full space-y-2">
-                    <p className="text-xs text-text-muted">Código Copia e Cola</p>
-                    <div className="bg-bg-surface rounded-xl p-3 text-[11px] text-text-secondary break-all font-mono border border-border-main max-h-20 overflow-auto">
-                        {pixData.qrCode}
+
+            <div className="flex items-center gap-2 text-sm">
+                <span className="text-text-muted">Expira em:</span>
+                <span className={`font-bold font-mono ${secondsLeft < 60 ? "text-red-400" : "text-brand-500"}`}>
+                    {mm}:{ss}
+                </span>
+            </div>
+
+            {!expired ? (
+                <div className="flex flex-col items-center gap-4">
+                    {pixData.qrCodeImage && (
+                        <img
+                            src={`data:image/png;base64,${pixData.qrCodeImage}`}
+                            alt="QR Code PIX"
+                            className="w-48 h-48 rounded-2xl border-2 border-brand-500/30"
+                        />
+                    )}
+                    <div className="w-full space-y-2">
+                        <p className="text-xs text-text-muted font-semibold">Copia e Cola</p>
+                        <div className="bg-bg-surface rounded-xl p-3 text-[11px] text-text-secondary break-all font-mono border border-border-main max-h-24 overflow-auto">
+                            {pixData.qrCode}
+                        </div>
+                        <button type="button" onClick={copy}
+                            className="flex items-center gap-2 text-sm font-semibold text-brand-500 hover:underline cursor-pointer"
+                        >
+                            {copied ? <MdCheck size={16} /> : <MdContentCopy size={16} />}
+                            {copied ? "Copiado!" : "Copiar código PIX"}
+                        </button>
                     </div>
-                    <button type="button" onClick={copy}
-                        className="flex items-center gap-2 text-xs text-brand-500 hover:underline cursor-pointer"
+                </div>
+            ) : (
+                <div className="flex flex-col items-center gap-4 py-4">
+                    <p className="text-sm text-text-secondary text-center">QR Code expirado. Gere um novo.</p>
+                    <button type="button" onClick={handleRefresh} disabled={refreshing}
+                        className="h-10 px-6 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 cursor-pointer flex items-center gap-2"
                     >
-                        {copied ? <MdCheck size={14} /> : <MdContentCopy size={14} />}
-                        {copied ? "Copiado!" : "Copiar código PIX"}
+                        {refreshing ? <CircularProgress size={16} color="inherit" /> : <FaPix size={14} />}
+                        Gerar novo QR Code
                     </button>
                 </div>
-            </div>
+            )}
+
             <p className="text-xs text-text-muted text-center">
-                Sua licença ativa automaticamente após o pagamento.
+                Aguardando confirmação do pagamento...
             </p>
         </div>
     );
@@ -70,18 +164,14 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     const [selectedPlan, setSelectedPlan] = useState("FREE");
     const [savedFormData, setSavedFormData] = useState(null);
     const [pixData, setPixData] = useState(null);
-
-    const [paymentMethod, setPaymentMethod] = useState("PIX");
-    const [card, setCard] = useState({ holderName: "", number: "", expiryMonth: "", expiryYear: "", ccv: "" });
-    const [cardHolder, setCardHolder] = useState({ postalCode: "", addressNumber: "" });
+    const [pixAppKey, setPixAppKey] = useState(null);
 
     const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
 
     const isFreePlan = selectedPlan === "FREE";
-
     const changeStep = (n) => { setStep(n); onStepChange?.(n); };
 
-    async function doRegister(data, payMethod) {
+    async function doRegister(data) {
         setLoading(true);
         try {
             const appKey = await registerCompany(
@@ -105,40 +195,19 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     throw new Error(e.error || "Erro ao configurar pagamento.");
                 }
 
-                const subPayload = { appKey, plan: selectedPlan, billingType: payMethod };
-                if (payMethod === "CREDIT_CARD") {
-                    subPayload.creditCard = {
-                        holderName: card.holderName,
-                        number: card.number.replace(/\s/g, ""),
-                        expiryMonth: card.expiryMonth,
-                        expiryYear: card.expiryYear,
-                        ccv: card.ccv,
-                    };
-                    subPayload.creditCardHolderInfo = {
-                        name: data.name,
-                        email: data.email,
-                        cpfCnpj: cpfCnpjRaw,
-                        postalCode: cardHolder.postalCode.replace(/\D/g, ""),
-                        addressNumber: cardHolder.addressNumber,
-                    };
-                }
-
                 const subRes = await fetch("/api/billing/subscribe", {
                     method: "POST",
                     headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify(subPayload),
+                    body: JSON.stringify({ appKey, plan: selectedPlan, billingType: "PIX" }),
                 });
                 const subData = await subRes.json();
                 if (!subRes.ok) throw new Error(subData.error || "Erro ao criar assinatura.");
 
-                if (payMethod === "PIX" && subData.pixInfo) {
+                if (subData.pixInfo) {
+                    setPixAppKey(appKey);
                     setPixData(subData.pixInfo);
-                    toast.success("Empresa cadastrada! Efetue o pagamento via PIX.");
                     return;
                 }
-
-                toast.success("Plano ativado com sucesso!", { description: "Bem-vindo ao TaskManager!" });
-                return;
             }
 
             toast.success("Empresa cadastrada com sucesso!", { description: "Bem-vindo ao TaskManager!" });
@@ -151,26 +220,20 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
 
     async function onCompanyDataSubmit(data) {
         if (isFreePlan) {
-            await doRegister(data, null);
+            await doRegister(data);
         } else {
             setSavedFormData(data);
             changeStep(3);
         }
     }
 
-    async function onPaymentSubmit() {
-        if (paymentMethod === "CREDIT_CARD") {
-            if (!card.holderName || !card.number || !card.expiryMonth || !card.expiryYear || !card.ccv) {
-                toast.error("Preencha todos os dados do cartão"); return;
-            }
-            if (!cardHolder.postalCode || !cardHolder.addressNumber) {
-                toast.error("Preencha CEP e número do endereço"); return;
-            }
-        }
-        await doRegister(savedFormData, paymentMethod);
-    }
-
-    if (pixData) return <PixSuccess pixData={pixData} />;
+    if (pixData) return (
+        <PixSuccess
+            pixData={pixData}
+            appKey={pixAppKey}
+            onRefresh={(newData) => setPixData(newData)}
+        />
+    );
 
     if (step === 1) {
         return (
@@ -204,76 +267,24 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                 >
                     <FaArrowLeft size={10} /> Voltar — Dados da Empresa
                 </button>
+
                 <div>
-                    <h2 className="text-xl font-black text-text-primary">Forma de Pagamento</h2>
-                    <p className="text-sm text-text-muted">Plano {selectedPlan} — ativa após confirmação do pagamento</p>
+                    <h2 className="text-xl font-black text-text-primary">Pagamento via PIX</h2>
+                    <p className="text-sm text-text-muted">
+                        Plano {selectedPlan} · R$ {selectedPlan === "BASIC" ? "29,90" : "49,90"}/mês
+                    </p>
                 </div>
 
-                <ToggleButtonGroup exclusive value={paymentMethod}
-                    onChange={(_, v) => { if (v) setPaymentMethod(v); }} sx={{ gap: 1 }}
-                >
-                    {[
-                        { value: "PIX", icon: <FaPix size={14} />, label: "PIX" },
-                        { value: "CREDIT_CARD", icon: <MdCreditCard size={16} />, label: "Cartão de Crédito" },
-                    ].map(({ value, icon, label }) => (
-                        <ToggleButton key={value} value={value} sx={{
-                            borderRadius: "10px !important",
-                            border: "1px solid var(--color-border-main) !important",
-                            color: "var(--color-text-secondary)",
-                            "&.Mui-selected": {
-                                backgroundColor: "rgba(26,215,111,0.1)",
-                                color: "var(--color-brand-500)",
-                                borderColor: "var(--color-brand-500) !important",
-                            },
-                            textTransform: "none", px: 2, gap: 1, fontSize: 13,
-                        }}>
-                            {icon} {label}
-                        </ToggleButton>
-                    ))}
-                </ToggleButtonGroup>
+                <div className="rounded-xl border border-brand-500/20 bg-brand-500/5 p-4 text-sm text-text-secondary leading-relaxed">
+                    Clique no botão para gerar o QR Code PIX. Após o pagamento, sua licença ativa automaticamente e você entra no sistema.
+                </div>
 
-                {paymentMethod === "CREDIT_CARD" && (
-                    <div className="flex flex-col gap-3">
-                        <TextField label="Nome no cartão" value={card.holderName}
-                            onChange={e => setCard(c => ({ ...c, holderName: e.target.value }))} sx={muiDark} />
-                        <TextField
-                            label="Número do cartão"
-                            value={card.number}
-                            onChange={e => {
-                                const v = e.target.value.replace(/\D/g, "").slice(0, 16);
-                                setCard(c => ({ ...c, number: v.replace(/(.{4})/g, "$1 ").trim() }));
-                            }}
-                            placeholder="0000 0000 0000 0000" sx={muiDark}
-                        />
-                        <div className="grid grid-cols-3 gap-3">
-                            <TextField label="Mês" placeholder="MM" value={card.expiryMonth}
-                                onChange={e => setCard(c => ({ ...c, expiryMonth: e.target.value.replace(/\D/g, "").slice(0, 2) }))} sx={muiDark} />
-                            <TextField label="Ano" placeholder="AAAA" value={card.expiryYear}
-                                onChange={e => setCard(c => ({ ...c, expiryYear: e.target.value.replace(/\D/g, "").slice(0, 4) }))} sx={muiDark} />
-                            <TextField label="CVV" placeholder="123" value={card.ccv}
-                                onChange={e => setCard(c => ({ ...c, ccv: e.target.value.replace(/\D/g, "").slice(0, 4) }))} sx={muiDark} />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                            <TextField label="CEP" placeholder="00000-000" value={cardHolder.postalCode}
-                                onChange={e => setCardHolder(h => ({ ...h, postalCode: e.target.value }))} sx={muiDark} />
-                            <TextField label="Número" placeholder="123" value={cardHolder.addressNumber}
-                                onChange={e => setCardHolder(h => ({ ...h, addressNumber: e.target.value }))} sx={muiDark} />
-                        </div>
-                    </div>
-                )}
-
-                {paymentMethod === "PIX" && (
-                    <div className="rounded-xl border border-border-main bg-bg-card p-4 text-sm text-text-secondary">
-                        Após o cadastro você receberá um QR Code PIX. Sua licença ativa automaticamente quando o pagamento for identificado.
-                    </div>
-                )}
-
-                <button type="button" disabled={loading} onClick={onPaymentSubmit}
+                <button type="button" disabled={loading} onClick={() => doRegister(savedFormData)}
                     className="h-12 w-full rounded-xl font-bold text-base tracking-wide text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                 >
                     {loading
                         ? <CircularProgress size={22} color="inherit" />
-                        : <>{paymentMethod === "PIX" ? <FaPix size={16} /> : <MdCreditCard size={17} />} Cadastrar e Ativar Plano {selectedPlan}</>
+                        : <><FaPix size={16} /> Gerar QR Code PIX</>
                     }
                 </button>
             </div>

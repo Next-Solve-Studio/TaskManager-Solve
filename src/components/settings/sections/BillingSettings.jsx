@@ -28,50 +28,88 @@ const muiField = {
     "& .MuiInputLabel-root.Mui-focused": { color: "var(--color-brand-500)" },
 };
 
-function PixDisplay({ pixData }) {
+function PixDisplay({ pixData, appKey, onRefresh }) {
     const [copied, setCopied] = useState(false);
+    const [secondsLeft, setSecondsLeft] = useState(300);
+    const [refreshing, setRefreshing] = useState(false);
+    const expired = secondsLeft <= 0;
+
+    useEffect(() => {
+        if (expired) return;
+        const id = setInterval(() => setSecondsLeft(s => s - 1), 1000);
+        return () => clearInterval(id);
+    }, [expired]);
+
+    const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
+    const ss = String(secondsLeft % 60).padStart(2, "0");
+
     const copy = () => {
         navigator.clipboard.writeText(pixData.qrCode ?? "");
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
+
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await onRefresh();
+            setSecondsLeft(300);
+        } catch {
+            toast.error("Erro ao atualizar QR Code.");
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     return (
         <div className="p-5 bg-bg-card border border-border-main rounded-2xl space-y-4">
-            <p className="text-sm font-bold text-text-primary">Pagamento PIX Pendente</p>
+            <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-text-primary">Pagamento PIX Pendente</p>
+                {!expired ? (
+                    <span className={`text-xs font-bold font-mono ${secondsLeft < 60 ? "text-red-400" : "text-brand-500"}`}>
+                        Expira em {mm}:{ss}
+                    </span>
+                ) : (
+                    <button type="button" onClick={handleRefresh} disabled={refreshing}
+                        className="flex items-center gap-1 text-xs text-brand-500 hover:underline cursor-pointer font-bold disabled:opacity-50"
+                    >
+                        {refreshing ? <CircularProgress size={12} sx={{ color: "inherit" }} /> : <FaPix size={12} />}
+                        Gerar novo
+                    </button>
+                )}
+            </div>
             <p className="text-xs text-text-secondary">
                 Valor: R$ {pixData.value?.toFixed(2).replace(".", ",")} · Vence em{" "}
                 {new Date(pixData.dueDate).toLocaleDateString("pt-BR")}
             </p>
-            <div className="flex flex-col md:flex-row gap-5 items-start">
-                {pixData.qrCodeImage && (
-                    <img
-                        src={`data:image/png;base64,${pixData.qrCodeImage}`}
-                        alt="QR Code PIX"
-                        className="w-40 h-40 rounded-xl border border-border-main"
-                    />
-                )}
-                <div className="flex-1 space-y-2">
-                    <p className="text-xs text-text-muted">Código PIX Copia e Cola</p>
-                    <div className="bg-bg-surface rounded-xl p-3 text-[11px] text-text-secondary break-all font-mono border border-border-main max-h-20 overflow-auto">
-                        {pixData.qrCode}
+            {!expired && (
+                <div className="flex flex-col md:flex-row gap-5 items-start">
+                    {pixData.qrCodeImage && (
+                        <img
+                            src={`data:image/png;base64,${pixData.qrCodeImage}`}
+                            alt="QR Code PIX"
+                            className="w-40 h-40 rounded-xl border border-border-main"
+                        />
+                    )}
+                    <div className="flex-1 space-y-2">
+                        <p className="text-xs text-text-muted">Código PIX Copia e Cola</p>
+                        <div className="bg-bg-surface rounded-xl p-3 text-[11px] text-text-secondary break-all font-mono border border-border-main max-h-20 overflow-auto">
+                            {pixData.qrCode}
+                        </div>
+                        <Button variant="outlined" size="small"
+                            startIcon={copied ? <MdCheck /> : <MdContentCopy />}
+                            onClick={copy}
+                            sx={{
+                                borderColor: "var(--color-brand-500)",
+                                color: "var(--color-brand-500)",
+                                borderRadius: "8px", textTransform: "none", fontSize: 12,
+                            }}
+                        >
+                            {copied ? "Copiado!" : "Copiar código"}
+                        </Button>
                     </div>
-                    <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={copied ? <MdCheck /> : <MdContentCopy />}
-                        onClick={copy}
-                        sx={{
-                            borderColor: "var(--color-brand-500)",
-                            color: "var(--color-brand-500)",
-                            borderRadius: "8px",
-                            textTransform: "none",
-                            fontSize: 12,
-                        }}
-                    >
-                        {copied ? "Copiado!" : "Copiar código"}
-                    </Button>
                 </div>
-            </div>
+            )}
         </div>
     );
 }
@@ -220,7 +258,12 @@ export default function BillingSettings() {
                     />
                 </div>
 
-                {pixData && <PixDisplay pixData={pixData} />}
+                {pixData && (
+                    <PixDisplay
+                        pixData={pixData}
+                        onRefresh={fetchStatus}
+                    />
+                )}
 
                 <div className="pt-2">
                     <Button
