@@ -58,7 +58,7 @@ export default function LicenseGuard({ children }) {
                     >
                         Entrar em Contato
                     </a>
-                    <p className="text-xs text-text-muted">{SUPPORT_EMAIL}</p>
+                    <p className="text-xs text-text-muted">Suporte: {SUPPORT_EMAIL}</p>
                 </div>
             </div>
         );

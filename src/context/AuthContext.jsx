@@ -50,7 +50,7 @@ const buildDefaultPermissions = () => {
 
 export const AuthProvider = ({ children }) => {
     // Componente Provedor, vai "abraçar" toda a aplicação
-    const [currentUser, setCurrentUser] = useState(null); // estado de usuário atual
+    const [currentUser, setCurrentUser] = useState(null); // estado de* usuário atual
     const [loading, setLoading] = useState(true);
     const router = useAppRouter(); // Inicia o hook de roteamento para que possamos usá-lo para redirecionar o usuário
 

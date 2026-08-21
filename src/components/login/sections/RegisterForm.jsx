@@ -1,7 +1,7 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaArrowLeft, FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
@@ -24,18 +24,27 @@ const schema = yup.object({
     endereco: yup.string().optional(),
 }).required();
 
-function PixSuccess({ pixData, appKey, onRefresh }) {
+function PixSuccess({ pixData, appKey, onRenew }) {
     const [copied, setCopied] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(300);
     const [refreshing, setRefreshing] = useState(false);
     const [activated, setActivated] = useState(false);
     const expired = secondsLeft <= 0;
+    const prevQrCode = useRef(pixData?.qrCode);
 
     useEffect(() => {
         if (expired) return;
         const id = setInterval(() => setSecondsLeft(s => s - 1), 1000);
         return () => clearInterval(id);
     }, [expired]);
+
+    // Reseta o timer quando chega um QR Code novo
+    useEffect(() => {
+        if (pixData?.qrCode && pixData.qrCode !== prevQrCode.current) {
+            prevQrCode.current = pixData.qrCode;
+            setSecondsLeft(300);
+        }
+    }, [pixData]);
 
     useEffect(() => {
         if (!appKey || activated) return;
@@ -70,19 +79,9 @@ function PixSuccess({ pixData, appKey, onRefresh }) {
     const handleRefresh = async () => {
         setRefreshing(true);
         try {
-            const token = await auth.currentUser?.getIdToken();
-            const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            const data = await res.json();
-            if (data.pixInfo) {
-                onRefresh(data.pixInfo);
-                setSecondsLeft(300);
-            } else {
-                toast.error("Nenhum pagamento PIX pendente encontrado.");
-            }
-        } catch {
-            toast.error("Erro ao atualizar QR Code.");
+            await onRenew();
+        } catch (err) {
+            toast.error(err.message || "Erro ao gerar novo QR Code.");
         } finally {
             setRefreshing(false);
         }
@@ -149,9 +148,11 @@ function PixSuccess({ pixData, appKey, onRefresh }) {
                 </div>
             )}
 
-            <p className="text-xs text-text-muted text-center">
-                Aguardando confirmação do pagamento...
-            </p>
+            {!expired && (
+                <p className="text-xs text-text-muted text-center">
+                    Aguardando confirmação do pagamento...
+                </p>
+            )}
         </div>
     );
 }
@@ -218,6 +219,28 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
         }
     }
 
+    async function handlePixRenew() {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Sessão expirada. Recarregue a página.");
+
+        await fetch("/api/billing/subscribe", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ appKey: pixAppKey }),
+        });
+
+        const subRes = await fetch("/api/billing/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ appKey: pixAppKey, plan: selectedPlan, billingType: "PIX" }),
+        });
+        const subData = await subRes.json();
+        if (!subRes.ok) throw new Error(subData.error || "Erro ao criar nova assinatura.");
+        if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
+
+        setPixData(subData.pixInfo);
+    }
+
     async function onCompanyDataSubmit(data) {
         if (isFreePlan) {
             await doRegister(data);
@@ -231,7 +254,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
         <PixSuccess
             pixData={pixData}
             appKey={pixAppKey}
-            onRefresh={(newData) => setPixData(newData)}
+            onRenew={handlePixRenew}
         />
     );
 
