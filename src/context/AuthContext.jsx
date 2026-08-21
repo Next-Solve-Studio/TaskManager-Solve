@@ -181,10 +181,10 @@ export const AuthProvider = ({ children }) => {
         ) => {
             justLoggedIn.current = true;
 
-            const companyRef = doc(collection(db, "companies"))
-            const companyId = companyRef.id
-            
-            //  Registrar licença na API (não bloqueia o cadastro se falhar)
+            const companyRef = doc(collection(db, "companies"));
+            const companyId = companyRef.id;
+
+            // 1. Registrar tenant na License API
             let appKey, expiresAt, confirmedPlan;
             try {
                 const response = await fetch("/api/register-company", {
@@ -200,7 +200,7 @@ export const AuthProvider = ({ children }) => {
                     }),
                 });
 
-                 if (!response.ok) {
+                if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(
                         errorData.error || errorData.message || `Erro na API: ${response.status}`
@@ -210,28 +210,13 @@ export const AuthProvider = ({ children }) => {
                 appKey = data.appKey;
                 expiresAt = data.expiresAt;
                 confirmedPlan = data.plan || "FREE";
-
             } catch (err) {
                 justLoggedIn.current = false;
-                console.error(
-                    "[auth] Licença não registrada (não crítico):",
-                    err,
-                );
                 throw err;
             }
 
-            // Criar a Empresa na coleção 'companies'
-            await setDoc(companyRef, {
-                name: companyName,
-                cnpj: cnpj,
-                endereco: endereco,
-                createdAt: new Date(),
-                plan: confirmedPlan,
-                status: "active",
-                appKey,
-                licenseExpiresAt: expiresAt,
-            });
-
+            // 2. Criar usuário Firebase ANTES de escrever no Firestore
+            //    (regras de segurança exigem autenticação)
             const userData = {
                 name: adminName.trim(),
                 email,
@@ -248,12 +233,28 @@ export const AuthProvider = ({ children }) => {
                 resolvePendingUserData = resolve;
             });
 
-            //  Criar usuário no Firebase Auth
+            if (plan !== "FREE") {
+                justLoggedIn.current = false;
+            }
+
             const userCredential = await createUserWithEmailAndPassword(
                 auth,
                 email,
                 password,
             );
+
+            // 3. Agora autenticado — escreve no Firestore sem erro de permissão
+            await setDoc(companyRef, {
+                name: companyName,
+                cnpj: cnpj,
+                endereco: endereco,
+                createdAt: new Date(),
+                plan: confirmedPlan,
+                status: "active",
+                appKey,
+                licenseExpiresAt: expiresAt,
+                ownerId: userCredential.user.uid,
+            });
 
             await setDoc(doc(db, "users", userCredential.user.uid), userData);
             await setDoc(doc(db, "role_permissions", companyId), {
@@ -261,8 +262,7 @@ export const AuthProvider = ({ children }) => {
                 permissions: buildDefaultPermissions(),
                 updatedAt: new Date(),
                 updatedBy: userCredential.user.uid,
-            })
-            await updateDoc(companyRef, { ownerId: userCredential.user.uid });
+            });
 
             resolvePendingUserData(userData);
 
@@ -270,7 +270,6 @@ export const AuthProvider = ({ children }) => {
             await setSessionCookie(token);
 
             return appKey;
-
         },
         [setSessionCookie],
     );

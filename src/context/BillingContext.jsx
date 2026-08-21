@@ -1,6 +1,8 @@
 "use client"
 import { createContext, useCallback, useContext, useEffect, useState} from 'react'
-import { useAuth } from './AuthContext'
+import { doc, getDoc } from "firebase/firestore";
+import { useAuth } from "@/context/AuthContext";
+import { auth, db } from "@/lib/firebaseConfig";
 
 const BillingContext = createContext()
 export const useBilling = () => useContext(BillingContext)
