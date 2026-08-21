@@ -3,10 +3,9 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
     try {
         const body = await request.json();
+        const { companyId, companyName, responsibleName, email, cpfCnpj } = body;
 
-        const { companyId, companyName, responsibleName, email } = body;
-
-        if (!companyId || !companyName || !responsibleName || !email) {
+        if (!companyId || !companyName || !responsibleName || !email || !cpfCnpj) {
             return NextResponse.json(
                 { error: "Campos obrigatórios faltando." },
                 { status: 400 }
@@ -15,22 +14,16 @@ export async function POST(request) {
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return NextResponse.json(
-                { error: "E-mail inválido." },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: "E-mail inválido." }, { status: 400 });
+        }
+
+        if (!process.env.REGISTRATION_SECRET) {
+            console.error("[register-company] REGISTRATION_SECRET não configurado.");
+            return NextResponse.json({ error: "Serviço indisponível." }, { status: 503 });
         }
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10_000);
-
-        if (!process.env.REGISTRATION_SECRET) {
-            console.error("[register-company] REGISTRATION_SECRET não configurado.");
-            return NextResponse.json(
-                { error: "Serviço indisponível." },
-                { status: 503 }
-            );
-        }
 
         try {
             const response = await fetch(

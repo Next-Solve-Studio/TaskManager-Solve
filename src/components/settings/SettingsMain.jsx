@@ -3,7 +3,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { FiSettings } from "react-icons/fi";
-import { MdPerson, MdSecurity, MdBusiness, MdLock } from "react-icons/md";
+import { MdPerson, MdSecurity, MdBusiness, MdLock, MdPayment } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { RiShieldKeyholeLine } from "react-icons/ri";
 import AccessControlSettings from "./sections/AcessControlSettings";
@@ -14,6 +14,7 @@ import SecuritySettings from "./sections/SecuritySettings";
 import SettingsHeader from "./sections/SettingsHeader";
 import SystemSettings from "./sections/SystemSettings";
 import CompanySettings from "./sections/CompanySettings";
+import BillingSettings from "./sections/BillingSettings";
 import LicenseSettings   from "./sections/LicenseSettings";
 
 export default function SettingsMain() {
@@ -33,7 +34,8 @@ export default function SettingsMain() {
         tabs.push(
             { label: "Empresa", icon: MdBusiness, component: <CompanySettings /> }, 
             { label: "Licença",  icon: RiShieldKeyholeLine, component: <LicenseSettings /> }, 
-            { label: "Controle de Acesso", icon: MdLock, component: <AccessControlSettings /> }
+            { label: "Controle de Acesso", icon: MdLock, component: <AccessControlSettings /> },
+            { label: "Pagamento", icon: MdPayment, component: <BillingSettings /> }
         );
     }
 

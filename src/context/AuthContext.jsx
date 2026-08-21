@@ -195,6 +195,7 @@ export const AuthProvider = ({ children }) => {
                         companyName,
                         responsibleName: adminName,
                         email,
+                        cpfCnpj: cnpj,
                         plan,
                     }),
                 });
@@ -202,8 +203,7 @@ export const AuthProvider = ({ children }) => {
                  if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
                     throw new Error(
-                        errorData.message ||
-                            `Erro na API: ${response.status}`
+                        errorData.error || errorData.message || `Erro na API: ${response.status}`
                     );
                 }
                 const data = await response.json();
@@ -268,6 +268,8 @@ export const AuthProvider = ({ children }) => {
 
             const token = await userCredential.user.getIdToken();
             await setSessionCookie(token);
+
+            return appKey;
 
         },
         [setSessionCookie],
