@@ -52,8 +52,7 @@ const PLANS = [
     },
 ];
 
-export default function PlanSelector({ selected, onSelect }) {
-    const [billing, setBilling] = useState("monthly");
+export default function PlanSelector({ selected, onSelect, billing, onBillingChange }) {
 
     return (
         <div className="flex flex-col gap-6 w-full">
@@ -72,7 +71,7 @@ export default function PlanSelector({ selected, onSelect }) {
             <div className="flex items-center justify-center gap-1 bg-bg-card border border-border-main2 rounded-full p-1 w-fit mx-auto">
                 <button
                     type="button"
-                    onClick={() => setBilling("monthly")}
+                    onClick={() => onBillingChange("monthly")}
                     className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 cursor-pointer ${
                         billing === "monthly"
                             ? "bg-bg-surface text-text-primary shadow"
@@ -83,7 +82,7 @@ export default function PlanSelector({ selected, onSelect }) {
                 </button>
                 <button
                     type="button"
-                    onClick={() => setBilling("annual")}
+                    onClick={() => onBillingChange("annual")}
                     className={`px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
                         billing === "annual"
                             ? "bg-bg-surface text-text-primary shadow"

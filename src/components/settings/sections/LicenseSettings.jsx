@@ -2,19 +2,22 @@
 
 import { useState } from "react"
 import { doc, getDoc } from "firebase/firestore"
-import { MdRefresh } from "react-icons/md";
+import { MdRefresh, MdCancel } from "react-icons/md";
 import { RiShieldKeyholeLine } from "react-icons/ri";
+import { toast } from "sonner";
 import { db } from "@/lib/firebaseConfig";
 import { validateLicense } from "@/lib/licenseApi";
 import { useAuth } from "@/context/AuthContext";
+import { useBilling } from "@/context/BillingContext";
 import StatusPlanBadge from "@/components/ui/badges/StatusPlanBadge";
-
 
 export default function LicenseSettings() {
     const { currentUser } = useAuth();
+    const { billingStatus, cancelSubscription } = useBilling();
     const [loading, setLoading]   = useState(false);
     const [result, setResult]     = useState(null);
     const [checked, setChecked]   = useState(false);
+    const [cancelling, setCancelling] = useState(false);
 
     async function handleCheck() {
         setLoading(true)
@@ -37,6 +40,19 @@ export default function LicenseSettings() {
         }
     }
 
+    async function handleCancelSubscription() {
+        if (!window.confirm("Tem certeza que deseja cancelar sua assinatura? Você continuará com acesso até o fim do período já pago, mas não haverá renovação automática.")) return;
+        setCancelling(true);
+        try {
+            await cancelSubscription();
+            toast.success("Assinatura cancelada. Você não será cobrado novamente.");
+        } catch (err) {
+            toast.error(err.message || "Erro ao cancelar assinatura.");
+        } finally {
+            setCancelling(false);
+        }
+    }
+
     return (
         <>
             {loading && (
@@ -50,7 +66,6 @@ export default function LicenseSettings() {
                 </div>
             )}
             <div className="flex flex-col gap-6">
-                {/* Cabeçalho da seção */}
                 <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                         <RiShieldKeyholeLine className="text-brand-500 text-lg" />
@@ -86,6 +101,29 @@ export default function LicenseSettings() {
                     <MdRefresh className={`text-lg ${loading ? "animate-spin" : ""}`} />
                     {checked ? "Verificar Novamente" : "Verificar Licença"}
                 </button>
+
+                {currentUser?.role === "master" && billingStatus?.hasSubscription && (
+                    <div className="flex flex-col gap-3 p-5 rounded-2xl bg-bg-card border border-border-main">
+                        <div className="flex flex-col gap-1">
+                            <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">
+                                Assinatura
+                            </span>
+                            <p className="text-sm text-text-secondary">
+                                Plano <strong className="text-text-primary">{billingStatus.plan}</strong> · cobrança via {billingStatus.paymentMethod === "PIX" ? "PIX" : "Cartão de Crédito"}
+                                {billingStatus.expiresAt && ` · próximo vencimento em ${new Date(billingStatus.expiresAt).toLocaleDateString("pt-BR")}`}
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleCancelSubscription}
+                            disabled={cancelling}
+                            className="flex items-center gap-2 px-5 h-10 w-fit rounded-xl font-bold text-sm text-red-400 border border-red-500/30 hover:bg-red-500/10 disabled:opacity-50 cursor-pointer transition-colors"
+                        >
+                            <MdCancel className="text-lg" />
+                            {cancelling ? "Cancelando..." : "Cancelar Assinatura"}
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     )

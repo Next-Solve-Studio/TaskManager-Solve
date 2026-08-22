@@ -6,48 +6,15 @@ import { IoMdWarning } from "react-icons/io";
 import { signOut } from "firebase/auth";
 import { FaPix } from "react-icons/fa6";
 import { MdCheck, MdContentCopy, MdCreditCard } from "react-icons/md";
-import { CircularProgress, TextField } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { toast } from "sonner";
 import { useLicense } from "@/context/LicenseApiContext";
 import { useBilling } from "@/context/BillingContext";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
-import { muiDark } from "@/styles/StyleInputs";
+import CreditCardForm from "@/components/billing/CreditCardForm";
 
 const SUPPORT_EMAIL = "equipe.nextsolvesolution@gmail.com";
-
-function CreditCardForm({ onSubmit, onBack }) {
-    const [form, setForm] = useState({
-        holderName: "", number: "", expiryMonth: "", expiryYear: "", ccv: "",
-        postalCode: "", addressNumber: "",
-    });
-
-    const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-    return (
-        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} className="flex flex-col gap-3 w-full text-left">
-            <TextField label="Nome no Cartão" value={form.holderName} onChange={update("holderName")} required size="small" sx={muiDark} />
-            <TextField label="Número do Cartão" value={form.number} onChange={update("number")} required size="small" sx={muiDark} />
-            <div className="flex gap-2">
-                <TextField label="Mês (MM)" value={form.expiryMonth} onChange={update("expiryMonth")} required size="small" sx={muiDark} />
-                <TextField label="Ano (AAAA)" value={form.expiryYear} onChange={update("expiryYear")} required size="small" sx={muiDark} />
-                <TextField label="CVV" value={form.ccv} onChange={update("ccv")} required size="small" sx={muiDark} />
-            </div>
-            <div className="flex gap-2">
-                <TextField label="CEP" value={form.postalCode} onChange={update("postalCode")} required size="small" sx={muiDark} />
-                <TextField label="Número" value={form.addressNumber} onChange={update("addressNumber")} required size="small" sx={muiDark} />
-            </div>
-            <div className="flex gap-2 mt-2">
-                <button type="button" onClick={onBack} className="flex-1 h-10 rounded-xl font-bold text-sm text-white/70 border border-white/10 hover:bg-white/5 cursor-pointer">
-                    Voltar
-                </button>
-                <button type="submit" className="flex-1 h-10 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 cursor-pointer">
-                    Pagar com Cartão
-                </button>
-            </div>
-        </form>
-    );
-}
 
 function PixActivation() {
     const { setupCustomer, subscribe, cancelSubscription, appKey } = useBilling();
@@ -345,7 +312,7 @@ export default function LicenseGuard({ children }) {
 
     return (
         <>
-            {license.status === "GRACE_PERIOD" && (
+            {(license.status === "GRACE_PERIOD" || license.status === "EXPIRING_SOON") && (
                 <div className="w-full bg-orange-500/15 border-b border-orange-500/20 px-4 py-2 text-center">
                     <p className="text-orange-300 text-xs font-semibold">
                         <IoMdWarning className="text-warning" /> {license.warning}
