@@ -6,7 +6,7 @@ import CardFooter from "./CardFooter";
 import CardHeader from "./CardHeader";
 import CreatedModifiedBy from "./CreatedModifiedBy";
 
-function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
+function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete, settings }) {
     //guarda o elemento HTML que servirá de “âncora” para o menu (que começa fechado)
     const [anchorEl, setAnchorEl] = useState(null);
 
@@ -30,7 +30,7 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 onDelete={onDelete}
             />
 
-            {project.client && (
+            {settings?.showClient !== false && project.client && (
                 <div className="flex items-center gap-1.5">
                     <MdPerson size={13} className="text-text-muted shrink-0" />
                     <span className="text-text-secondary text-[12px]">
@@ -40,7 +40,7 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 </div>
             )}
 
-            {project.description && (
+            {settings?.showDescription !== false && project.description && (
                 <p className="text-text-secondary text-[12px] m-0 leading-[1.6]">
                     {project.description.length > 100
                         ? `${project.description.slice(0, 100)}…`
@@ -48,7 +48,7 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 </p>
             )}
 
-            {techStack.length > 0 && (
+            {settings?.showTechStack !== false && techStack.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                     {techStack.map((tech) => (
                         <span
@@ -62,11 +62,11 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete }) {
                 </div>
             )}
 
-            <CardDevs project={project} usersMap={usersMap} />
+            {settings?.showDevelopers !== false && <CardDevs project={project} usersMap={usersMap} />}
 
-            <CardFooter project={project} />
+            {settings?.showDates !== false && <CardFooter project={project} />}
 
-            <CreatedModifiedBy usersMap={usersMap} project={project} />
+            {settings?.showCreatedModifiedBy !== false && <CreatedModifiedBy usersMap={usersMap} project={project} />}
         </div>
     );
 }

@@ -23,6 +23,7 @@ export default function TasksContent({
     onCreate,
     visibleTasksCount,
     loadMoreTasks,
+    settings,
 }) {
     const { currentUser } = useAuth();
 
@@ -164,6 +165,7 @@ export default function TasksContent({
                                             usersMap={usersMap}
                                             onEdit={onEdit}
                                             onDelete={onDelete}
+                                            settings={settings}
                                         />
                                     ))}
                                 </div>

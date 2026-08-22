@@ -3,7 +3,7 @@ import CardChecklist from "./sections/CardChecklist";
 import CardFooter from "./sections/CardFooter";
 import CardHeader from "./sections/CardHeader";
 
-function TaskCard({ task, usersMap, onEdit, onDelete }) {
+function TaskCard({ task, usersMap, onEdit, onDelete, settings }) {
     const assignedUsers = (task.assignedTo || [])
         .map((uid) => usersMap[uid])
         .filter(Boolean);
@@ -18,7 +18,7 @@ function TaskCard({ task, usersMap, onEdit, onDelete }) {
             <CardHeader task={task} onEdit={onEdit} onDelete={onDelete} />
 
             {/* Descrição */}
-            {task.description && (
+            {settings?.showDescription !== false && task.description && (
                 <p className="text-[12px] text-text-secondary leading-relaxed">
                     {task.description.length > 90
                         ? `${task.description.slice(0, 90)}…`
@@ -27,10 +27,10 @@ function TaskCard({ task, usersMap, onEdit, onDelete }) {
             )}
 
             {/* Checklist progress */}
-            <CardChecklist task={task} />
+            {settings?.showChecklist !== false && <CardChecklist task={task} />}
 
             {/* Footer: responsáveis + datas */}
-            <CardFooter task={task} assignedUsers={assignedUsers} />
+            <CardFooter task={task} assignedUsers={assignedUsers} settings={settings} />
         </div>
     );
 }

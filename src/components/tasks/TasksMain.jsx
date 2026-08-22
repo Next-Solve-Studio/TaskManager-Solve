@@ -5,11 +5,13 @@ import { useProjects } from "@/context/ProjectsContext";
 import { useTasks } from "@/context/TasksContext";
 import TaskDeleteModal from "./modals/TaskDeleteModal";
 import TaskForm from "./modals/TaskForm";
+import TaskCardSettingsModal from "./modals/TaskCardSettingsModal";
 import TasksContent from "./sections/TasksContent";
 import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCardSettings } from "@/hooks/useCardSettings";
 
 export default function TasksMain() {
     const {
@@ -35,6 +37,14 @@ export default function TasksMain() {
     const [filterProject, setFilterProject] = useState("all");
     const [filterAssignee, setFilterAssignee] = useState("all");
     const [filterMonth, setFilterMonth] = useState("all");
+    
+    const [settingsOpen, setSettingsOpen] = useState(false);
+    const { settings, updateSetting, isLoaded } = useCardSettings("taskCardSettings", {
+        showDescription: true,
+        showChecklist: true,
+        showAssignees: true,
+        showDates: true,
+    });
 
     // abre o form para criar task
     const handleOpenCreate = () => {
@@ -83,7 +93,7 @@ export default function TasksMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-            <TasksHeader handleOpenCreate={handleOpenCreate} tasks={tasks} />
+            <TasksHeader handleOpenCreate={handleOpenCreate} handleOpenSettings={() => setSettingsOpen(true)} tasks={tasks} />
 
             {/* Stats */}
             <TasksStats tasks={tasks} />
@@ -129,6 +139,14 @@ export default function TasksMain() {
                 onCreate={handleOpenCreate}
                 visibleTasksCount={visibleTasksCount}
                 loadMoreTasks={loadMoreTasks}
+                settings={settings}
+            />
+
+            <TaskCardSettingsModal
+                open={settingsOpen}
+                onClose={() => setSettingsOpen(false)}
+                settings={settings}
+                updateSetting={updateSetting}
             />
 
             <TaskForm

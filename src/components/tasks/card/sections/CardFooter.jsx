@@ -2,7 +2,7 @@ import { MdOutlineCalendarToday, MdPerson } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 
-export default function CardFooter({ assignedUsers, task }) {
+export default function CardFooter({ assignedUsers, task, settings }) {
     const isOverdue =
         task.endDate &&
         task.status !== "concluido" &&
@@ -12,10 +12,15 @@ export default function CardFooter({ assignedUsers, task }) {
                 : new Date(task.endDate),
         ) < new Date();
 
+    if (settings?.showAssignees === false && settings?.showDates === false) {
+        return null;
+    }
+
     return (
         <div className="flex items-center justify-between pt-1 border-t border-border-main2/50">
             {/* Avatares dos responsáveis */}
-            <div className="flex items-center -space-x-1.5">
+            {settings?.showAssignees !== false && (
+                <div className="flex items-center -space-x-1.5">
                 {assignedUsers.length === 0 ? (
                     <div className="flex items-center gap-1 text-text-muted">
                         <MdPerson size={13} />
@@ -39,9 +44,10 @@ export default function CardFooter({ assignedUsers, task }) {
                     </span>
                 )}
             </div>
+            )}
 
             {/* Datas */}
-            {(task.startDate || task.endDate) && (
+            {settings?.showDates !== false && (task.startDate || task.endDate) && (
                 <div
                     className={`flex items-center gap-1 text-[10px] ${
                         isOverdue ? "text-error" : "text-text-muted"

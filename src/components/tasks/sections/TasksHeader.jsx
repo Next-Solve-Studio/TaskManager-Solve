@@ -1,8 +1,8 @@
-import { MdOutlineTaskAlt } from "react-icons/md";
+import { MdOutlineTaskAlt, MdVisibility } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import { AddButton } from "@/components/ui/Buttons/Buttons";
 
-export default function TasksHeader({ handleOpenCreate, tasks }) {
+export default function TasksHeader({ handleOpenCreate, handleOpenSettings, tasks }) {
     return (
         <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
@@ -20,9 +20,19 @@ export default function TasksHeader({ handleOpenCreate, tasks }) {
                     sistema
                 </p>
             </div>
-            <CanDo permission="canCreateTasks">
-                <AddButton label="Nova Task" action={handleOpenCreate}/>
-            </CanDo>
+            <div className="flex gap-2 items-center">
+                <button
+                    type="button"
+                    onClick={handleOpenSettings}
+                    className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                    title="Configurar visualização"
+                >
+                    <MdVisibility size={20} />
+                </button>
+                <CanDo permission="canCreateTasks">
+                    <AddButton label="Nova Task" action={handleOpenCreate}/>
+                </CanDo>
+            </div>
         </div>
     );
 }

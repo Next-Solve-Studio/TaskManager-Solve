@@ -13,6 +13,7 @@ export function ProjectsGrid({
     onDelete,
     onCreate,
     filtered,
+    settings,
 }) {
     return (
         <section>
@@ -38,6 +39,7 @@ export function ProjectsGrid({
                             clientMap={clientMap}
                             onEdit={onEdit}
                             onDelete={onDelete}
+                            settings={settings}
                         />
                     ))}
                 </div>
