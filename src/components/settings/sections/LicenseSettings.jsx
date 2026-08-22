@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { doc, getDoc } from "firebase/firestore"
 import { MdRefresh, MdCancel } from "react-icons/md";
 import { RiShieldKeyholeLine } from "react-icons/ri";
@@ -19,7 +19,7 @@ export default function LicenseSettings() {
     const [checked, setChecked]   = useState(false);
     const [cancelling, setCancelling] = useState(false);
 
-    async function handleCheck() {
+    const handleCheck = useCallback(async () => {
         setLoading(true)
         try {
             const companySnap = await getDoc(doc(db,"companies", currentUser.companyId))
@@ -38,7 +38,13 @@ export default function LicenseSettings() {
             setLoading(false)
             setChecked(true)
         }
-    }
+    },[currentUser.companyId])
+
+    useEffect(()=>{
+        if (currentUser?.companyId){
+            handleCheck()
+        }
+    }, [currentUser?.companyId, handleCheck])
 
     async function handleCancelSubscription() {
         if (!window.confirm("Tem certeza que deseja cancelar sua assinatura? Você continuará com acesso até o fim do período já pago, mas não haverá renovação automática.")) return;
