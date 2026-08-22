@@ -122,7 +122,7 @@ export default function CreditCardForm({ onSubmit, onBack, loading }) {
                     <TextField label="Número" value={form.addressNumber} onChange={update("addressNumber")} required size="small" sx={muiDark} />
                 </div>
                 <div className="flex gap-2 mt-2">
-                    <button type="button" onClick={onBack} className="flex-1 h-10 rounded-xl font-bold text-sm text-white/70 border border-white/10 hover:bg-white/5 cursor-pointer">
+                    <button type="button" onClick={onBack} className="flex-1 h-10 rounded-xl bg-[#0f3460] font-bold text-sm text-white/70 border border-white/10 hover:bg-[#16213e] cursor-pointer">
                         Voltar
                     </button>
                     <button type="submit" disabled={loading} className="flex-1 h-10 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
