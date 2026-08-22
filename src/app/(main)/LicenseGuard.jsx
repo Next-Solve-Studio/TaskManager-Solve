@@ -4,23 +4,58 @@ import { doc, getDoc } from "firebase/firestore";
 import { FcLock } from "react-icons/fc";
 import { IoMdWarning } from "react-icons/io";
 import { FaPix } from "react-icons/fa6";
-import { MdCheck, MdContentCopy } from "react-icons/md";
-import { CircularProgress } from "@mui/material";
+import { MdCheck, MdContentCopy, MdCreditCard } from "react-icons/md";
+import { CircularProgress, TextField } from "@mui/material";
 import { toast } from "sonner";
 import { useLicense } from "@/context/LicenseApiContext";
 import { useBilling } from "@/context/BillingContext";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
+import { muiDark } from "@/styles/StyleInputs";
 
 const SUPPORT_EMAIL = "equipe.nextsolvesolution@gmail.com";
+
+function CreditCardForm({ onSubmit, onBack }) {
+    const [form, setForm] = useState({
+        holderName: "", number: "", expiryMonth: "", expiryYear: "", ccv: "",
+        postalCode: "", addressNumber: "",
+    });
+
+    const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
+    return (
+        <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} className="flex flex-col gap-3 w-full text-left">
+            <TextField label="Nome no Cartão" value={form.holderName} onChange={update("holderName")} required size="small" sx={muiDark} />
+            <TextField label="Número do Cartão" value={form.number} onChange={update("number")} required size="small" sx={muiDark} />
+            <div className="flex gap-2">
+                <TextField label="Mês (MM)" value={form.expiryMonth} onChange={update("expiryMonth")} required size="small" sx={muiDark} />
+                <TextField label="Ano (AAAA)" value={form.expiryYear} onChange={update("expiryYear")} required size="small" sx={muiDark} />
+                <TextField label="CVV" value={form.ccv} onChange={update("ccv")} required size="small" sx={muiDark} />
+            </div>
+            <div className="flex gap-2">
+                <TextField label="CEP" value={form.postalCode} onChange={update("postalCode")} required size="small" sx={muiDark} />
+                <TextField label="Número" value={form.addressNumber} onChange={update("addressNumber")} required size="small" sx={muiDark} />
+            </div>
+            <div className="flex gap-2 mt-2">
+                <button type="button" onClick={onBack} className="flex-1 h-10 rounded-xl font-bold text-sm text-white/70 border border-white/10 hover:bg-white/5 cursor-pointer">
+                    Voltar
+                </button>
+                <button type="submit" className="flex-1 h-10 rounded-xl font-bold text-sm text-white bg-brand-600 hover:bg-brand-700 cursor-pointer">
+                    Pagar com Cartão
+                </button>
+            </div>
+        </form>
+    );
+}
 
 function PixActivation() {
     const { setupCustomer, subscribe, cancelSubscription, appKey } = useBilling();
     const { currentUser } = useAuth();
-    const [state, setState] = useState("idle"); // idle | loading | qr | success
+    const [state, setState] = useState("choose"); // choose | card-form | loading | qr | success
     const [pixData, setPixData] = useState(null);
     const [secondsLeft, setSecondsLeft] = useState(300);
     const [copied, setCopied] = useState(false);
+    const [cancelling, setCancelling] = useState(false);
     const prevQrCode = useRef(null);
     const expired = secondsLeft <= 0;
 
@@ -57,7 +92,7 @@ function PixActivation() {
         return () => clearInterval(id);
     }, [state, appKey]);
 
-    const doSubscribe = async () => {
+    const doSubscribe = async (billingType, cardForm) => {
         const companySnap = await getDoc(doc(db, "companies", currentUser.companyId));
         const companyData = companySnap.data();
         const plan = companyData?.plan;
@@ -67,23 +102,71 @@ function PixActivation() {
 
         await setupCustomer({ name: currentUser.name, email: currentUser.email, cpfCnpj });
 
-        const subData = await subscribe({ plan, billingType: "PIX" });
-        if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
+        const payload = { plan, billingType };
+        if (billingType === "CREDIT_CARD") {
+            payload.creditCard = {
+                holderName: cardForm.holderName,
+                number: cardForm.number.replace(/\s/g, ""),
+                expiryMonth: cardForm.expiryMonth,
+                expiryYear: cardForm.expiryYear,
+                ccv: cardForm.ccv,
+            };
+            payload.creditCardHolderInfo = {
+                name: currentUser.name,
+                email: currentUser.email,
+                cpfCnpj,
+                postalCode: cardForm.postalCode.replace(/\D/g, ""),
+                addressNumber: cardForm.addressNumber,
+            };
+        }
 
-        setPixData(subData.pixInfo);
-        setState("qr");
+        const subData = await subscribe(payload);
+
+        if (billingType === "PIX") {
+            if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
+            setPixData(subData.pixInfo);
+            setState("qr");
+        } else {
+            setState("success");
+            setTimeout(() => { window.location.href = "/"; }, 2000);
+        }
     };
 
-    const handleGenerate = async () => {
+    const handleChoosePix = async () => {
         setState("loading");
-        try { await doSubscribe(); }
-        catch (err) { toast.error(err.message || "Erro ao gerar QR Code."); setState("idle"); }
+        try { await doSubscribe("PIX"); }
+        catch (err) { toast.error(err.message || "Erro ao gerar QR Code."); setState("choose"); }
+    };
+
+    const handleSubmitCard = async (cardForm) => {
+        setState("loading");
+        try { await doSubscribe("CREDIT_CARD", cardForm); }
+        catch (err) { toast.error(err.message || "Erro ao processar pagamento."); setState("card-form"); }
     };
 
     const handleRenew = async () => {
         setState("loading");
-        try { await doSubscribe(); }
+        try { await doSubscribe("PIX"); }
         catch (err) { toast.error(err.message || "Erro ao renovar QR Code."); setState("qr"); }
+    };
+
+    const handleCancel = async () => {
+        if (!window.confirm("Tem certeza? Isso vai excluir seu cadastro e você precisará se cadastrar novamente.")) return;
+        setCancelling(true);
+        try {
+            const token = await auth.currentUser?.getIdToken();
+            const res = await fetch("/api/billing/cancel-account", {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.message || "Erro ao cancelar.");
+            toast.success("Cadastro cancelado.");
+            window.location.href = "/login";
+        } catch (err) {
+            toast.error(err.message || "Erro ao cancelar cadastro.");
+            setCancelling(false);
+        }
     };
 
     const mm = String(Math.floor(secondsLeft / 60)).padStart(2, "0");
@@ -104,16 +187,38 @@ function PixActivation() {
         </div>
     );
 
-    if (state === "idle" || state === "loading") return (
-        <button
-            type="button"
-            onClick={handleGenerate}
-            disabled={state === "loading" || !appKey}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer"
-        >
-            {state === "loading" ? <CircularProgress size={18} color="inherit" /> : <FaPix size={16} />}
-            Completar Pagamento
-        </button>
+    if (state === "choose" || state === "loading") return (
+        <div className="flex flex-col items-center gap-3 w-full">
+            <div className="flex gap-2 w-full">
+                <button type="button" onClick={handleChoosePix} disabled={state === "loading" || !appKey}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer"
+                >
+                    {state === "loading" ? <CircularProgress size={18} color="inherit" /> : <FaPix size={16} />}
+                    PIX
+                </button>
+                <button type="button" onClick={() => setState("card-form")} disabled={state === "loading" || !appKey}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-white bg-white/10 border border-white/15 hover:bg-white/15 disabled:opacity-50 cursor-pointer"
+                >
+                    <MdCreditCard size={18} /> Cartão
+                </button>
+            </div>
+            <button type="button" onClick={handleCancel} disabled={cancelling}
+                className="text-xs text-white/40 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 mt-1"
+            >
+                {cancelling ? "Cancelando..." : "Cancelar cadastro"}
+            </button>
+        </div>
+    );
+
+    if (state === "card-form") return (
+        <div className="w-full">
+            <CreditCardForm onSubmit={handleSubmitCard} onBack={() => setState("choose")} />
+            <button type="button" onClick={handleCancel} disabled={cancelling}
+                className="text-xs text-white/40 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 mt-3 mx-auto block"
+            >
+                {cancelling ? "Cancelando..." : "Cancelar cadastro"}
+            </button>
+        </div>
     );
 
     // state === "qr"
@@ -158,6 +263,11 @@ function PixActivation() {
                     </button>
                 </div>
             )}
+            <button type="button" onClick={handleCancel} disabled={cancelling}
+                className="text-xs text-white/40 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
+            >
+                {cancelling ? "Cancelando..." : "Cancelar cadastro"}
+            </button>
         </div>
     );
 }
