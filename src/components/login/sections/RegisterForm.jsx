@@ -14,6 +14,7 @@ import { auth } from "@/lib/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
 import { muiDark } from "@/styles/StyleInputs";
 import PlanSelector from "./PlanSelector";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 
 const schema = yup.object({
     companyName: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
@@ -167,7 +168,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     const [pixData, setPixData] = useState(null);
     const [pixAppKey, setPixAppKey] = useState(null);
 
-    const { register, handleSubmit, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
+    const { register,watch, handleSubmit,setValue, formState: { errors } } = useForm({ resolver: yupResolver(schema) });
 
     const isFreePlan = selectedPlan === "FREE";
     const changeStep = (n) => { setStep(n); onStepChange?.(n); };
@@ -244,9 +245,29 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     async function onCompanyDataSubmit(data) {
         if (isFreePlan) {
             await doRegister(data);
-        } else {
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const cpfCnpjRaw = data.cnpj.replace(/\D/g, "");
+            const res = await fetch(
+                `/api/check-cpf-availability?cpfCnpj=${encodeURIComponent(cpfCnpjRaw)}&plan=${selectedPlan}`,
+            );
+            const result = await res.json();
+
+            if (!res.ok || !result.available) {
+                toast.error(result.message || result.error || "Não foi possível continuar com esse CPF/CNPJ.");
+                return;
+            }
+
             setSavedFormData(data);
             changeStep(3);
+        } catch (error) {
+            console.log(error);
+            toast.error("Erro ao verificar CPF/CNPJ. Tente novamente.");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -314,6 +335,8 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
         );
     }
 
+    const documentValue = watch("documento");
+
     return (
         <div className="flex flex-col gap-6 w-full">
             <div className="flex flex-col gap-2">
@@ -359,6 +382,14 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                 </div>
                 <TextField {...register("cnpj")} label="CPF/CNPJ" variant="outlined"
                     error={!!errors.cnpj}
+                    value={FormatDocument(documentValue)}
+                    onChange={(e) => {
+                            setValue(
+                                "documento",
+                                FormatDocument(e.target.value),
+                                { shouldValidate: true },
+                            );
+                        }}
                     helperText={errors.cnpj?.message ?? "Obrigatório — verificação de uso do plano gratuito"}
                     sx={muiDark}
                 />
