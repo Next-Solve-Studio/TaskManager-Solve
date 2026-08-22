@@ -44,6 +44,7 @@ function PixSuccess({ pixData, appKey, onRenew }) {
     const [secondsLeft, setSecondsLeft] = useState(300);
     const [refreshing, setRefreshing] = useState(false);
     const [activated, setActivated] = useState(false);
+    const [cancelling, setCancelling] = useState(false);
     const expired = secondsLeft <= 0;
     const prevQrCode = useRef(pixData?.qrCode);
 
@@ -245,7 +246,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     const [savedFormData, setSavedFormData] = useState(null);
     const [pixData, setPixData] = useState(null);
     const [pixAppKey, setPixAppKey] = useState(null);
-    const [cancelling, setCancelling] = useState(false);
+    
 
     const {
         register,
