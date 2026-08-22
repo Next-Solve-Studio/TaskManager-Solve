@@ -7,14 +7,15 @@ import { signOut } from "firebase/auth";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaArrowLeft, FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
-import { IoMdLock } from "react-icons/io";
-import { MdCheck, MdContentCopy, MdOutlineEmail } from "react-icons/md";
+import { IoMdLock, IoMdWarning } from "react-icons/io";
+import { MdCheck, MdContentCopy, MdCreditCard, MdOutlineEmail } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebaseConfig";
 import { muiDark } from "@/styles/StyleInputs";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
+import CreditCardForm from "@/components/billing/CreditCardForm";
 import PlanSelector from "./PlanSelector";
 
 const schema = yup
@@ -40,6 +41,67 @@ const schema = yup
     })
     .required();
 
+function CardConfirmation({ appKey }) {
+    const [status, setStatus] = useState("processing"); // processing | success | pending
+    const attemptsRef = useRef(0);
+
+    useEffect(() => {
+        if (!appKey) return;
+        const poll = async () => {
+            try {
+                const token = await auth.currentUser?.getIdToken();
+                if (!token) return;
+                const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                if (data.status === true) {
+                    setStatus("success");
+                    clearInterval(id);
+                    setTimeout(() => { window.location.href = "/"; }, 1500);
+                    return;
+                }
+                attemptsRef.current += 1;
+                if (attemptsRef.current >= 6) {
+                    setStatus("pending");
+                    clearInterval(id);
+                }
+            } catch { /* ignora */ }
+        };
+        const id = setInterval(poll, 5000);
+        poll();
+        return () => clearInterval(id);
+    }, [appKey]);
+
+    if (status === "success") return (
+        <div className="flex flex-col items-center gap-4 py-8">
+            <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center">
+                <MdCheck size={28} className="text-brand-500" />
+            </div>
+            <p className="text-base font-bold text-text-primary">Pagamento confirmado!</p>
+            <p className="text-sm text-text-muted">Redirecionando para o sistema...</p>
+            <CircularProgress size={20} sx={{ color: "var(--color-brand-500)" }} />
+        </div>
+    );
+
+    if (status === "pending") return (
+        <div className="flex flex-col items-center gap-4 py-8 text-center">
+            <IoMdWarning className="text-3xl text-yellow-400" />
+            <p className="text-base font-bold text-text-primary">Pagamento em análise</p>
+            <p className="text-sm text-text-muted">
+                Seu pagamento ainda está sendo processado pela operadora. Assim que for confirmado, sua conta é ativada automaticamente.
+            </p>
+        </div>
+    );
+
+    return (
+        <div className="flex flex-col items-center gap-4 py-8">
+            <CircularProgress size={28} sx={{ color: "var(--color-brand-500)" }} />
+            <p className="text-sm text-text-muted">Confirmando pagamento...</p>
+        </div>
+    );
+}
+
 function PixSuccess({ pixData, appKey, onRenew }) {
     const [copied, setCopied] = useState(false);
     const [secondsLeft, setSecondsLeft] = useState(300);
@@ -55,7 +117,6 @@ function PixSuccess({ pixData, appKey, onRenew }) {
         return () => clearInterval(id);
     }, [expired]);
 
-    // Reseta o timer quando chega um QR Code novo
     useEffect(() => {
         if (pixData?.qrCode && pixData.qrCode !== prevQrCode.current) {
             prevQrCode.current = pixData.qrCode;
@@ -248,7 +309,9 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     const [savedFormData, setSavedFormData] = useState(null);
     const [pixData, setPixData] = useState(null);
     const [pixAppKey, setPixAppKey] = useState(null);
-    
+    const [billingCycle, setBillingCycle] = useState("monthly");
+    const [paymentChoice, setPaymentChoice] = useState(null);
+    const [confirmingCard, setConfirmingCard] = useState(false);
 
     const {
         register,
@@ -264,7 +327,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
         onStepChange?.(n);
     };
 
-    async function doRegister(data) {
+    async function doRegister(data, billingType = "PIX", cardForm) {
         setLoading(true);
         try {
             const appKey = await registerCompany(
@@ -302,17 +365,31 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     throw new Error(e.error || "Erro ao configurar pagamento.");
                 }
 
+                const subscribeBody = { appKey, plan: selectedPlan, billingType, billingCycle: billingCycle.toUpperCase() };
+                if (billingType === "CREDIT_CARD" && cardForm) {
+                    subscribeBody.creditCard = {
+                        holderName: cardForm.holderName,
+                        number: cardForm.number.replace(/\s/g, ""),
+                        expiryMonth: cardForm.expiryMonth,
+                        expiryYear: cardForm.expiryYear,
+                        ccv: cardForm.ccv,
+                    };
+                    subscribeBody.creditCardHolderInfo = {
+                        name: data.name,
+                        email: data.email,
+                        cpfCnpj: cpfCnpjRaw,
+                        postalCode: cardForm.postalCode.replace(/\D/g, ""),
+                        addressNumber: cardForm.addressNumber,
+                    };
+                }
+
                 const subRes = await fetch("/api/billing/subscribe", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`,
                     },
-                    body: JSON.stringify({
-                        appKey,
-                        plan: selectedPlan,
-                        billingType: "PIX",
-                    }),
+                    body: JSON.stringify(subscribeBody),
                 });
                 const subData = await subRes.json();
                 if (!subRes.ok)
@@ -320,11 +397,16 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                         subData.error || "Erro ao criar assinatura.",
                     );
 
-                if (subData.pixInfo) {
+                if (billingType === "PIX") {
+                    if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
                     setPixAppKey(appKey);
                     setPixData(subData.pixInfo);
                     return;
                 }
+
+                setPixAppKey(appKey);
+                setConfirmingCard(true);
+                return;
             }
 
             toast.success("Empresa cadastrada com sucesso!", {
@@ -360,6 +442,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                 appKey: pixAppKey,
                 plan: selectedPlan,
                 billingType: "PIX",
+                billingCycle: billingCycle.toUpperCase(),
             }),
         });
         const subData = await subRes.json();
@@ -413,13 +496,14 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
             />
         );
 
+    if (confirmingCard) return <CardConfirmation appKey={pixAppKey} />;
+
     if (step === 1) {
         return (
             <div className="flex flex-col gap-6 w-full">
                 <div className="w-full">
                     <PlanSelector
-                        selected={selectedPlan}
-                        onSelect={setSelectedPlan}
+                        selected={selectedPlan} onSelect={setSelectedPlan} billing={billingCycle} onBillingChange={setBillingCycle}
                     />
                     <div className="flex flex-col gap-3">
                         <button
@@ -449,6 +533,29 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     }
 
     if (step === 3) {
+        if (paymentChoice === "CARD") {
+            return (
+                <div className="flex flex-col gap-5 w-full">
+                    <button type="button" onClick={() => setPaymentChoice(null)}
+                        className="flex items-center gap-2 text-xs text-text-muted hover:text-brand-500 transition-colors w-fit cursor-pointer"
+                    >
+                        <FaArrowLeft size={10} /> Voltar
+                    </button>
+                    <div>
+                        <h2 className="text-xl font-black text-text-primary">Pagamento com Cartão</h2>
+                        <p className="text-sm text-text-muted">
+                            Plano {selectedPlan} · R$ {selectedPlan === "BASIC" ? "29,90" : "49,90"}/mês
+                        </p>
+                    </div>
+                    <CreditCardForm
+                        loading={loading}
+                        onBack={() => setPaymentChoice(null)}
+                        onSubmit={(cardForm) => doRegister(savedFormData, "CREDIT_CARD", cardForm)}
+                    />
+                </div>
+            );
+        }
+
         return (
             <div className="flex flex-col gap-5 w-full">
                 <button
@@ -461,7 +568,7 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
 
                 <div>
                     <h2 className="text-xl font-black text-text-primary">
-                        Pagamento via PIX
+                        Forma de Pagamento
                     </h2>
                     <p className="text-sm text-text-muted">
                         Plano {selectedPlan} · R${" "}
@@ -469,25 +576,20 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     </p>
                 </div>
 
-                <div className="rounded-xl border border-brand-500/20 bg-brand-500/5 p-4 text-sm text-text-secondary leading-relaxed">
-                    Clique no botão para gerar o QR Code PIX. Após o pagamento,
-                    sua licença ativa automaticamente e você entra no sistema.
+                <div className="flex gap-2">
+                    <button type="button" disabled={loading} onClick={() => doRegister(savedFormData, "PIX")}
+                        className="flex-1 h-24 rounded-xl border border-brand-500/20 bg-brand-500/5 flex flex-col items-center justify-center gap-2 text-text-primary font-bold hover:border-brand-500/40 disabled:opacity-50 cursor-pointer"
+                    >
+                        {loading ? <CircularProgress size={20} /> : <FaPix size={22} className="text-brand-500" />}
+                        PIX
+                    </button>
+                    <button type="button" disabled={loading} onClick={() => setPaymentChoice("CARD")}
+                        className="flex-1 h-24 rounded-xl border border-border-main bg-bg-surface flex flex-col items-center justify-center gap-2 text-text-primary font-bold hover:border-brand-500/40 disabled:opacity-50 cursor-pointer"
+                    >
+                        <MdCreditCard size={22} className="text-brand-500" />
+                        Cartão
+                    </button>
                 </div>
-
-                <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => doRegister(savedFormData)}
-                    className="h-12 w-full rounded-xl font-bold text-base tracking-wide text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
-                >
-                    {loading ? (
-                        <CircularProgress size={22} color="inherit" />
-                    ) : (
-                        <>
-                            <FaPix size={16} /> Gerar QR Code PIX
-                        </>
-                    )}
-                </button>
             </div>
         );
     }

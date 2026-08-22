@@ -72,7 +72,7 @@ export default function StatusPlanBadge({checked, result}) {
                                 {config.label}
                             </p>
                             <p className="text-xs text-text-muted">
-                                {result.tenant ?? currentUser?.companyId}
+                                {result.tenant ?? "-"}
                             </p>
                         </div>
                     </div>
