@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
+import { signOut } from "firebase/auth";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaArrowLeft, FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
@@ -124,6 +125,7 @@ function PixSuccess({ pixData, appKey, onRenew }) {
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || "Erro ao cancelar.");
             toast.success("Cadastro cancelado.");
+            await signOut(auth);
             window.location.href = "/login";
         } catch (err) {
             toast.error(err.message || "Erro ao cancelar cadastro.");

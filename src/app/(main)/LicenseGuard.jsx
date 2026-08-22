@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { FcLock } from "react-icons/fc";
 import { IoMdWarning } from "react-icons/io";
+import { signOut } from "firebase/auth";
 import { FaPix } from "react-icons/fa6";
 import { MdCheck, MdContentCopy, MdCreditCard } from "react-icons/md";
 import { CircularProgress, TextField } from "@mui/material";
@@ -162,6 +163,7 @@ function PixActivation() {
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || "Erro ao cancelar.");
             toast.success("Cadastro cancelado.");
+            await signOut(auth);
             window.location.href = "/login";
         } catch (err) {
             toast.error(err.message || "Erro ao cancelar cadastro.");
