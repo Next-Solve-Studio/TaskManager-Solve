@@ -21,7 +21,7 @@ export default function TasksHeader({ handleOpenCreate, handleOpenSettings, task
                 </p>
             </div>
             <div className="flex gap-2 items-center">
-                <CanDo permission="canManageSystemSettings">
+                <CanDo permission="canManageProjectCardView">
                     <button
                         type="button"
                         onClick={handleOpenSettings}

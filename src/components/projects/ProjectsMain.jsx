@@ -163,7 +163,7 @@ export default function ProjectsMain() {
             <div className="flex justify-between flex-col gap-5 sm:flex-row">
                 <ProjectsStats projects={projects} />
                 <div className="flex gap-2 items-center justify-end">
-                    <CanDo permission="canManageSystemSettings">
+                    <CanDo permission="canManageProjectCardView">
                         <button
                             type="button"
                             onClick={() => setSettingsOpen(true)}
