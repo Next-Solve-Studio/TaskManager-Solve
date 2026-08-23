@@ -116,6 +116,15 @@ export default function ProjectCardSettingsModal({
                     />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
+                    <span className="text-[13px] font-semibold text-text-secondary">Links (Repositório/Hosting)</span>
+                    <Switch
+                        size="small"
+                        checked={settings.showRepository ?? true}
+                        onChange={handleToggle("showRepository")}
+                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
+                    />
+                </div>
+                <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Criado/Modificado Por</span>
                     <Switch
                         size="small"

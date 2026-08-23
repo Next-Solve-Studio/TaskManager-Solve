@@ -3,7 +3,7 @@ import { MdCalendarToday, MdComputer, MdOutlineTimer } from "react-icons/md";
 import { RiGitBranchLine } from "react-icons/ri";
 import { useProjectsDates } from "@/hooks/useProjectDates";
 
-export default function CardFooter({ project }) {
+export default function CardFooter({ project, settings }) {
     const {
         startDateInfo,
         expectedInfo,
@@ -12,9 +12,15 @@ export default function CardFooter({ project }) {
         supportInfo,
     } = useProjectsDates(project);
 
+    // Se as datas estão ocultas e não há links, não precisamos renderizar o footer
+    if (settings?.showDates === false && !project.repositoryUrl && !project.hosting) {
+        return null;
+    }
+
     return (
         <div className="flex items-center justify-between pt-3 gap-2 flex-wrap border-t border-border-main">
-            <div className="flex flex-col gap-0.75">
+            {settings?.showDates !== false && (
+                <div className="flex flex-col gap-0.75">
                 {startDateInfo && (
                     <span className="flex items-center gap-1 text-[11px] text-text-secondary">
                         <MdCalendarToday size={11} />
@@ -56,34 +62,37 @@ export default function CardFooter({ project }) {
                     </span>
                 )}
             </div>
+            )}
 
-            <div style={{ display: "flex", gap: 6 }}>
-                {project.repositoryUrl && (
-                    <Tooltip title="Repositório" arrow>
-                        <a
-                            href={project.repositoryUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-center w-7 h-7 rounded-[7px] text-text-secondary bg-bg-surface
-                                border border-border-main no-underline transition-all duration-150
-                                sm:hover:text-brand-500 sm:hover:border-brand-500/30"
-                        >
-                            <RiGitBranchLine size={14} />
-                        </a>
-                    </Tooltip>
-                )}
-                {project.hosting && (
-                    <Tooltip title={`Hosting: ${project.hosting}`} arrow>
-                        <div
-                            className="flex items-center gap-1 py-0.75 px-2.5 rounded-[7px] text-text-muted
-                            bg-bg-surface border border-border-main text-[10px]"
-                        >
-                            <MdComputer size={12} />
-                            {project.hosting}
-                        </div>
-                    </Tooltip>
-                )}
-            </div>
+            {settings?.showRepository !== false && (
+                <div style={{ display: "flex", gap: 6 }}>
+                    {project.repositoryUrl && (
+                        <Tooltip title="Repositório" arrow>
+                            <a
+                                href={project.repositoryUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center justify-center w-7 h-7 rounded-[7px] text-text-secondary bg-bg-surface
+                                    border border-border-main no-underline transition-all duration-150
+                                    sm:hover:text-brand-500 sm:hover:border-brand-500/30"
+                            >
+                                <RiGitBranchLine size={14} />
+                            </a>
+                        </Tooltip>
+                    )}
+                    {project.hosting && (
+                        <Tooltip title={`Hosting: ${project.hosting}`} arrow>
+                            <div
+                                className="flex items-center gap-1 py-0.75 px-2.5 rounded-[7px] text-text-muted
+                                bg-bg-surface border border-border-main text-[10px]"
+                            >
+                                <MdComputer size={12} />
+                                {project.hosting}
+                            </div>
+                        </Tooltip>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

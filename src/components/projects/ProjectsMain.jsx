@@ -52,6 +52,7 @@ export default function ProjectsMain() {
         showTechStack: true,
         showDevelopers: true,
         showDates: true,
+        showRepository: true,
         showCreatedModifiedBy: true,
     };
     const settings = systemSettings?.projectCardSettings || defaultSettings;

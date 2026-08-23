@@ -64,7 +64,7 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete, settings 
 
             {settings?.showDevelopers !== false && <CardDevs project={project} usersMap={usersMap} />}
 
-            {settings?.showDates !== false && <CardFooter project={project} />}
+            <CardFooter project={project} settings={settings} />
 
             {settings?.showCreatedModifiedBy !== false && <CreatedModifiedBy usersMap={usersMap} project={project} />}
         </div>

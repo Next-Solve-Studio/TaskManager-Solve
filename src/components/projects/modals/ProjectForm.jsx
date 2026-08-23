@@ -500,7 +500,7 @@ export function ProjectForm({
 
                     {/* Repository URL */}
                     <TextField
-                        label="URL do Repositório"
+                        label="URL do Site"
                         {...register("repositoryUrl")}
                         error={Boolean(errors.repositoryUrl)}
                         helperText={errors.repositoryUrl?.message}
