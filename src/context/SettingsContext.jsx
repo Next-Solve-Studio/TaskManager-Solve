@@ -28,13 +28,10 @@ export const SettingsProvider = ({ children }) => {
     const [systemSettings, setSystemSettings] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Ouvir configurações do sistema (Global)
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-        if (!currentUser?.uid) return;
-        
+        if (!currentUser?.companyId) return;
 
-        const systemDocRef = doc(db, "system_settings", "config");
+        const systemDocRef = doc(db, "system_settings", currentUser.companyId);
         const unsubscribe = onSnapshot(systemDocRef, (docSnap) => {
             if (docSnap.exists()) {
                 setSystemSettings(docSnap.data());
@@ -42,7 +39,7 @@ export const SettingsProvider = ({ children }) => {
             setLoading(false);
         });
         return unsubscribe;
-    }, [currentUser]);
+    }, [currentUser?.companyId]);
 
     // Atualizar perfil do usuário (name, preferences, etc)
     const updateProfile = useCallback(
@@ -93,12 +90,14 @@ export const SettingsProvider = ({ children }) => {
 
     // Atualizar configurações globais do sistema
     const updateSystemSettings = useCallback(async (data) => {
+        if (!currentUser?.companyId) return;
         try {
-            const systemDocRef = doc(db, "system_settings", "config");
+            const systemDocRef = doc(db, "system_settings", currentUser.companyId);
             await setDoc(
                 systemDocRef,
                 {
                     ...data,
+                    companyId: currentUser.companyId,
                     updatedAt: new Date(),
                 },
                 { merge: true },
@@ -109,7 +108,7 @@ export const SettingsProvider = ({ children }) => {
             toast.error(getErrorMessage(error, "Erro ao atualizar configurações"));
             throw error;
         }
-    }, []);
+    }, [currentUser?.companyId]);
 
     const value = useMemo(()=>({
         userSettings,
