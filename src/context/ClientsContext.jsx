@@ -59,7 +59,9 @@ export const ClientsProvider = ({ children }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir clientes", error);
-                toast.error("Erro ao carregar clientes");
+                if (error.code !== "permission-denied") {
+                    toast.error("Erro ao carregar clientes");
+                }
                 setLoading(false);
             },
         );

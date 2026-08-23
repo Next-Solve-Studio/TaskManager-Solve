@@ -77,7 +77,9 @@ export const TasksProvider = ({ children, projectId }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir tasks", error);
-                toast.error(getErrorMessage(error, "Erro ao carregar tarefas"));
+                if (error.code !== "permission-denied") {
+                    toast.error(getErrorMessage(error, "Erro ao carregar tarefas"));
+                }
                 setLoadingTasks(false);
             },
         );

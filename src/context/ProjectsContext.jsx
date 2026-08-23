@@ -74,7 +74,9 @@ export const ProjectsProvider = ({ children }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir projetos", error);
-                toast.error("Erro ao carregar projetos");
+                if (error.code !== "permission-denied") {
+                    toast.error("Erro ao carregar projetos");
+                }
                 setLoadingProjects(false);
             },
         );

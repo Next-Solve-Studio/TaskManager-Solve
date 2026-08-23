@@ -114,7 +114,9 @@ export const ScheduleProvider = ({ children }) => {
             },
             (error) => {
                 console.error(error);
-                toast.error(getErrorMessage(error, "Erro ao carregar agenda"));
+                if (error.code !== "permission-denied") {
+                    toast.error(getErrorMessage(error, "Erro ao carregar agenda"));
+                }
                 setLoadingSchedules(false);
             },
         );

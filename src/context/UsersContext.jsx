@@ -55,7 +55,9 @@ export const UsersProvider = ({ children }) => {
             },
             (error) => {
                 console.error("Erro ao ouvir users", error);
-                toast.error(getErrorMessage(error, "Erro ao carregar usuários"));
+                if (error.code !== "permission-denied") {
+                    toast.error(getErrorMessage(error, "Erro ao carregar usuários"));
+                }
                 setLoadingUsers(false);
             },
         );
