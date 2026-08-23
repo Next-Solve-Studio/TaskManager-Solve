@@ -32,6 +32,7 @@ import { Avatar } from "@/components/ui/AvatarBadge";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
+import { useSettings } from "@/context/SettingsContext";
 
 export function ProjectForm({
     open,
@@ -44,6 +45,8 @@ export function ProjectForm({
     loading,
 }) {
     const isEdit = Boolean(project);
+    const { systemSettings } = useSettings();
+    const settings = systemSettings?.projectCardSettings || {};
 
     const defaultValues = {
         title: "",
@@ -181,7 +184,6 @@ export function ProjectForm({
 
             <form onSubmit={handleSubmit(handleFormSubmit)}>
                 <DialogContent className="flex flex-col gap-4 py-5 px-6">
-                    {/* Title + Client */}
                     <div className="grid grid-cols-2 gap-3">
                         <TextField
                             label="Título *"
@@ -191,51 +193,56 @@ export function ProjectForm({
                             fullWidth
                             size="small"
                             sx={muiDark}
+                            className={settings?.showClient !== false ? "" : "col-span-2"}
                         />
 
-                        <FormControl
-                            size="small"
-                            error={Boolean(errors.client)}
-                            sx={muiDark}
-                        >
-                            <InputLabel>Cliente *</InputLabel>
-                            <Controller
-                                name="client"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        label="Cliente *"
-                                        MenuProps={menuPaper}
-                                    >
-                                        {clients.map((c) => (
-                                            <MenuItem
-                                                key={c.id}
-                                                value={c.id}
-                                                style={{
-                                                    fontSize: 13,
-                                                    color: "var(--color-text-primary)",
-                                                }}
-                                            >
-                                                {c.name}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                )}
-                            />
-                        </FormControl>
+                        {settings?.showClient !== false && (
+                            <FormControl
+                                size="small"
+                                error={Boolean(errors.client)}
+                                sx={muiDark}
+                            >
+                                <InputLabel>Cliente *</InputLabel>
+                                <Controller
+                                    name="client"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select
+                                            {...field}
+                                            label="Cliente *"
+                                            MenuProps={menuPaper}
+                                        >
+                                            {clients.map((c) => (
+                                                <MenuItem
+                                                    key={c.id}
+                                                    value={c.id}
+                                                    style={{
+                                                        fontSize: 13,
+                                                        color: "var(--color-text-primary)",
+                                                    }}
+                                                >
+                                                    {c.name}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    )}
+                                />
+                            </FormControl>
+                        )}
                     </div>
 
                     {/* Description */}
-                    <TextField
-                        label="Descrição"
-                        {...register("description")}
-                        multiline
-                        rows={3}
-                        fullWidth
-                        size="small"
-                        sx={muiDark}
-                    />
+                    {settings?.showDescription !== false && (
+                        <TextField
+                            label="Descrição"
+                            {...register("description")}
+                            multiline
+                            rows={3}
+                            fullWidth
+                            size="small"
+                            sx={muiDark}
+                        />
+                    )}
 
                     <CanDo permission="canViewFinancials">
                         <div className="grid grid-cols-2 gap-3 p-3 rounded-lg bg-brand-500/5 border border-brand-500/10">
@@ -343,180 +350,194 @@ export function ProjectForm({
                         </FormControl>
                     </div>
 
-                    <FormControl
-                        size="small"
-                        error={Boolean(errors.developers)}
-                        sx={muiDark}
-                        fullWidth
-                    >
-                        <InputLabel>Desenvolvedores *</InputLabel>
-                        <Controller
-                            name="developers"
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    multiple
-                                    label="Desenvolvedores *"
-                                    input={
-                                        <OutlinedInput label="Desenvolvedores *" />
-                                    }
-                                    MenuProps={menuPaper}
-                                    renderValue={(selected) => (
-                                        <div className="flex flex-wrap gap-1">
-                                            {selected.map((uid) => {
-                                                const u = usersMap[uid];
-                                                return (
-                                                    <Chip
-                                                        key={uid}
-                                                        label={u?.name || uid}
-                                                        size="small"
-                                                        sx={{
-                                                            background:
-                                                                "rgba(25, 202, 104, 0.15)",
-                                                            color: "var(--color-brand-500)",
-                                                            fontSize: 11,
-                                                            height: 22,
-                                                            "& .MuiChip-label":
-                                                                { px: 1 },
-                                                        }}
-                                                    />
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                >
-                                    {users.map((u) => (
-                                        <MenuItem
-                                            key={u.id}
-                                            value={u.id}
-                                            style={{ fontSize: 13 }}
-                                        >
-                                            <Checkbox
-                                                checked={field.value?.includes(
-                                                    u.id,
-                                                )}
-                                                size="small"
-                                                sx={{
-                                                    color: "var(--color-font-gray2)",
-                                                    "&.Mui-checked": {
-                                                        color: "var(--color-brand-500)",
-                                                    },
-                                                    padding: "0 8px 0 0",
-                                                }}
-                                            />
-                                            <div className="flex items-center gap-2">
-                                                <Avatar
-                                                    name={u.name}
-                                                    uid={u.id}
-                                                    size={22}
-                                                    referrerPolicy="no-referrer"
-                                                    src={u.photo}
-                                                />
-                                                <span className="text-secondary">
-                                                    {u.name}
-                                                </span>
-                                                <span className="text-text-muted text-[11px]">
-                                                    ({u.role || "membro"})
-                                                </span>
+                    {settings?.showDevelopers !== false && (
+                        <FormControl
+                            size="small"
+                            error={Boolean(errors.developers)}
+                            sx={muiDark}
+                            fullWidth
+                        >
+                            <InputLabel>Desenvolvedores *</InputLabel>
+                            <Controller
+                                name="developers"
+                                control={control}
+                                render={({ field }) => (
+                                    <Select
+                                        {...field}
+                                        multiple
+                                        label="Desenvolvedores *"
+                                        input={
+                                            <OutlinedInput label="Desenvolvedores *" />
+                                        }
+                                        MenuProps={menuPaper}
+                                        renderValue={(selected) => (
+                                            <div className="flex flex-wrap gap-1">
+                                                {selected.map((uid) => {
+                                                    const u = usersMap[uid];
+                                                    return (
+                                                        <Chip
+                                                            key={uid}
+                                                            label={u?.name || uid}
+                                                            size="small"
+                                                            sx={{
+                                                                background:
+                                                                    "rgba(25, 202, 104, 0.15)",
+                                                                color: "var(--color-brand-500)",
+                                                                fontSize: 11,
+                                                                height: 22,
+                                                                "& .MuiChip-label":
+                                                                    { px: 1 },
+                                                            }}
+                                                        />
+                                                    );
+                                                })}
                                             </div>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
+                                        )}
+                                    >
+                                        {users.map((u) => (
+                                            <MenuItem
+                                                key={u.id}
+                                                value={u.id}
+                                                style={{ fontSize: 13 }}
+                                            >
+                                                <Checkbox
+                                                    checked={field.value?.includes(
+                                                        u.id,
+                                                    )}
+                                                    size="small"
+                                                    sx={{
+                                                        color: "var(--color-font-gray2)",
+                                                        "&.Mui-checked": {
+                                                            color: "var(--color-brand-500)",
+                                                        },
+                                                        padding: "0 8px 0 0",
+                                                    }}
+                                                />
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar
+                                                        name={u.name}
+                                                        uid={u.id}
+                                                        size={22}
+                                                        referrerPolicy="no-referrer"
+                                                        src={u.photo}
+                                                    />
+                                                    <span className="text-secondary">
+                                                        {u.name}
+                                                    </span>
+                                                    <span className="text-text-muted text-[11px]">
+                                                        ({u.role || "membro"})
+                                                    </span>
+                                                </div>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                )}
+                            />
+                            {errors.developers && (
+                                <FormHelperText>
+                                    {errors.developers.message}
+                                </FormHelperText>
                             )}
-                        />
-                        {errors.developers && (
-                            <FormHelperText>
-                                {errors.developers.message}
-                            </FormHelperText>
-                        )}
-                    </FormControl>
+                        </FormControl>
+                    )}
 
                     {/* StartDate + DeliveryDate */}
-                    <div className="grid gap-3 grid-cols-2">
-                        <TextField
-                            label="Data de Início"
-                            type="date"
-                            {...register("startDate")}
-                            fullWidth
-                            size="small"
-                            InputLabelProps={{ shrink: true }}
-                            sx={muiDark}
-                        />
-                        <TextField
-                            label="Previsão de Entrega"
-                            type="date"
-                            {...register("expectedDeliveryDate")}
-                            fullWidth
-                            size="small"
-                            InputLabelProps={{ shrink: true }}
-                            sx={muiDark}
-                        />
-                        {project?.status === "concluido" && (
+                    {settings?.showDates !== false && (
+                        <div className="grid gap-3 grid-cols-2">
                             <TextField
-                                label="Data de Entrega"
+                                label="Data de Início"
                                 type="date"
+                                {...register("startDate")}
+                                fullWidth
+                                size="small"
+                                InputLabelProps={{ shrink: true }}
                                 sx={muiDark}
-                                {...register("deliveryDate")}
                             />
-                        )}
-                    </div>
+                            <TextField
+                                label="Previsão de Entrega"
+                                type="date"
+                                {...register("expectedDeliveryDate")}
+                                fullWidth
+                                size="small"
+                                InputLabelProps={{ shrink: true }}
+                                sx={muiDark}
+                            />
+                            {project?.status === "concluido" && (
+                                <TextField
+                                    label="Data de Entrega"
+                                    type="date"
+                                    sx={muiDark}
+                                    {...register("deliveryDate")}
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {/* TechStack + Hosting */}
-                    <div className="grid gap-3 grid-cols-2">
-                        <TextField
-                            label="Tech Stack (separado por vírgula)"
-                            {...register("techStack")}
-                            fullWidth
-                            size="small"
-                            sx={muiDark}
-                            placeholder="React, Node.js, Firebase..."
-                            InputProps={{
-                                startAdornment: (
-                                    <MdCode
-                                        size={15}
-                                        className="text-font-gray2 mr-1.5"
-                                    />
-                                ),
-                            }}
-                        />
-                        <TextField
-                            label="Hosting"
-                            {...register("hosting")}
-                            fullWidth
-                            size="small"
-                            sx={muiDark}
-                            placeholder="Vercel, AWS, Netlify..."
-                            InputProps={{
-                                startAdornment: (
-                                    <MdComputer
-                                        size={15}
-                                        className="text-font-gray2 mr-1.5"
-                                    />
-                                ),
-                            }}
-                        />
-                    </div>
+                    {(settings?.showTechStack !== false || settings?.showRepository !== false) && (
+                        <div className="grid gap-3 grid-cols-2">
+                            {settings?.showTechStack !== false && (
+                                <TextField
+                                    label="Tech Stack (separado por vírgula)"
+                                    {...register("techStack")}
+                                    fullWidth
+                                    size="small"
+                                    sx={muiDark}
+                                    className={settings?.showRepository === false ? "col-span-2" : ""}
+                                    placeholder="React, Node.js, Firebase..."
+                                    InputProps={{
+                                        startAdornment: (
+                                            <MdCode
+                                                size={15}
+                                                className="text-font-gray2 mr-1.5"
+                                            />
+                                        ),
+                                    }}
+                                />
+                            )}
+                            {settings?.showRepository !== false && (
+                                <TextField
+                                    label="Hosting"
+                                    {...register("hosting")}
+                                    fullWidth
+                                    size="small"
+                                    sx={muiDark}
+                                    className={settings?.showTechStack === false ? "col-span-2" : ""}
+                                    placeholder="Vercel, AWS, Netlify..."
+                                    InputProps={{
+                                        startAdornment: (
+                                            <MdComputer
+                                                size={15}
+                                                className="text-font-gray2 mr-1.5"
+                                            />
+                                        ),
+                                    }}
+                                />
+                            )}
+                        </div>
+                    )}
 
                     {/* Repository URL */}
-                    <TextField
-                        label="URL do Site"
-                        {...register("repositoryUrl")}
-                        error={Boolean(errors.repositoryUrl)}
-                        helperText={errors.repositoryUrl?.message}
-                        fullWidth
-                        size="small"
-                        sx={muiDark}
-                        placeholder="https://github.com/..."
-                        InputProps={{
-                            startAdornment: (
-                                <RiGitBranchLine
-                                    size={15}
-                                    className="text-font-gray2 mr-1.5"
-                                />
-                            ),
-                        }}
-                    />
+                    {settings?.showRepository !== false && (
+                        <TextField
+                            label="URL do Site"
+                            {...register("repositoryUrl")}
+                            error={Boolean(errors.repositoryUrl)}
+                            helperText={errors.repositoryUrl?.message}
+                            fullWidth
+                            size="small"
+                            sx={muiDark}
+                            placeholder="https://github.com/..."
+                            InputProps={{
+                                startAdornment: (
+                                    <RiGitBranchLine
+                                        size={15}
+                                        className="text-font-gray2 mr-1.5"
+                                    />
+                                ),
+                            }}
+                        />
+                    )}
                 </DialogContent>
 
                 <DialogActions className="gap-2 border-t border-border-main py-4 px-6">

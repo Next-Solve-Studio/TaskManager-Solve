@@ -28,6 +28,7 @@ import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { SelectController } from "@/components/ui/SelectController";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
+import { useSettings } from "@/context/SettingsContext";
 
 function TaskForm({
     open,
@@ -40,6 +41,8 @@ function TaskForm({
     projects,
 }) {
     const isEdit = Boolean(task);
+    const { systemSettings } = useSettings();
+    const settings = systemSettings?.taskCardSettings || {};
 
     const defaultValues = {
         title: "",
@@ -211,111 +214,117 @@ function TaskForm({
                         )}
                     />
                     {/* Descrição */}
-                    <TextField
-                        label="Descrição"
-                        size="small"
-                        fullWidth
-                        multiline
-                        rows={3}
-                        sx={muiDark}
-                        {...register("description")}
-                    />
+                    {settings?.showDescription !== false && (
+                        <TextField
+                            label="Descrição"
+                            size="small"
+                            fullWidth
+                            multiline
+                            rows={3}
+                            sx={muiDark}
+                            {...register("description")}
+                        />
+                    )}
 
                     {/* Responsáveis */}
-                    <Controller
-                        name="assignedTo"
-                        control={control}
-                        render={({ field }) => (
-                            <FormControl fullWidth size="small" sx={muiDark}>
-                                <InputLabel>Responsáveis</InputLabel>
-                                <Select
-                                    multiple
-                                    value={field.value}
-                                    MenuProps={menuPaper}
-                                    onChange={field.onChange}
-                                    input={
-                                        <OutlinedInput label="Responsáveis" />
-                                    }
-                                    renderValue={(selected) => (
-                                        <div className="flex flex-wrap gap-1">
-                                            {selected.map((uid) => (
-                                                <Chip
-                                                    key={uid}
-                                                    label={
-                                                        usersMap[uid]?.name ||
-                                                        uid
-                                                    }
+                    {settings?.showAssignees !== false && (
+                        <Controller
+                            name="assignedTo"
+                            control={control}
+                            render={({ field }) => (
+                                <FormControl fullWidth size="small" sx={muiDark}>
+                                    <InputLabel>Responsáveis</InputLabel>
+                                    <Select
+                                        multiple
+                                        value={field.value}
+                                        MenuProps={menuPaper}
+                                        onChange={field.onChange}
+                                        input={
+                                            <OutlinedInput label="Responsáveis" />
+                                        }
+                                        renderValue={(selected) => (
+                                            <div className="flex flex-wrap gap-1">
+                                                {selected.map((uid) => (
+                                                    <Chip
+                                                        key={uid}
+                                                        label={
+                                                            usersMap[uid]?.name ||
+                                                            uid
+                                                        }
+                                                        size="small"
+                                                        sx={{
+                                                            background:
+                                                                "rgba(25,202,104,0.15)",
+                                                            color: "var(--color-brand-500)",
+                                                            fontSize: 11,
+                                                        }}
+                                                    />
+                                                ))}
+                                            </div>
+                                        )}
+                                    >
+                                        {users.map((u) => (
+                                            <MenuItem key={u.id} value={u.id}>
+                                                <Checkbox
+                                                    checked={field.value.includes(
+                                                        u.id,
+                                                    )}
                                                     size="small"
                                                     sx={{
-                                                        background:
-                                                            "rgba(25,202,104,0.15)",
                                                         color: "var(--color-brand-500)",
-                                                        fontSize: 11,
+                                                        "&.Mui-checked": {
+                                                            color: "var(--color-brand-500)",
+                                                        },
                                                     }}
                                                 />
-                                            ))}
-                                        </div>
-                                    )}
-                                >
-                                    {users.map((u) => (
-                                        <MenuItem key={u.id} value={u.id}>
-                                            <Checkbox
-                                                checked={field.value.includes(
-                                                    u.id,
-                                                )}
-                                                size="small"
-                                                sx={{
-                                                    color: "var(--color-brand-500)",
-                                                    "&.Mui-checked": {
-                                                        color: "var(--color-brand-500)",
-                                                    },
-                                                }}
-                                            />
-                                            <div className="flex items-center gap-2">
-                                                <Avatar
-                                                    name={u.name}
-                                                    uid={u.id}
-                                                    size={22}
-                                                    src={u.photo} // URL da foto
-                                                />
-                                                <span className="text-[13px]">
-                                                    {u.name}
-                                                </span>
-                                            </div>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        )}
-                    />
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar
+                                                        name={u.name}
+                                                        uid={u.id}
+                                                        size={22}
+                                                        src={u.photo} // URL da foto
+                                                    />
+                                                    <span className="text-[13px]">
+                                                        {u.name}
+                                                    </span>
+                                                </div>
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            )}
+                        />
+                    )}
 
                     {/* Datas */}
-                    <div className="grid grid-cols-2 gap-3">
-                        <TextField
-                            label="Início"
-                            type="date"
-                            size="small"
-                            fullWidth
-                            InputLabelProps={{ shrink: true }}
-                            sx={muiDark}
-                            {...register("startDate")}
-                        />
-                        <TextField
-                            label="Fim"
-                            type="date"
-                            size="small"
-                            fullWidth
-                            InputLabelProps={{ shrink: true }}
-                            sx={muiDark}
-                            {...register("endDate", {
-                                validate: (value, formValues) =>
-                                    !value ||
-                                    !formValues.startDate ||
-                                    value >= formValues.startDate ||
-                                    "Fim deve ser após início",
-                            })}
-                        />
-                    </div>
+                    {settings?.showDates !== false && (
+                        <div className="grid grid-cols-2 gap-3">
+                            <TextField
+                                label="Início"
+                                type="date"
+                                size="small"
+                                fullWidth
+                                InputLabelProps={{ shrink: true }}
+                                sx={muiDark}
+                                {...register("startDate")}
+                            />
+                            <TextField
+                                label="Fim"
+                                type="date"
+                                size="small"
+                                fullWidth
+                                InputLabelProps={{ shrink: true }}
+                                sx={muiDark}
+                                {...register("endDate", {
+                                    validate: (value, formValues) =>
+                                        !value ||
+                                        !formValues.startDate ||
+                                        value >= formValues.startDate ||
+                                        "Fim deve ser após início",
+                                })}
+                            />
+                        </div>
+                    )}
 
                     {/* Prioridade + Status */}
                     <div className="grid grid-cols-2 gap-3">
@@ -346,85 +355,87 @@ function TaskForm({
                     />
 
                     {/* Checklist */}
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-1.5">
-                            <MdOutlineChecklist className="text-brand-500 text-base" />
-                            <span className="text-[12px] font-bold uppercase tracking-widest text-text-secondary">
-                                Checklist
-                            </span>
-                            <span className="text-[10px] text-text-muted ml-auto">
-                                {checklistItems.filter((i) => i.done).length}/
-                                {checklistItems.length}
-                            </span>
-                        </div>
+                    {settings?.showChecklist !== false && (
+                        <div className="flex flex-col gap-2">
+                            <div className="flex items-center gap-1.5">
+                                <MdOutlineChecklist className="text-brand-500 text-base" />
+                                <span className="text-[12px] font-bold uppercase tracking-widest text-text-secondary">
+                                    Checklist
+                                </span>
+                                <span className="text-[10px] text-text-muted ml-auto">
+                                    {checklistItems.filter((i) => i.done).length}/
+                                    {checklistItems.length}
+                                </span>
+                            </div>
 
-                        {/* Items existentes */}
-                        <div className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-1">
-                            {checklistItems.map((item) => (
-                                <div
-                                    key={item.id}
-                                    className="flex items-center gap-2 bg-bg-surface rounded-lg px-3 py-1.5 group"
+                            {/* Items existentes */}
+                            <div className="flex flex-col gap-1 max-h-36 overflow-y-auto pr-1">
+                                {checklistItems.map((item) => (
+                                    <div
+                                        key={item.id}
+                                        className="flex items-center gap-2 bg-bg-surface rounded-lg px-3 py-1.5 group"
+                                    >
+                                        <Checkbox
+                                            checked={item.done}
+                                            onChange={() =>
+                                                toggleChecklistItem(item.id)
+                                            }
+                                            size="small"
+                                            sx={{
+                                                p: 0,
+                                                color: "var(--color-text-muted)",
+                                                "&.Mui-checked": {
+                                                    color: "var(--color-brand-500)",
+                                                },
+                                            }}
+                                        />
+                                        <span
+                                            className={`text-[12px] flex-1 ${
+                                                item.done
+                                                    ? "line-through text-text-muted"
+                                                    : "text-text-primary"
+                                            }`}
+                                        >
+                                            {item.text}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                removeChecklistItem(item.id)
+                                            }
+                                            className="opacity-0 group-hover:opacity-100 text-error hover:text-error/80 transition-all cursor-pointer"
+                                        >
+                                            <MdDelete size={14} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Adicionar item */}
+                            <div className="flex gap-2">
+                                <input
+                                    type="text"
+                                    value={newItem}
+                                    onChange={(e) => setNewItem(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            addChecklistItem();
+                                        }
+                                    }}
+                                    placeholder="Adicionar item ao checklist..."
+                                    className="flex-1 bg-bg-surface border border-border-main2 rounded-lg px-3 py-1.5 text-[12px] text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/50 transition-colors"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={addChecklistItem}
+                                    className="w-8 h-8 flex items-center justify-center bg-brand-500/15 hover:bg-brand-500/25 text-brand-500 rounded-lg transition-colors cursor-pointer"
                                 >
-                                    <Checkbox
-                                        checked={item.done}
-                                        onChange={() =>
-                                            toggleChecklistItem(item.id)
-                                        }
-                                        size="small"
-                                        sx={{
-                                            p: 0,
-                                            color: "var(--color-text-muted)",
-                                            "&.Mui-checked": {
-                                                color: "var(--color-brand-500)",
-                                            },
-                                        }}
-                                    />
-                                    <span
-                                        className={`text-[12px] flex-1 ${
-                                            item.done
-                                                ? "line-through text-text-muted"
-                                                : "text-text-primary"
-                                        }`}
-                                    >
-                                        {item.text}
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            removeChecklistItem(item.id)
-                                        }
-                                        className="opacity-0 group-hover:opacity-100 text-error hover:text-error/80 transition-all cursor-pointer"
-                                    >
-                                        <MdDelete size={14} />
-                                    </button>
-                                </div>
-                            ))}
+                                    <MdAdd size={16} />
+                                </button>
+                            </div>
                         </div>
-
-                        {/* Adicionar item */}
-                        <div className="flex gap-2">
-                            <input
-                                type="text"
-                                value={newItem}
-                                onChange={(e) => setNewItem(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        e.preventDefault();
-                                        addChecklistItem();
-                                    }
-                                }}
-                                placeholder="Adicionar item ao checklist..."
-                                className="flex-1 bg-bg-surface border border-border-main2 rounded-lg px-3 py-1.5 text-[12px] text-text-primary placeholder:text-text-muted outline-none focus:border-brand-500/50 transition-colors"
-                            />
-                            <button
-                                type="button"
-                                onClick={addChecklistItem}
-                                className="w-8 h-8 flex items-center justify-center bg-brand-500/15 hover:bg-brand-500/25 text-brand-500 rounded-lg transition-colors cursor-pointer"
-                            >
-                                <MdAdd size={16} />
-                            </button>
-                        </div>
-                    </div>
+                    )}
                 </DialogContent>
 
                 <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
