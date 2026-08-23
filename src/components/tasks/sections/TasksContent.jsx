@@ -6,6 +6,7 @@ import CanDo from "@/components/auth/CanDo";
 import { useAuth } from "@/context/AuthContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import TaskCard from "../card/TaskCard";
+import { formatDateInput } from "@/utils/FormatDateProjects";
 
 export default function TasksContent({
     loadingTasks,
