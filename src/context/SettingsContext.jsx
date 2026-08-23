@@ -88,6 +88,33 @@ export const SettingsProvider = ({ children }) => {
         }
     }, []);
 
+     const requestPasswordChangeCode = useCallback(async () => {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Não autenticado.");
+
+        const res = await fetch("/api/auth/request-password-change-code", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || "Erro ao enviar código.");
+        return json;
+    }, []);
+
+    const verifyPasswordChangeCode = useCallback(async (code, newPassword) => {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Não autenticado.");
+
+        const res = await fetch("/api/auth/verify-password-change-code", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ code, newPassword }),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.message || "Código inválido.");
+        return json;
+    }, []);
+
     // Atualizar configurações globais do sistema
     const updateSystemSettings = useCallback(async (data) => {
         if (!currentUser?.companyId) return;
@@ -118,7 +145,9 @@ export const SettingsProvider = ({ children }) => {
         updateProfile,
         changePassword,
         updateSystemSettings,
-    }), [userSettings, systemSettings, loading, updateProfile, changePassword, updateSystemSettings]);
+        requestPasswordChangeCode,
+        verifyPasswordChangeCode,
+    }), [userSettings, systemSettings, loading, updateProfile, changePassword,requestPasswordChangeCode,verifyPasswordChangeCode, updateSystemSettings]);
 
     return (
         <SettingsContext.Provider value={value}>
