@@ -53,16 +53,16 @@ export default function TasksContent({
 
             if (filterMonth !== "all") {
                 const taskDate = t.startDate || t.createdAt;
-                if (taskDate) {
-                    const date = taskDate.toDate
-                        ? taskDate.toDate()
-                        : new Date(taskDate);
-                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+                const formatted = taskDate ? formatDateInput(taskDate).dateFormatted : "";
+                if (formatted) {
+                    const [, month, year] = formatted.split("/");
+                    const monthKey = `${year}-${month}`;
                     if (monthKey !== filterMonth) return false;
                 } else {
                     return false;
                 }
             }
+
             if (debouncedSearch) {
                 const q = debouncedSearch.toLowerCase();
                 return (

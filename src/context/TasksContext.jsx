@@ -26,6 +26,7 @@ import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
+
 //Criando o contexto
 const TasksContext = createContext();
 
@@ -94,7 +95,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 description: data.description || "",
                 projectId: data.projectId || projectId || "",
                 assignedTo: data.assignedTo || [],
-                startDate: data.startDate || "",
+                startDate: data.startDate ? new Date(data.startDate) : null,
                 endDate: data.endDate || "",
                 priority: data.priority || "media",
                 status: data.status || "em_andamento",

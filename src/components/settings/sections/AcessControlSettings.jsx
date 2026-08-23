@@ -18,7 +18,7 @@ const PERMISSION_ROWS = [
     { group: "Atividades", key: "canViewActivityHistorys", label: "Ver histórico de atividades" },
     { group: "Agenda", key: "canViewAllUsersSchedule", label: "Ver e editar agenda de outros usuários" },
     { group: "Sistema", key: "canManageSystemSettings", label: "Gerenciar configurações do sistema" },
-    {group: "Visualização", key: "canManageProjectCardView", label: "Personalizar exibição dos cards de projeto" },
+    {group: "Visualização", key: "canManageProjectCardView", label: "Personalizar Visualização de campos" },
 
 ];
 
