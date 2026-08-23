@@ -11,10 +11,11 @@ export default function ProjectCardSettingsModal({
     open,
     onClose,
     settings,
-    updateSetting,
+    updateSystemSettings,
 }) {
     const handleToggle = (key) => (e) => {
-        updateSetting(key, e.target.checked);
+        const nextSettings = { ...settings, [key]: e.target.checked };
+        updateSystemSettings({ projectCardSettings: nextSettings });
     };
 
     return (

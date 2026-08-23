@@ -3,12 +3,13 @@
 import { useCallback, useMemo, useState } from "react";
 import { MdVisibility } from "react-icons/md";
 import { toast } from "sonner";
+import CanDo from "@/components/auth/CanDo";
 import ModalDelete from "@/components/projects/modals/ModalDelete";
 import ProjectForm from "@/components/projects/modals/ProjectForm";
 import ProjectCardSettingsModal from "@/components/projects/modals/ProjectCardSettingsModal";
 import { useProjects } from "@/context/ProjectsContext";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useCardSettings } from "@/hooks/useCardSettings";
+import { useSettings } from "@/context/SettingsContext";
 import NewProject from "./button/NewProject";
 import ProjectsFilters from "./sections/ProjectsFilters";
 import ProjectsGrid from "./sections/ProjectsGrid";
@@ -43,14 +44,17 @@ export default function ProjectsMain() {
     const [deleting, setDeleting] = useState(false);
     
     const [settingsOpen, setSettingsOpen] = useState(false);
-    const { settings, updateSetting, isLoaded } = useCardSettings("projectCardSettings", {
+    const { systemSettings, updateSystemSettings } = useSettings();
+    
+    const defaultSettings = {
         showClient: true,
         showDescription: true,
         showTechStack: true,
         showDevelopers: true,
         showDates: true,
         showCreatedModifiedBy: true,
-    });
+    };
+    const settings = systemSettings?.projectCardSettings || defaultSettings;
 
     const debouncedSearch = useDebounce(searchInput, 300);
 
@@ -159,14 +163,16 @@ export default function ProjectsMain() {
             <div className="flex justify-between flex-col gap-5 sm:flex-row">
                 <ProjectsStats projects={projects} />
                 <div className="flex gap-2 items-center justify-end">
-                    <button
-                        type="button"
-                        onClick={() => setSettingsOpen(true)}
-                        className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
-                        title="Configurar visualização"
-                    >
-                        <MdVisibility size={20} />
-                    </button>
+                    <CanDo permission="canManageSystemSettings">
+                        <button
+                            type="button"
+                            onClick={() => setSettingsOpen(true)}
+                            className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                            title="Configurar visualização global"
+                        >
+                            <MdVisibility size={20} />
+                        </button>
+                    </CanDo>
                     <NewProject onCreate={handleOpenCreate} />
                 </div>
             </div>
@@ -214,7 +220,7 @@ export default function ProjectsMain() {
                 open={settingsOpen}
                 onClose={() => setSettingsOpen(false)}
                 settings={settings}
-                updateSetting={updateSetting}
+                updateSystemSettings={updateSystemSettings}
             />
 
             <ProjectForm

@@ -11,7 +11,7 @@ import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
 import { getErrorMessage } from "@/utils/getErrorMessage";
-import { useCardSettings } from "@/hooks/useCardSettings";
+import { useSettings } from "@/context/SettingsContext";
 
 export default function TasksMain() {
     const {
@@ -39,12 +39,15 @@ export default function TasksMain() {
     const [filterMonth, setFilterMonth] = useState("all");
     
     const [settingsOpen, setSettingsOpen] = useState(false);
-    const { settings, updateSetting, isLoaded } = useCardSettings("taskCardSettings", {
+    const { systemSettings, updateSystemSettings } = useSettings();
+    
+    const defaultSettings = {
         showDescription: true,
         showChecklist: true,
         showAssignees: true,
         showDates: true,
-    });
+    };
+    const settings = systemSettings?.taskCardSettings || defaultSettings;
 
     // abre o form para criar task
     const handleOpenCreate = () => {
@@ -146,7 +149,7 @@ export default function TasksMain() {
                 open={settingsOpen}
                 onClose={() => setSettingsOpen(false)}
                 settings={settings}
-                updateSetting={updateSetting}
+                updateSystemSettings={updateSystemSettings}
             />
 
             <TaskForm

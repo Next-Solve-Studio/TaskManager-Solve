@@ -21,14 +21,16 @@ export default function TasksHeader({ handleOpenCreate, handleOpenSettings, task
                 </p>
             </div>
             <div className="flex gap-2 items-center">
-                <button
-                    type="button"
-                    onClick={handleOpenSettings}
-                    className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
-                    title="Configurar visualização"
-                >
-                    <MdVisibility size={20} />
-                </button>
+                <CanDo permission="canManageSystemSettings">
+                    <button
+                        type="button"
+                        onClick={handleOpenSettings}
+                        className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                        title="Configurar visualização global"
+                    >
+                        <MdVisibility size={20} />
+                    </button>
+                </CanDo>
                 <CanDo permission="canCreateTasks">
                     <AddButton label="Nova Task" action={handleOpenCreate}/>
                 </CanDo>
