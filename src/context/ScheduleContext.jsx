@@ -1,40 +1,17 @@
 "use client";
-import { addWeeks, endOfWeek, format, startOfWeek } from "date-fns";
-import {
-    collection,
-    doc,
-    onSnapshot,
-    orderBy,
-    query,
-    setDoc,
-    updateDoc,
-    where,
-} from "firebase/firestore";
-import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
-} from "react";
+import { addDays, addWeeks, endOfWeek, format, startOfWeek } from "date-fns";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebaseConfig";
-import { logActivity } from "@/utils/ActivityLogger";
+import { auth, db } from "@/lib/firebaseConfig";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
-const ScheduleContext = createContext(); // contexto da agenda criado
-
+const ScheduleContext = createContext();
 export const useSchedule = () => useContext(ScheduleContext);
-//hook personalizado, para usar useSchedule, ao inves de escrever useContext(ScheduleContext)
 
-// Recebe uma data e retorna uma string no formato "2026-W24" (ano + num. da semana)
 export const getWeekKey = (date) => {
-    const d = new Date(date);
-    // Segunda-feira é o primeiro dia da semana (weekStartsOn: 1).
-    const startMonday = startOfWeek(d, { weekStartsOn: 1 });
-
+    const startMonday = startOfWeek(new Date(date), { weekStartsOn: 1 });
     return format(startMonday, "yyyy-MM-dd");
 };
 
@@ -48,68 +25,56 @@ export const WEEK_DAYS = [
     { key: "domingo", label: "Domingo" },
 ];
 
+export const CATEGORIES = {
+    reuniao: { label: "Reunião (Meet)", color: "var(--color-cyan-400)" },
+    foco: { label: "Foco / tarefa", color: "var(--color-brand-500)" },
+    pessoal: { label: "Pessoal", color: "var(--color-purple-500)" },
+    ausencia: { label: "Ausência", color: "var(--color-amber-500)" },
+};
+
+async function authedFetch(url, options = {}) {
+    const token = await auth.currentUser?.getIdToken();
+    if (!token) throw new Error("Não autenticado");
+    const res = await fetch(url, {
+        ...options,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, ...(options.headers || {}) },
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(json.message || "Erro na requisição");
+    return json;
+}
+
 export const ScheduleProvider = ({ children }) => {
-    // provedor do contexto de auth
     const { currentUser } = useAuth();
 
-    // Semana exibida (offset em relação à semana atual, 0 = atual)
     const [weekOffset, setWeekOffset] = useState(0);
-    // controla se mostra minha agenda ("me"), agenda de outro usuário (UID) ou todos ("all").
     const [filterUserId, setFilterUserId] = useState("me");
-    // array com os documentos baixados do Firestore
-    const [schedules, setSchedules] = useState([]);
+    const [events, setEvents] = useState([]);
     const [loadingSchedules, setLoadingSchedules] = useState(true);
+    const [googleStatus, setGoogleStatus] = useState({ connected: false, checked: false });
 
-    // addWeeks soma ou subtrai semanas da data atual
-    const weekStart = startOfWeek(addWeeks(new Date(), weekOffset), {
-        weekStartsOn: 1,
-    });
-    // obtém o domingo da mesma semana, ja que weekStart comeca segunda
+    const weekStart = startOfWeek(addWeeks(new Date(), weekOffset), { weekStartsOn: 1 });
     const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 });
-    // gera a chave única da semana (ex: "2025-W16").
     const weekKey = getWeekKey(weekStart);
 
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
         if (!currentUser?.companyId) {
-            setSchedules([]);             // Corrigido
+            setEvents([]);
             setLoadingSchedules(false);
             return;
         }
-
         setLoadingSchedules(true);
 
-        let q;
+        const q = query(
+            collection(db, "scheduleEvents"),
+            where("companyId", "==", currentUser.companyId),
+            where("weekKey", "==", weekKey),
+        );
 
-        if (filterUserId === "all") {
-            // consulta todos os docs da weekKey específica, ordenando por nome do user
-            q = query(
-                collection(db, "schedules"),
-                where("weekKey", "==", weekKey),
-                where("companyId", "==", currentUser.companyId),
-                orderBy("userName", "asc"),
-            );
-        } else {
-            // Se o filtro for "me", usa o UID do usuário logado. Caso contrário, usa o UID digitado (ou undefined se for "all").
-            const effectiveUserId =
-                filterUserId === "me" ? currentUser.uid : filterUserId;
-
-            // consulta apenas o doc do user específico, com filtro por weekKey e userId
-            q = query(
-                collection(db, "schedules"),
-                where("weekKey", "==", weekKey),
-                where("userId", "==", effectiveUserId),
-                where("companyId", "==", currentUser.companyId),
-            );
-        }
-
-        // escuta mudanças em tempo real. Toda vez que algum documento bater com a consulta, a função de callback é executada com o novo snapshot
         const unsubscribe = onSnapshot(
             q,
             (snapshot) => {
-                setSchedules(
-                    snapshot.docs.map((d) => ({ id: d.id, ...d.data() })),
-                );
+                setEvents(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
                 setLoadingSchedules(false);
             },
             (error) => {
@@ -121,138 +86,62 @@ export const ScheduleProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser?.uid, weekKey, filterUserId, currentUser?.companyId]);
+    }, [currentUser?.companyId, weekKey]);
 
-    // callback para memorizar a função para que não seja recriada em toda renderização
-    const saveDay = useCallback(
-        async (dayKey, description, targetUserId) => {
-            if (!currentUser?.uid) return;
-            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+    const refreshGoogleStatus = useCallback(async () => {
+        if (!currentUser?.uid) return;
+        try {
+            const data = await authedFetch("/api/google/status");
+            setGoogleStatus({ connected: !!data.connected, email: data.email, checked: true });
+        } catch {
+            setGoogleStatus({ connected: false, checked: true });
+        }
+    }, [currentUser?.uid]);
 
-            // se for passado targetUserId (ex: um admin editando agenda de outro), usa ele; senão usa o próprio
-            const uid = targetUserId || currentUser.uid;
-            // ID único do documento (ex: abc123_2026-W25)
-            const docId = `${uid}_${weekKey}`;
+    useEffect(() => {
+        refreshGoogleStatus();
+    }, [refreshGoogleStatus]);
 
-            const docRef = doc(db, "schedules", docId);
+    const connectGoogle = useCallback(() => {
+        window.location.href = "/api/google/auth";
+    }, []);
 
-            try {
-                // cria o doc se não existir, ou atualiza os campos fornecidos
-                 await setDoc(
-                    docRef,
-                    {
-                        userId: uid,
-                        userName:
-                            currentUser.name ||
-                            currentUser.displayName ||
-                            "Usuário",
-                        companyId: currentUser.companyId,
-                        weekKey,
-                        weekStart: weekStart,
-                    },
-                    { merge: true },
-                );
+    const disconnectGoogle = useCallback(async () => {
+        await authedFetch("/api/google/disconnect", { method: "POST" });
+        await refreshGoogleStatus();
+    }, [refreshGoogleStatus]);
 
-                // Depois atualiza apenas o campo do dia usando dot notation
-                // Isso preserva todos os outros dias intactos
-                await updateDoc(docRef, {
-                    [`days.${dayKey}.description`]: description,
-                    [`days.${dayKey}.updatedAt`]: new Date(),
-                });
-
-                // Log de Atividade
-                const dayLabel =
-                    WEEK_DAYS.find((d) => d.key === dayKey)?.label || dayKey;
-                await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
-                    companyId: currentUser.companyId,
-                    action: "update",
-                    resourceType: "schedule",
-                    resourceId: docId,
-                    resourceName: `Agenda de ${dayLabel}`,
-                    details: {
-                        field: "description",
-                        newValue:
-                            description?.substring(0, 50) +
-                            (description?.length > 50 ? "..." : ""),
-                    },
-                });
-            } catch (err) {
-                console.error(err);
-                toast.error(getErrorMessage(err, "Erro ao salvar o dia"));
-                throw err;
-            }
+    const saveMeeting = useCallback(
+        async (eventData) => {
+            const dayIndex = WEEK_DAYS.findIndex((d) => d.key === eventData.dayKey);
+            const date = format(addDays(weekStart, dayIndex), "yyyy-MM-dd");
+            return authedFetch("/api/schedule/meetings", {
+                method: "POST",
+                body: JSON.stringify({ ...eventData, weekKey, date }),
+            });
         },
-        [currentUser, weekKey, weekStart],
+        [weekKey, weekStart],
     );
+
+    const deleteMeeting = useCallback((id) => authedFetch(`/api/schedule/meetings/${id}`, { method: "DELETE" }), []);
 
     const goToPreviousWeek = useCallback(() => setWeekOffset((o) => o - 1), []);
     const goToNextWeek = useCallback(() => setWeekOffset((o) => o + 1), []);
     const goToCurrentWeek = useCallback(() => setWeekOffset(0), []);
-
     const isCurrentWeek = weekOffset === 0;
-    const isFutureWeek = weekOffset > 0;
 
     const value = useMemo(
         () => ({
-            weekOffset,
-            weekStart,
-            weekEnd,
-            weekKey,
-            isCurrentWeek,
-            isFutureWeek,
-            goToPreviousWeek,
-            goToNextWeek,
-            goToCurrentWeek,
-            filterUserId,
-            setFilterUserId,
-            schedules,
-            loadingSchedules,
-            saveDay,
+            weekOffset, weekStart, weekEnd, weekKey, isCurrentWeek,
+            goToPreviousWeek, goToNextWeek, goToCurrentWeek,
+            filterUserId, setFilterUserId,
+            events, loadingSchedules,
+            saveMeeting, deleteMeeting,
+            googleStatus, connectGoogle, disconnectGoogle,
         }),
-        [
-            weekOffset,
-            weekStart,
-            weekEnd,
-            weekKey,
-            isCurrentWeek,
-            isFutureWeek,
-            goToPreviousWeek,
-            goToNextWeek,
-            goToCurrentWeek,
-            filterUserId,
-            schedules,
-            loadingSchedules,
-            saveDay,
-        ],
+        [weekOffset, weekStart, weekEnd, weekKey, isCurrentWeek, goToPreviousWeek, goToNextWeek, goToCurrentWeek,
+         filterUserId, events, loadingSchedules, saveMeeting, deleteMeeting, googleStatus, connectGoogle, disconnectGoogle],
     );
 
-    return (
-        <ScheduleContext.Provider value={value}>
-            {children}
-        </ScheduleContext.Provider>
-    );
+    return <ScheduleContext.Provider value={value}>{children}</ScheduleContext.Provider>;
 };
-
-/**
- * Firestore collection: "schedules"
- * Documento ID: "{userId}_{weekKey}"   ex: "abc123_2025-W24"
- * Estrutura do documento:
- * {
- *   userId: string,
- *   userName: string,
- *   weekKey: string,          // "2025-W24"
- *   weekStart: Timestamp,
- *   days: {
- *     segunda: { description: string, updatedAt: Timestamp },
- *     terca:   { description: string, updatedAt: Timestamp },
- *     quarta:  { description: string, updatedAt: Timestamp },
- *     quinta:  { description: string, updatedAt: Timestamp },
- *     sexta:   { description: string, updatedAt: Timestamp },
- *     sabado:  { description: string, updatedAt: Timestamp },
- *     domingo: { description: string, updatedAt: Timestamp },
- *   }
- * }
- */
