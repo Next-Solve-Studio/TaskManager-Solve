@@ -1,21 +1,27 @@
 "use client";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
+import { signOut } from "firebase/auth";
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { signOut } from "firebase/auth";
 import { AiOutlineUser } from "react-icons/ai";
 import { FaArrowLeft, FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
 import { FaPix } from "react-icons/fa6";
 import { IoMdLock, IoMdWarning } from "react-icons/io";
-import { MdCheck, MdContentCopy, MdCreditCard, MdOutlineEmail } from "react-icons/md";
+import {
+    MdCheck,
+    MdContentCopy,
+    MdCreditCard,
+    MdOutlineEmail,
+} from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
+import CreditCardForm from "@/components/billing/CreditCardForm";
+import TermsGateModal from "@/components/login/modals/TermsGateModal";
 import { useAuth } from "@/context/AuthContext";
 import { auth } from "@/lib/firebaseConfig";
 import { muiDark } from "@/styles/StyleInputs";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
-import CreditCardForm from "@/components/billing/CreditCardForm";
 import PlanSelector from "./PlanSelector";
 
 const schema = yup
@@ -51,14 +57,19 @@ function CardConfirmation({ appKey }) {
             try {
                 const token = await auth.currentUser?.getIdToken();
                 if (!token) return;
-                const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const res = await fetch(
+                    `/api/billing/status?appKey=${appKey}`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    },
+                );
                 const data = await res.json();
                 if (data.status === true) {
                     setStatus("success");
                     clearInterval(id);
-                    setTimeout(() => { window.location.href = "/"; }, 1500);
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
                     return;
                 }
                 attemptsRef.current += 1;
@@ -66,37 +77,55 @@ function CardConfirmation({ appKey }) {
                     setStatus("pending");
                     clearInterval(id);
                 }
-            } catch { /* ignora */ }
+            } catch {
+                /* ignora */
+            }
         };
         const id = setInterval(poll, 5000);
         poll();
         return () => clearInterval(id);
     }, [appKey]);
 
-    if (status === "success") return (
-        <div className="flex flex-col items-center gap-4 py-8">
-            <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center">
-                <MdCheck size={28} className="text-brand-500" />
+    if (status === "success")
+        return (
+            <div className="flex flex-col items-center gap-4 py-8">
+                <div className="w-14 h-14 rounded-full bg-brand-500/20 flex items-center justify-center">
+                    <MdCheck size={28} className="text-brand-500" />
+                </div>
+                <p className="text-base font-bold text-text-primary">
+                    Pagamento confirmado!
+                </p>
+                <p className="text-sm text-text-muted">
+                    Redirecionando para o sistema...
+                </p>
+                <CircularProgress
+                    size={20}
+                    sx={{ color: "var(--color-brand-500)" }}
+                />
             </div>
-            <p className="text-base font-bold text-text-primary">Pagamento confirmado!</p>
-            <p className="text-sm text-text-muted">Redirecionando para o sistema...</p>
-            <CircularProgress size={20} sx={{ color: "var(--color-brand-500)" }} />
-        </div>
-    );
+        );
 
-    if (status === "pending") return (
-        <div className="flex flex-col items-center gap-4 py-8 text-center">
-            <IoMdWarning className="text-3xl text-yellow-400" />
-            <p className="text-base font-bold text-text-primary">Pagamento em análise</p>
-            <p className="text-sm text-text-muted">
-                Seu pagamento ainda está sendo processado pela operadora. Assim que for confirmado, sua conta é ativada automaticamente.
-            </p>
-        </div>
-    );
+    if (status === "pending")
+        return (
+            <div className="flex flex-col items-center gap-4 py-8 text-center">
+                <IoMdWarning className="text-3xl text-yellow-400" />
+                <p className="text-base font-bold text-text-primary">
+                    Pagamento em análise
+                </p>
+                <p className="text-sm text-text-muted">
+                    Seu pagamento ainda está sendo processado pela operadora.
+                    Assim que for confirmado, sua conta é ativada
+                    automaticamente.
+                </p>
+            </div>
+        );
 
     return (
         <div className="flex flex-col items-center gap-4 py-8">
-            <CircularProgress size={28} sx={{ color: "var(--color-brand-500)" }} />
+            <CircularProgress
+                size={28}
+                sx={{ color: "var(--color-brand-500)" }}
+            />
             <p className="text-sm text-text-muted">Confirmando pagamento...</p>
         </div>
     );
@@ -175,7 +204,12 @@ function PixSuccess({ pixData, appKey, onRenew }) {
     };
 
     const handleCancel = async () => {
-        if (!window.confirm("Tem certeza? Isso vai excluir seu cadastro e você precisará se cadastrar novamente.")) return;
+        if (
+            !window.confirm(
+                "Tem certeza? Isso vai excluir seu cadastro e você precisará se cadastrar novamente.",
+            )
+        )
+            return;
         setCancelling(true);
         try {
             const token = await auth.currentUser?.getIdToken();
@@ -291,7 +325,10 @@ function PixSuccess({ pixData, appKey, onRenew }) {
                 </p>
             )}
 
-            <button type="button" onClick={handleCancel} disabled={cancelling}
+            <button
+                type="button"
+                onClick={handleCancel}
+                disabled={cancelling}
                 className="text-xs text-text-muted hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50"
             >
                 {cancelling ? "Cancelando..." : "Cancelar cadastro"}
@@ -312,6 +349,8 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
     const [billingCycle, setBillingCycle] = useState("monthly");
     const [paymentChoice, setPaymentChoice] = useState(null);
     const [confirmingCard, setConfirmingCard] = useState(false);
+    const [termsOpen, setTermsOpen] = useState(false);
+    const [pendingRegister, setPendingRegister] = useState(null);
 
     const {
         register,
@@ -365,7 +404,12 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     throw new Error(e.error || "Erro ao configurar pagamento.");
                 }
 
-                const subscribeBody = { appKey, plan: selectedPlan, billingType, billingCycle: billingCycle.toUpperCase() };
+                const subscribeBody = {
+                    appKey,
+                    plan: selectedPlan,
+                    billingType,
+                    billingCycle: billingCycle.toUpperCase(),
+                };
                 if (billingType === "CREDIT_CARD" && cardForm) {
                     subscribeBody.creditCard = {
                         holderName: cardForm.holderName,
@@ -398,7 +442,10 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     );
 
                 if (billingType === "PIX") {
-                    if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
+                    if (!subData.pixInfo)
+                        throw new Error(
+                            "QR Code não disponível. Tente novamente.",
+                        );
                     setPixAppKey(appKey);
                     setPixData(subData.pixInfo);
                     return;
@@ -456,7 +503,8 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
 
     async function onCompanyDataSubmit(data) {
         if (isFreePlan) {
-            await doRegister(data);
+            setPendingRegister({ data, mode: "free" });
+            setTermsOpen(true);
             return;
         }
 
@@ -477,13 +525,27 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                 return;
             }
 
-            setSavedFormData(data);
-            changeStep(3);
+            setPendingRegister({ data, mode: "paid" });
+            setTermsOpen(true);
         } catch (error) {
             console.log(error);
             toast.error("Erro ao verificar CPF/CNPJ. Tente novamente.");
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleAcceptTerms() {
+        setTermsOpen(false);
+        if (!pendingRegister) return;
+        const { data, mode } = pendingRegister;
+        setPendingRegister(null);
+
+        if (mode === "free") {
+            await doRegister(data);
+        } else {
+            setSavedFormData(data);
+            changeStep(3);
         }
     }
 
@@ -503,7 +565,10 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
             <div className="flex flex-col gap-6 w-full">
                 <div className="w-full">
                     <PlanSelector
-                        selected={selectedPlan} onSelect={setSelectedPlan} billing={billingCycle} onBillingChange={setBillingCycle}
+                        selected={selectedPlan}
+                        onSelect={setSelectedPlan}
+                        billing={billingCycle}
+                        onBillingChange={setBillingCycle}
                     />
                     <div className="flex flex-col gap-3">
                         <button
@@ -536,21 +601,28 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
         if (paymentChoice === "CARD") {
             return (
                 <div className="flex flex-col gap-5 w-full">
-                    <button type="button" onClick={() => setPaymentChoice(null)}
+                    <button
+                        type="button"
+                        onClick={() => setPaymentChoice(null)}
                         className="flex items-center gap-2 text-xs text-text-muted hover:text-brand-500 transition-colors w-fit cursor-pointer"
                     >
                         <FaArrowLeft size={10} /> Voltar
                     </button>
                     <div>
-                        <h2 className="text-xl font-black text-text-primary">Pagamento com Cartão</h2>
+                        <h2 className="text-xl font-black text-text-primary">
+                            Pagamento com Cartão
+                        </h2>
                         <p className="text-sm text-text-muted">
-                            Plano {selectedPlan} · R$ {selectedPlan === "BASIC" ? "29,90" : "49,90"}/mês
+                            Plano {selectedPlan} · R${" "}
+                            {selectedPlan === "BASIC" ? "29,90" : "49,90"}/mês
                         </p>
                     </div>
                     <CreditCardForm
                         loading={loading}
                         onBack={() => setPaymentChoice(null)}
-                        onSubmit={(cardForm) => doRegister(savedFormData, "CREDIT_CARD", cardForm)}
+                        onSubmit={(cardForm) =>
+                            doRegister(savedFormData, "CREDIT_CARD", cardForm)
+                        }
                     />
                 </div>
             );
@@ -577,13 +649,23 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                 </div>
 
                 <div className="flex gap-2">
-                    <button type="button" disabled={loading} onClick={() => doRegister(savedFormData, "PIX")}
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => doRegister(savedFormData, "PIX")}
                         className="flex-1 h-24 rounded-xl border border-brand-500/20 bg-brand-500/5 flex flex-col items-center justify-center gap-2 text-text-primary font-bold hover:border-brand-500/40 disabled:opacity-50 cursor-pointer"
                     >
-                        {loading ? <CircularProgress size={20} /> : <FaPix size={22} className="text-brand-500" />}
+                        {loading ? (
+                            <CircularProgress size={20} />
+                        ) : (
+                            <FaPix size={22} className="text-brand-500" />
+                        )}
                         PIX
                     </button>
-                    <button type="button" disabled={loading} onClick={() => setPaymentChoice("CARD")}
+                    <button
+                        type="button"
+                        disabled={loading}
+                        onClick={() => setPaymentChoice("CARD")}
                         className="flex-1 h-24 rounded-xl border border-border-main bg-bg-surface flex flex-col items-center justify-center gap-2 text-text-primary font-bold hover:border-brand-500/40 disabled:opacity-50 cursor-pointer"
                     >
                         <MdCreditCard size={22} className="text-brand-500" />
@@ -756,6 +838,11 @@ export default function RegisterForm({ setHaveAccount, onStepChange }) {
                     )}
                 </button>
             </form>
+            <TermsGateModal
+                open={termsOpen}
+                onClose={() => setTermsOpen(false)}
+                onAccept={handleAcceptTerms}
+            />
         </div>
     );
 }

@@ -17,8 +17,8 @@ export default function PrivacyPolicyPage() {
                 <div className="space-y-8 text-text-secondary leading-relaxed [&_h2]:text-text-primary [&_h2]:font-semibold [&_h2]:text-xl [&_h2]:mb-3 [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1">
                     <section>
                         <p>
-                            Esta Política de Privacidade descreve como o <strong>Task Manager Solve</strong>, produto
-                            de [Razão Social] Ltda., inscrita no CNPJ nº [00.000.000/0000-00] ("nós"), coleta, usa,
+                            Esta Política de Privacidade descreve como o <strong>Task Manager Solve</strong>, operado
+                            por 61.303.644 GUILHERME BARROSO JUCA, CNPJ nº 61.303.644/0001-43 ("nós"), coleta, usa,
                             armazena e protege as informações de quem utiliza a plataforma ("você").
                         </p>
                     </section>

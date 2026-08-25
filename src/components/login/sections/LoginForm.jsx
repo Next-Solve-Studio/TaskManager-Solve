@@ -121,6 +121,17 @@ export default function LoginForm({ setHaveAccount, allowRegistration }) {
                     {loading ? <CircularProgress size={22} color="inherit" /> : "Entrar"}
                 </button>
             </form>
+                <p className="text-xs text-text-muted text-center">
+                    Ao continuar, você concorda com nossos{" "}
+                    <a href="/TermsOfService" target="_blank" rel="noopener noreferrer" className="text-brand-500 hover:underline">
+                        Termos de Uso
+                    </a>{" "}
+                    e nossa{" "}
+                    <a href="/PrivacyPolicy" target="_blank" rel="noopener noreferrer" className="text-brand-500 hover:underline">
+                        Política de Privacidade
+                    </a>
+                    .
+                </p>
         </div>
     );
 }

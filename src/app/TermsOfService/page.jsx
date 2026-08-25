@@ -18,9 +18,8 @@ export default function TermsOfServicePage() {
                     <section>
                         <p>
                             Estes Termos de Uso regulam o acesso e a utilização do <strong>Task Manager Solve</strong>,
-                            plataforma de gestão de tarefas, projetos e agenda de equipes, operada por [Razão Social]
-                            Ltda., CNPJ nº [00.000.000/0000-00] ("nós"). Ao criar uma conta, você concorda com estes
-                            termos.
+                            plataforma de gestão de tarefas, projetos e agenda de equipes, operada por 61.303.644 GUILHERME BARROSO JUCA, CNPJ nº 61.303.644/0001-43
+                            . Ao criar uma conta, você concorda com estes termos.
                         </p>
                     </section>
 
