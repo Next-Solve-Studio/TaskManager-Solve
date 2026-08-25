@@ -1,0 +1,104 @@
+<svg viewBox="0 0 320 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glass background gradient -->
+    <linearGradient id="glassBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#0D2B1F" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#061812" stop-opacity="0.96"/>
+    </linearGradient>
+
+    <!-- Top shine -->
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="white" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="white" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Orbital halo -->
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#1AD76F" stop-opacity="0.22"/>
+      <stop offset="60%"  stop-color="#1AD76F" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#1AD76F" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Center squircle gradient -->
+    <linearGradient id="sqG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#6AFFCC"/>
+      <stop offset="45%"  stop-color="#1AD76F"/>
+      <stop offset="100%" stop-color="#08924A"/>
+    </linearGradient>
+
+    <!-- Text gradient -->
+    <linearGradient id="textG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#5AFFB8"/>
+      <stop offset="40%"  stop-color="#26EB82"/>
+      <stop offset="100%" stop-color="#0BAA50"/>
+    </linearGradient>
+
+    <!-- Dot glow filter -->
+    <filter id="dg" x="-150%" y="-150%" width="400%" height="400%">
+      <feGaussianBlur stdDeviation="1.8" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Squircle glow filter -->
+    <filter id="sg" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Page-level outer glow on the whole card -->
+    <filter id="cardGlow" x="-5%" y="-10%" width="110%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- ── Glass card ── -->
+  <rect x="0" y="0" width="320" height="88" rx="20"
+        fill="url(#glassBg)"
+        stroke="#1AD76F" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- Top shine overlay -->
+  <rect x="1" y="1" width="318" height="42" rx="19"
+        fill="url(#shine)"/>
+
+  <!-- ── Orbital icon (center of left 88×88 zone) ── -->
+  <g transform="translate(44, 44)">
+    <!-- Halo -->
+    <circle r="38" fill="url(#halo)"/>
+
+    <!-- Outer orbital ring -->
+    <circle r="30" stroke="#1AD76F" stroke-opacity="0.18" stroke-width="1" fill="none"/>
+
+    <!-- Inner orbital ring -->
+    <circle r="20" stroke="#1AD76F" stroke-opacity="0.3" stroke-width="1" fill="none"/>
+
+    <!-- Orbital dots (θ measured clockwise from 12-o'clock in SVG coords)
+         top: (0,−30)  upper-right: (+26,−15)  lower-left: (−21,+22)  lower-right: (+21,+22) -->
+    <circle cx="0"   cy="-30" r="2.6" fill="#26EB82" filter="url(#dg)"/>
+    <circle cx="26"  cy="-14" r="2.6" fill="#26EB82" filter="url(#dg)"/>
+    <circle cx="-21" cy="22"  r="2"   fill="#26EB82" fill-opacity="0.72" filter="url(#dg)"/>
+    <circle cx="21"  cy="22"  r="2"   fill="#26EB82" fill-opacity="0.72" filter="url(#dg)"/>
+
+    <!-- Center squircle (rotated rounded rect) -->
+    <rect x="-14" y="-14" width="28" height="28" rx="8"
+          fill="url(#sqG)" transform="rotate(8)"
+          filter="url(#sg)"/>
+  </g>
+
+  <!-- ── Separator ── -->
+  <line x1="94" y1="22" x2="94" y2="66"
+        stroke="#1AD76F" stroke-opacity="0.2" stroke-width="1"/>
+
+  <!-- ── Text ── -->
+  <!-- "TaskManager" -->
+  <text x="112" y="42"
+    font-family="Space Grotesk,Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+    font-size="28" font-weight="800" letter-spacing="-1"
+    fill="url(#textG)">TaskManager</text>
+
+  <!-- Tagline -->
+  <text x="113" y="60"
+    font-family="Space Grotesk,Inter,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif"
+    font-size="10.5" font-weight="500" letter-spacing="2.8"
+    fill="white" fill-opacity="0.35">SOLVE · MANAGE · DELIVER</text>
+</svg>
