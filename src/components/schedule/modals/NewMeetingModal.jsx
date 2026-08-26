@@ -66,8 +66,21 @@ export default function NewMeetingModal({ open, onClose, onSaved, users, current
     const otherUsers = users.filter((u) => u.id !== currentUserId);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)" }} onClick={onClose}>
-            <div className="w-full max-w-md rounded-2xl p-5 bg-bg-card border border-border-main shadow-2xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        
+        {/* Fundo escuro atuando como botão nativo para capturar o clique fora */}
+        <button
+            type="button"
+            className="absolute inset-0 w-full h-full m-0 p-0 border-none cursor-default"
+            style={{ background: "rgba(0,0,0,0.55)" }}
+            onClick={onClose}
+            tabIndex={-1} 
+            aria-hidden="true"
+        />
+            <dialog 
+                open={open}
+                className="relative z-10 w-full max-w-md rounded-2xl p-5 bg-bg-card border border-border-main shadow-2xl max-h-[85vh] overflow-y-auto"
+            >
                 <div className="flex items-start justify-between gap-3 mb-4">
                     <h3 className="text-base font-semibold text-text-primary">{editingEvent ? "Editar evento" : "Nova Atividade"}</h3>
                     <button type="button" onClick={onClose} className="text-text-muted hover:text-text-primary">
@@ -136,7 +149,7 @@ export default function NewMeetingModal({ open, onClose, onSaved, users, current
                         ))}
                     </div>
 
-                    <textarea rows={3} placeholder="Pauta (opcional)" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                    <textarea rows={3} placeholder="Descrição" value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                         className="w-full resize-none rounded-lg px-3 py-2.5 text-sm bg-bg-surface border border-border-main2 text-text-primary outline-none focus:border-brand-500" />
                 </div>
 
@@ -166,7 +179,7 @@ export default function NewMeetingModal({ open, onClose, onSaved, users, current
                         {editingEvent ? "Salvar" : "Criar evento"}
                     </button>
                 </div>
-            </div>
+            </dialog>
         </div>
     );
 }

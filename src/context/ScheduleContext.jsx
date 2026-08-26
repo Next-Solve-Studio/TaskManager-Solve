@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useRole } from "@/hooks/useRole";
 
 const ScheduleContext = createContext();
 export const useSchedule = () => useContext(ScheduleContext);
@@ -46,6 +47,7 @@ async function authedFetch(url, options = {}) {
 
 export const ScheduleProvider = ({ children }) => {
     const { currentUser } = useAuth();
+    const { can } = useRole();
 
     const [weekOffset, setWeekOffset] = useState(0);
     const [filterUserId, setFilterUserId] = useState("me");
@@ -65,11 +67,20 @@ export const ScheduleProvider = ({ children }) => {
         }
         setLoadingSchedules(true);
 
-        const q = query(
-            collection(db, "scheduleEvents"),
-            where("companyId", "==", currentUser.companyId),
-            where("weekKey", "==", weekKey),
-        );
+        const canViewAll = can("canViewAllUsersSchedule");
+
+        const q = canViewAll
+            ? query(
+                  collection(db, "scheduleEvents"),
+                  where("companyId", "==", currentUser.companyId),
+                  where("weekKey", "==", weekKey),
+              )
+            : query(
+                  collection(db, "scheduleEvents"),
+                  where("companyId", "==", currentUser.companyId),
+                  where("weekKey", "==", weekKey),
+                  where("people", "array-contains", currentUser.uid),
+              );
 
         const unsubscribe = onSnapshot(
             q,
@@ -86,7 +97,7 @@ export const ScheduleProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser?.companyId, weekKey]);
+    }, [currentUser?.companyId, currentUser?.uid, weekKey, can]);
 
     const refreshGoogleStatus = useCallback(async () => {
         if (!currentUser?.uid) return;
