@@ -83,7 +83,7 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                             className={`absolute right-3 font-medium text-text-muted tabular-nums ${isMobile ? "text-[11px]" : "text-[10px]"}`}
                                             style={{ top: (h - HOUR_START) * ROW_HEIGHT + 2 }}
                                         >
-                                            {String(h).padStart(2, "0")}:00
+                                            {h === HOUR_END ? "23:59" : `${String(h).padStart(2, "0")}:00`}
                                         </span>
                                     ))}
                                 </div>
