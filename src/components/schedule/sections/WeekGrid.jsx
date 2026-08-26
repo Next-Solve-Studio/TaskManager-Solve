@@ -117,8 +117,7 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                                         height: ROW_HEIGHT - TILE_GAP,
                                                         background: today
                                                             ? "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-500) 16%, var(--color-bg-card)), color-mix(in srgb, var(--color-text-primary) 3%, var(--color-bg-card)))"
-                                                            : weekend
-                                                                ? "color-mix(in srgb, var(--color-text-primary) 7%, var(--color-bg-card))"
+                                                           
                                                                 : "color-mix(in srgb, var(--color-text-primary) 4%, var(--color-bg-card))",
                                                         border: "1px solid color-mix(in srgb, var(--color-text-primary) 14%, transparent)",
                                                         boxShadow: "inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 18%, transparent)",
