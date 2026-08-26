@@ -1,11 +1,12 @@
 "use client";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, TextField, MenuItem, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { toast } from "sonner";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { CATEGORIES, WEEK_DAYS } from "@/context/ScheduleContext";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { muiDark, menuPaper } from "@/styles/StyleInputs";
 
 const emptyForm = (dayKey, start) => ({
     title: "", dayKey: dayKey || WEEK_DAYS[0].key, start: start || "09:00", end: "10:00",
@@ -68,7 +69,7 @@ export default function NewMeetingModal({ open, onClose, onSaved, users, current
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)" }} onClick={onClose}>
             <div className="w-full max-w-md rounded-2xl p-5 bg-bg-card border border-border-main shadow-2xl max-h-[85vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-start justify-between gap-3 mb-4">
-                    <h3 className="text-base font-semibold text-text-primary">{editingEvent ? "Editar evento" : "Nova reunião"}</h3>
+                    <h3 className="text-base font-semibold text-text-primary">{editingEvent ? "Editar evento" : "Nova Atividade"}</h3>
                     <button type="button" onClick={onClose} className="text-text-muted hover:text-text-primary">
                         <MdClose size={18} />
                     </button>
@@ -85,18 +86,45 @@ export default function NewMeetingModal({ open, onClose, onSaved, users, current
                     <input type="text" placeholder="Título" value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                         className="w-full rounded-lg px-3 py-2.5 text-sm bg-bg-surface border border-border-main2 text-text-primary outline-none focus:border-brand-500" />
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <select value={form.dayKey} onChange={(e) => setForm((f) => ({ ...f, dayKey: e.target.value }))}
-                            className="w-full rounded-lg px-3 py-2.5 text-sm bg-bg-surface border border-border-main2 text-text-primary">
-                            {WEEK_DAYS.map((d) => <option key={d.key} value={d.key}>{d.label}</option>)}
-                        </select>
-                        <div className="grid grid-cols-2 gap-2">
-                            <input type="time" value={form.start} onChange={(e) => setForm((f) => ({ ...f, start: e.target.value }))}
-                                className="w-full rounded-lg px-2 py-2.5 text-sm bg-bg-surface border border-border-main2 text-text-primary" />
-                            <input type="time" value={form.end} onChange={(e) => setForm((f) => ({ ...f, end: e.target.value }))}
-                                className="w-full rounded-lg px-2 py-2.5 text-sm bg-bg-surface border border-border-main2 text-text-primary" />
-                        </div>
-                    </div>
+                    <TextField
+                        select
+                        fullWidth
+                        size="small"
+                        label="Dia da Semana"
+                        value={form.dayKey}
+                        onChange={(e) => setForm((f) => ({ ...f, dayKey: e.target.value }))}
+                        sx={muiDark}
+                        slotProps={{ select: { MenuProps: menuPaper } }}
+                    >
+                        {WEEK_DAYS.map((d) => (
+                            <MenuItem key={d.key} value={d.key}>
+                                {d.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+
+                    <Stack direction="row" spacing={2}>
+                        <TextField
+                            type="time"
+                            fullWidth
+                            size="small"
+                            label="Início"
+                            value={form.start}
+                            onChange={(e) => setForm((f) => ({ ...f, start: e.target.value }))}
+                            sx={muiDark}
+                            slotProps={{ inputLabel: { shrink: true } }}
+                        />
+                        <TextField
+                            type="time"
+                            fullWidth
+                            size="small"
+                            label="Fim"
+                            value={form.end}
+                            onChange={(e) => setForm((f) => ({ ...f, end: e.target.value }))}
+                            sx={muiDark}
+                            slotProps={{ inputLabel: { shrink: true } }}
+                        />
+                    </Stack>
 
                     <div className="flex gap-2 flex-wrap">
                         {Object.entries(CATEGORIES).map(([key, c]) => (

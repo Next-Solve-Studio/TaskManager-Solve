@@ -3,10 +3,10 @@ import { addDays, format, isToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { MdEventBusy, MdFlag, MdPerson, MdVideocam } from "react-icons/md";
 import { CATEGORIES, WEEK_DAYS } from "@/context/ScheduleContext";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 const HOUR_START = 7;
 const HOUR_END = 20;
-const ROW_HEIGHT = 48;
 const TILE_GAP = 4;
 
 const CAT_ICONS = {
@@ -21,7 +21,9 @@ function toMinutes(time) {
     return h * 60 + m;
 }
 
-export default function WeekGrid({ weekStart, events, onSelectEvent, onCreateAt }) {
+export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCreateAt }) {
+    const isMobile = useIsMobile();
+    const ROW_HEIGHT = isMobile ? 68 : 56;
     const totalHeight = (HOUR_END - HOUR_START) * ROW_HEIGHT;
     const hours = Array.from({ length: HOUR_END - HOUR_START + 1 }, (_, i) => HOUR_START + i);
 
@@ -41,7 +43,7 @@ export default function WeekGrid({ weekStart, events, onSelectEvent, onCreateAt 
 
             <div className="bg-bg-card/90 backdrop-blur-xl border border-border-main rounded-2xl overflow-hidden shadow-lg">
                 <div className="overflow-x-auto">
-                    <div className="min-w-[760px]">
+                    <div className="min-w-190">
                         <div className="grid grid-cols-[64px_repeat(7,1fr)] gap-1.5 px-2 pt-2 border-b border-border-main2 bg-bg-card/80 backdrop-blur-md sticky top-0 z-10">
                             <div />
                             {WEEK_DAYS.map((day, i) => {
@@ -69,7 +71,7 @@ export default function WeekGrid({ weekStart, events, onSelectEvent, onCreateAt 
                                 {hours.map((h) => (
                                     <span
                                         key={h}
-                                        className="absolute right-3 text-[10px] font-medium text-text-muted tabular-nums"
+                                        className={`absolute right-3 font-medium text-text-muted tabular-nums ${isMobile ? "text-[11px]" : "text-[10px]"}`}
                                         style={{ top: (h - HOUR_START) * ROW_HEIGHT + 2 }}
                                     >
                                         {String(h).padStart(2, "0")}:00
@@ -105,50 +107,63 @@ export default function WeekGrid({ weekStart, events, onSelectEvent, onCreateAt 
                                                     top: (h - HOUR_START) * ROW_HEIGHT + TILE_GAP / 2,
                                                     height: ROW_HEIGHT - TILE_GAP,
                                                     background: today
-                                                        ? "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-500) 16%, rgba(255,255,255,0.03)), rgba(255,255,255,0.015))"
+                                                        ? "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-500) 16%, var(--color-bg-card)), color-mix(in srgb, var(--color-text-primary) 3%, var(--color-bg-card)))"
                                                         : weekend
-                                                            ? "rgba(255,255,255,0.035)"
-                                                            : "rgba(255,255,255,0.02)",
-                                                    border: "1px solid rgba(255,255,255,0.09)",
-                                                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                                                            ? "color-mix(in srgb, var(--color-text-primary) 7%, var(--color-bg-card))"
+                                                            : "color-mix(in srgb, var(--color-text-primary) 4%, var(--color-bg-card))",
+                                                    border: "1px solid color-mix(in srgb, var(--color-text-primary) 14%, transparent)",
+                                                    boxShadow: "inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 18%, transparent)",
                                                 }}
                                             />
                                         ))}
 
                                         {dayEvents.map((ev) => {
                                             const top = (toMinutes(ev.start) - HOUR_START * 60) * (ROW_HEIGHT / 60);
-                                            const height = Math.max((toMinutes(ev.end) - toMinutes(ev.start)) * (ROW_HEIGHT / 60), 26);
+                                            const height = Math.max(
+                                                (toMinutes(ev.end) - toMinutes(ev.start)) * (ROW_HEIGHT / 60),
+                                                ROW_HEIGHT * 0.55,
+                                            );
                                             const cat = CATEGORIES[ev.cat] || CATEGORIES.foco;
                                             const Icon = CAT_ICONS[ev.cat] || CAT_ICONS.foco;
-                                            const compact = height < 46;
+                                            const compact = height < ROW_HEIGHT * 0.85;
+                                            const creator = users?.find((u) => u.id === ev.createdBy);
                                             return (
                                                 <button
                                                     key={ev.id}
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); onSelectEvent(ev); }}
-                                                    className="absolute left-1.5 right-1.5 rounded-xl px-2.5 py-2 text-left overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:z-20 transition-all duration-150 backdrop-blur-md"
+                                                    className={`absolute w-full rounded-xl text-left overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:z-20 transition-all duration-150 backdrop-blur-md ${
+                                                        isMobile ? "px-3 py-2.5" : "px-2.5 py-2"
+                                                    }`}
                                                     style={{
                                                         top,
                                                         height,
-                                                        background: `color-mix(in srgb, ${cat.color} 10%, var(--color-bg-card))`,
-                                                        border: "1px solid rgba(255,255,255,0.12)",
-                                                        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15)",
+                                                        background: `color-mix(in srgb, ${cat.color} 14%, var(--color-bg-card))`,
+                                                        border: "1px solid color-mix(in srgb, var(--color-text-primary) 16%, transparent)",
+                                                        boxShadow: "inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 22%, transparent)",
                                                     }}
                                                 >
                                                     <div className="flex items-center justify-between gap-1.5">
-                                                        <span className="text-[10px] text-text-muted tabular-nums truncate">
+                                                        <span className={`text-text-muted tabular-nums truncate ${isMobile ? "text-[11px]" : "text-[10px]"}`}>
                                                             {ev.start}–{ev.end}
                                                         </span>
                                                         <span
-                                                            className="flex items-center justify-center w-4 h-4 rounded-full shrink-0"
-                                                            style={{ background: `color-mix(in srgb, ${cat.color} 25%, transparent)` }}
+                                                            className={`flex items-center justify-center rounded-full shrink-0 ${isMobile ? "w-5 h-5" : "w-[18px] h-[18px]"}`}
+                                                            style={{ background: `color-mix(in srgb, ${cat.color} 30%, transparent)` }}
                                                         >
-                                                            <Icon size={9} style={{ color: cat.color }} />
+                                                            <Icon size={isMobile ? 11 : 10} style={{ color: cat.color }} />
                                                         </span>
                                                     </div>
                                                     {!compact && (
-                                                        <span className="block text-xs font-bold text-text-primary truncate mt-1 leading-tight">
+                                                        <span className={`block font-bold text-text-primary truncate mt-1 leading-tight ${isMobile ? "text-sm" : "text-[13px]"}`}>
                                                             {ev.title}
+                                                        </span>
+                                                    )}
+                                                    {!compact && creator && (
+                                                        <span
+                                                            className={`absolute bottom-1.5 right-2.5 text-text-muted truncate max-w-[55%] ${isMobile ? "text-[11px]" : "text-[10px]"}`}
+                                                        >
+                                                            {creator.name?.split(" ")[0]}
                                                         </span>
                                                     )}
                                                 </button>

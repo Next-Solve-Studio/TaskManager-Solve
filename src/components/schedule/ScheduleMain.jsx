@@ -55,7 +55,7 @@ export default function ScheduleMain() {
                     <span className="text-font-gray2 text-sm">Carregando agenda...</span>
                 </div>
             ) : (
-                <WeekGrid weekStart={weekStart} events={visibleEvents} onSelectEvent={setSelectedEvent} onCreateAt={(dayKey, start) => setModalState({ create: true, dayKey, start })} />
+                <WeekGrid weekStart={weekStart} events={visibleEvents} users={users} onSelectEvent={setSelectedEvent} onCreateAt={(dayKey, start) => setModalState({ create: true, dayKey, start })} />
             )}
 
             <EventDetailModal

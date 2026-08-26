@@ -27,9 +27,9 @@ export const WEEK_DAYS = [
 
 export const CATEGORIES = {
     reuniao: { label: "Reunião (Meet)", color: "var(--color-cyan-400)" },
-    foco: { label: "Foco / tarefa", color: "var(--color-brand-500)" },
+    foco: { label: "Foco / tarefa", color: "var(--color-amber-500)" },
     pessoal: { label: "Pessoal", color: "var(--color-purple-500)" },
-    ausencia: { label: "Ausência", color: "var(--color-amber-500)" },
+    ausencia: { label: "Ausência", color: "var(--color-error)" },
 };
 
 async function authedFetch(url, options = {}) {
