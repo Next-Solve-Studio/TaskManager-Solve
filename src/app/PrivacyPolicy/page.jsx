@@ -36,29 +36,61 @@ export default function PrivacyPolicyPage() {
                     <section>
                         <h2>2. Integração com o Google Calendar</h2>
                         <p>
-                            Se você optar por conectar sua conta do Google na tela de Agenda, solicitamos a permissão{" "}
-                            <code>https://www.googleapis.com/auth/calendar.events</code>. Usamos esse acesso
-                            exclusivamente para:
+                            Se você optar por conectar sua conta do Google na tela de Agenda, usamos a API do Google
+                            Calendar (OAuth, escopo <code>https://www.googleapis.com/auth/calendar.events</code>) para
+                            oferecer a criação de reuniões com link do Google Meet diretamente na plataforma.
                         </p>
+
+                        <p><strong>Quais dados de usuário do Google acessamos</strong></p>
                         <ul>
-                            <li>Criar, atualizar e cancelar no seu Google Calendar as reuniões que você cria dentro do Task Manager Solve;</li>
-                            <li>Gerar automaticamente o link de videochamada (Google Meet) dessas reuniões;</li>
-                            <li>Convidar, por e-mail, os participantes que você mesmo seleciona na tela de criação da reunião.</li>
+                            <li>O endereço de e-mail principal da sua Conta do Google, usado apenas para identificar qual conta está conectada.</li>
+                            <li>Os dados dos eventos que o próprio Task Manager Solve cria no seu Google Calendar em seu nome: título, descrição, data, horário e a lista de participantes que você define na tela de criação da reunião.</li>
+                            <li>O link de videochamada (Google Meet) gerado automaticamente para esses eventos.</li>
                         </ul>
                         <p>
-                            Não lemos, listamos ou coletamos outros eventos já existentes na sua agenda pessoal —
-                            o acesso é usado apenas para os eventos que o próprio sistema cria a seu pedido. Você pode
-                            revogar essa permissão a qualquer momento pela própria tela de Agenda ou diretamente em{" "}
-                            <a
-                                href="https://myaccount.google.com/permissions"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-brand-500 hover:underline"
-                            >
-                                myaccount.google.com/permissions
-                            </a>
-                            .
+                            Não acessamos, lemos, listamos ou armazenamos nenhum outro evento já existente na sua
+                            agenda do Google — o acesso é usado somente para os eventos que o próprio sistema cria a
+                            seu pedido.
                         </p>
+
+                        <p><strong>Como usamos esses dados</strong></p>
+                        <ul>
+                            <li>Criar o evento no seu Google Calendar quando você cria uma reunião no sistema;</li>
+                            <li>Atualizar esse evento quando você edita a reunião (horário, título, participantes);</li>
+                            <li>Cancelar/excluir esse evento no Google Calendar quando você exclui a reunião no sistema;</li>
+                            <li>Gerar e exibir o link do Google Meet vinculado ao evento.</li>
+                        </ul>
+                        <p>Não usamos esses dados para publicidade, perfilamento de usuários ou qualquer finalidade fora da criação/gestão dessas reuniões.</p>
+
+                        <p><strong>Com quem compartilhamos, transferimos ou divulgamos esses dados</strong></p>
+                        <ul>
+                            <li>Com os participantes que você mesmo seleciona ao criar a reunião — eles recebem o convite do evento diretamente do Google Calendar (mecanismo padrão do próprio Google), não por um envio nosso.</li>
+                            <li>Não vendemos, alugamos, nem compartilhamos esses dados com anunciantes, corretores de dados ou qualquer terceiro para fins comerciais.</li>
+                            <li>Não transferimos esses dados para nenhum outro serviço além do próprio Google Calendar (via API) e do banco de dados do Task Manager Solve (Firestore, Google Cloud), usado só para manter a referência do evento dentro do sistema.</li>
+                        </ul>
+
+                        <p><strong>Como protegemos esses dados</strong></p>
+                        <ul>
+                            <li>O token de acesso à sua conta do Google (refresh token) fica isolado numa coleção do banco de dados que nenhum usuário — nem administradores da empresa — consegue ler pelo aplicativo; só o servidor consegue usá-lo, com credenciais de administrador que nunca chegam ao navegador.</li>
+                            <li>Toda comunicação com a API do Google acontece via HTTPS/TLS.</li>
+                            <li>O token só é utilizado no exato momento em que você cria, edita ou cancela uma reunião — não fazemos sincronizações automáticas nem chamadas em segundo plano.</li>
+                            <li>Você pode revogar esse acesso a qualquer momento pela própria tela de Agenda ou diretamente em{" "}
+                                <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">
+                                    myaccount.google.com/permissions
+                                </a>.
+                            </li>
+                        </ul>
+
+                        <p><strong>Retenção e exclusão dos dados do Google</strong></p>
+                        <p>
+                            O token de acesso é mantido apenas enquanto sua conta do Google estiver conectada. Ao
+                            desconectar (pela tela de Agenda) ou ao excluir sua conta no Task Manager Solve, o token é
+                            apagado permanentemente do nosso banco de dados de forma imediata. Os eventos já criados no
+                            seu Google Calendar não são apagados automaticamente ao desconectar — eles continuam lá até
+                            você excluí-los pelo próprio Google Calendar ou pelo Task Manager Solve, enquanto ainda
+                            estiver conectado.
+                        </p>
+
                         <p>
                             O uso e a transferência de informações recebidas das APIs do Google pelo Task Manager
                             Solve seguem a{" "}
@@ -66,7 +98,6 @@ export default function PrivacyPolicyPage() {
                                 href="https://developers.google.com/terms/api-services-user-data-policy"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-brand-500 hover:underline"
                             >
                                 Política de Dados do Usuário dos Serviços de API do Google
                             </a>
