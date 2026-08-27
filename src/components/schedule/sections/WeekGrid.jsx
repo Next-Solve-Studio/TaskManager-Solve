@@ -7,7 +7,11 @@ import { CATEGORIES, WEEK_DAYS } from "@/context/ScheduleContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 const HOUR_START = 6;
-const DISPLAY_HOURS = Array.from({ length: 25 }, (_, i) => (HOUR_START + i) % 24);
+const DISPLAY_HOURS = Array.from({ length: 25 }, (_, i) => ({
+    hour: (HOUR_START + i) % 24,
+    index: i,
+    id: `hour-slot-${i}`
+}));
 const TILE_GAP = 4;
 
 const CAT_ICONS = {
@@ -105,13 +109,15 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                         <div className="overflow-y-auto overscroll-y-contain" style={{ maxHeight: ROW_HEIGHT * 11 }}>
                             <div className={`grid ${gridColsClass} gap-1.5 p-2 relative`}>
                                 <div className="relative" style={{ height: totalHeight }}>
-                                    {DISPLAY_HOURS.map((h, i) => (
+                                    {DISPLAY_HOURS.map((slot) => (
                                         <span
-                                            key={`${h}-${i}`}
+                                            key={slot.id}
                                             className={`absolute right-3 font-medium text-text-muted tabular-nums ${isMobile ? "text-[11px]" : "text-[10px]"}`}
-                                            style={{ top: i * ROW_HEIGHT + 2 }}
+                                            style={{ top: slot.index * ROW_HEIGHT + 2 }}
                                         >
-                                            {i === 24 ? `${String((HOUR_START - 1 + 24) % 24).padStart(2, "0")}:59` : `${String(h).padStart(2, "0")}:00`}
+                                            {slot.index === 24
+                                                ? `${String((HOUR_START - 1 + 24) % 24).padStart(2, "0")}:59`
+                                                : `${String(slot.hour).padStart(2, "0")}:00`}
                                         </span>
                                     ))}
                                 </div>
@@ -123,27 +129,39 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                     const dayEvents = events.filter((e) => e.dayKey === day.key);
 
                                     return (
-                                        // biome-ignore lint/a11y/noStaticElementInteractions: <>
-                                        // biome-ignore lint/a11y/useKeyWithClickEvents: <>
                                         <div
                                             key={day.key}
-                                            className="relative cursor-pointer"
+                                            className="relative"
                                             style={{ height: totalHeight }}
-                                            onClick={(e) => {
-                                                if (e.target !== e.currentTarget) return;
-                                                const rect = e.currentTarget.getBoundingClientRect();
-                                                const displayHour = Math.floor((e.clientY - rect.top) / ROW_HEIGHT);
-                                                const realHour = DISPLAY_HOURS[Math.min(displayHour, 23)];
-                                                onCreateAt?.(day.key, `${String(realHour).padStart(2, "0")}:00`);
-                                            }}
                                         >
-                                            {DISPLAY_HOURS.slice(0, -1).map((h, i) => (
+                                            {/* Área clicável para criar evento — fica abaixo de tudo */}
+                                            <button
+                                                type="button"
+                                                aria-label={`Criar evento em ${day.key}`}
+                                                className="absolute inset-0 w-full cursor-pointer bg-transparent border-0 p-0"
+                                                style={{ zIndex: 0 }}
+                                                onClick={(e) => {
+                                                    const rect = e.currentTarget.getBoundingClientRect();
+                                                    const displayHour = Math.floor((e.clientY - rect.top) / ROW_HEIGHT);
+                                                    const realHour = DISPLAY_HOURS[Math.min(displayHour, 23)].hour;
+                                                    onCreateAt?.(day.key, `${String(realHour).padStart(2, "0")}:00`);
+                                                }}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === "Enter" || e.key === " ") {
+                                                        onCreateAt?.(day.key, "09:00");
+                                                    }
+                                                }}
+                                            />
+
+                                            {/* Tiles de fundo — pointer-events none */}
+                                            {DISPLAY_HOURS.slice(0, -1).map((slot) => (
                                                 <div
-                                                    key={`${h}-${i}`}
+                                                    key={`bg-${slot.id}`}
                                                     className="absolute left-0.5 right-0.5 rounded-lg pointer-events-none backdrop-blur-sm"
                                                     style={{
-                                                        top: i * ROW_HEIGHT + TILE_GAP / 2,
+                                                        top: slot.index * ROW_HEIGHT + TILE_GAP / 2,
                                                         height: ROW_HEIGHT - TILE_GAP,
+                                                        zIndex: 1,
                                                         background: today
                                                             ? "linear-gradient(135deg, color-mix(in srgb, var(--color-brand-500) 16%, var(--color-bg-card)), color-mix(in srgb, var(--color-text-primary) 3%, var(--color-bg-card)))"
                                                             : "color-mix(in srgb, var(--color-text-primary) 4%, var(--color-bg-card))",
@@ -153,6 +171,7 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                                 />
                                             ))}
 
+                                            {/* Eventos — ficam acima do botão de criação */}
                                             {dayEvents.map((ev) => {
                                                 const startOffset = toDisplayMinutes(ev.start);
                                                 const endOffset = toDisplayMinutes(ev.end);
@@ -168,12 +187,13 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                                         key={ev.id}
                                                         type="button"
                                                         onClick={(e) => { e.stopPropagation(); onSelectEvent(ev); }}
-                                                        className={`absolute w-full rounded-xl text-left overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:z-20 transition-all duration-150 backdrop-blur-md ${
+                                                        className={`absolute w-full rounded-xl text-left overflow-hidden shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-150 backdrop-blur-md ${
                                                             isMobile ? "px-3 py-2.5" : "px-2.5 py-2"
                                                         }`}
                                                         style={{
                                                             top,
                                                             height,
+                                                            zIndex: 10,
                                                             background: `color-mix(in srgb, ${cat.color} 14%, var(--color-bg-card))`,
                                                             border: "1px solid color-mix(in srgb, var(--color-text-primary) 16%, transparent)",
                                                             boxShadow: "inset 0 1px 0 color-mix(in srgb, var(--color-text-primary) 22%, transparent)",
@@ -184,7 +204,7 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                                                 {ev.start}–{ev.end}
                                                             </span>
                                                             <span
-                                                                className={`flex items-center justify-center rounded-full shrink-0 ${isMobile ? "w-5 h-5" : "w-[18px] h-[18px]"}`}
+                                                                className={`flex items-center justify-center rounded-full shrink-0 ${isMobile ? "w-5 h-5" : "w-4.5 h-4.5"}`}
                                                                 style={{ background: `color-mix(in srgb, ${cat.color} 30%, transparent)` }}
                                                             >
                                                                 <Icon size={isMobile ? 11 : 10} style={{ color: cat.color }} />
@@ -196,9 +216,8 @@ export default function WeekGrid({ weekStart, events, users, onSelectEvent, onCr
                                                             </span>
                                                         )}
                                                         {!compact && creator && (
-                                                            <span
-                                                                className={`absolute bottom-1.5 right-2.5 text-text-muted truncate max-w-[55%] ${isMobile ? "text-[11px]" : "text-[10px]"}`}
-                                                            >
+                                                            <span className={`absolute bottom-1.5 right-2.5 rounded-md px-1 truncate max-w-[55%] ${isMobile ? "text-[11px]" : "text-[10px]"}`}
+                                                                    style={{ background: `color-mix(in srgb, ${cat.color} 30%, transparent)`, color: cat.color }}>
                                                                 {creator.name?.split(" ")[0]}
                                                             </span>
                                                         )}
