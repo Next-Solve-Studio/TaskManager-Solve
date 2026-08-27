@@ -16,6 +16,9 @@ async function verifyToken(token) {
     });
 }
 
+const PUBLIC_PATHS = ["/PrivacyPolicy", "/TermsOfService"];
+
+
 export async function proxy(request) {
     const { pathname } = request.nextUrl;
 
