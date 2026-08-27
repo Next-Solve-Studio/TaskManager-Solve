@@ -6,7 +6,7 @@ import SettingsMain from "@/components/settings/SettingsMain";
 export default function SettingsPage() {
     return (
         <ProtectedRoutes>
-            <div className="p-6">
+            <div className="py-6">
                 <SettingsMain />
             </div>
         </ProtectedRoutes>
