@@ -18,6 +18,8 @@ import { AiOutlineClear } from "react-icons/ai";
 import { MdOutlineFilterList, MdSearch } from "react-icons/md";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
+import { useRolePermissions } from "@/context/RolePermissionsContext";
+import { ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 export default function TasksFilters({
     projects,
@@ -37,13 +39,17 @@ export default function TasksFilters({
 }) {
     const [showFilters, setShowFilters] = useState(true);
     const { currentUser } = useAuth();
+    const { permissions } = useRolePermissions()
+    const canViewAll =
+        currentUser?.role === ROLES.MASTER ||
+        (permissions?.canViewAllUsersTasks?.includes(currentUser?.role) ?? false)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <>
     useEffect(() => {
-        if (currentUser && filterAssignee === "all") {
+        if (currentUser && (filterAssignee === "all" || !canViewAll)) {
             setFilterAssignee("mine");
         }
-    }, []);
+    }, [canViewAll]);
 
     const clearFilters = () => {
         setFilterStatus("all");
@@ -215,10 +221,11 @@ export default function TasksFilters({
                             value={filterAssignee}
                             MenuProps={menuPaper}
                             onChange={(e) => setFilterAssignee(e.target.value)}
+                            disabled={!canViewAll}
                         >
-                            <MenuItem value="all">Todos</MenuItem>
+                            {canViewAll && <MenuItem value="all">Todos</MenuItem>}
                             <MenuItem value="mine">Minhas tarefas</MenuItem>
-                            {users.map((u) => (
+                            {canViewAll && users.map((u) => (
                                 <MenuItem key={u.id} value={u.id}>
                                     {u.name}
                                 </MenuItem>
