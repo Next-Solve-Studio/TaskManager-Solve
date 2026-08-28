@@ -12,6 +12,7 @@ const PERMISSION_ROWS = [
     { group: "Tarefas", key: "canCreateTasks", label: "Criar tarefas" },
     { group: "Tarefas", key: "canEditTasks", label: "Editar/concluir tarefas" },
     { group: "Tarefas", key: "canDeleteTasks", label: "Excluir tarefas" },
+    { group: "Tarefas", key: "canViewAllUsersTasks", label: "Ver tarefas de todos os usuários"} ,
     { group: "Clientes", key: "canManageClients", label: "Criar/editar/excluir clientes" },
     { group: "Usuários", key: "canManageUsers", label: "Editar/excluir funcionários" },
     { group: "Usuários", key: "canCreateUsers", label: "Criar novos funcionários" },

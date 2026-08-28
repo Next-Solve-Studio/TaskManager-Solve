@@ -16,8 +16,16 @@ async function verifyToken(token) {
     });
 }
 
+const PUBLIC_PATHS = ["/PrivacyPolicy", "/TermsOfService"];
+
+
 export async function proxy(request) {
     const { pathname } = request.nextUrl;
+
+    if (PUBLIC_PATHS.some(p => pathname === p || pathname.startsWith(p + "/"))) {
+        return NextResponse.next();
+    }
+
     const sessionCookie = request.cookies.get("__session");
     const token = sessionCookie?.value;
 

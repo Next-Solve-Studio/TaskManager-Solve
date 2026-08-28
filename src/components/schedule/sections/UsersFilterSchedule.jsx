@@ -45,7 +45,7 @@ export default function UsersFiltersSchedule({
                         rounded-full text-sm font-medium transition-all duration-150
                         ${isViewingMe
                         ? "bg-green-500/15 border border-green-500/40 text-brand-500 hover:bg-brand-500/25 hover:border-brand-500/60"
-                        : "bg-bg-card border border-border-main text-text-secondary hover:bg-gray-100"
+                        : "bg-bg-card border border-border-main text-text-secondary hover:bg-bg-card/50"
                         }
                     `}
                 >
@@ -58,11 +58,11 @@ export default function UsersFiltersSchedule({
                         type="button"
                         onClick={() => setFilterUserId("all")}
                         className={`
-                            shadow-sm flex items-center gap-1.5 px-3 py-1.5 rounded-full 
+                            shadow-sm cursor-pointer flex items-center gap-1.5 px-3 py-1.5 rounded-full 
                             text-sm font-medium transition-all duration-150
                             ${isViewingAll
                             ? "bg-cyan-400/12 border border-cyan-400/35 text-cyan-400 hover:bg-cyan-400/20 hover:border-cyan-400/50"
-                            : "bg-bg-card border border-border-main text-text-secondary hover:bg-gray-100"
+                            : "bg-bg-card border border-border-main text-text-secondary hover:bg-bg-card/50"
                             }
                         `}
                     >

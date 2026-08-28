@@ -22,7 +22,9 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { useRolePermissions } from "@/context/RolePermissionsContext";
 import { db } from "@/lib/firebaseConfig";
+import { ROLES } from "@/lib/roles";
 import { logActivity } from "@/utils/ActivityLogger";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
@@ -35,40 +37,43 @@ export const useTasks = () => useContext(TasksContext);
 
 export const TasksProvider = ({ children, projectId }) => {
     const { currentUser } = useAuth(); // dados do user atual
+    const { permissions, loadingPermissions } = useRolePermissions();
     const [tasks, setTasks] = useState([]);
     const [loadingTasks, setLoadingTasks] = useState(true);
 
     // Paginação
     const [visibleTasksCount, setVisibleTasksCount] = useState(20);
+
     const loadMoreTasks = useCallback(
         () => setVisibleTasksCount((prev) => prev + 20),
         [],
     );
 
+    const canViewAll = currentUser?.role === ROLES.MASTER || (permissions?.canViewAllUsersTasks?.includes(currentUser?.role) ?? false);
+
     useEffect(() => {
-        // só busca dados se o usuário estiver logado.
-         if (!currentUser?.companyId) {
+        if (!currentUser?.companyId || loadingPermissions) {
             setTasks([]);
             setLoadingTasks(false);
             return;
         }
 
-        const q = projectId
-            ? // caso exista projectId, busca as tasks pelo id específico dele
-                query(
-                    collection(db, "tasks"),
-                    where("companyId", "==", currentUser.companyId),
-                    where("projectId", "==", projectId),
-                    orderBy("createdAt", "desc"),
-                )
-            : // caso não exista, trás todos as tasks
-                query(
-                    collection(db, "tasks"),
-                    where("companyId", "==", currentUser.companyId),
-                    orderBy("createdAt", "desc"),
-                );
+        const constraints = [
+            where("companyId", "==", currentUser.companyId),
+        ];
 
-        // abre uma conexão em tempo real com o firestore,Toda vez que projectId, será executada.
+        if (!canViewAll) {
+            constraints.push(where("assignedTo", "array-contains", currentUser.uid));
+        }
+
+        if (projectId) {
+            constraints.push(where("projectId", "==", projectId));
+        }
+
+        constraints.push(orderBy("createdAt", "desc"));
+
+        const q = query(collection(db, "tasks"), ...constraints);
+
         const unsubscribe = onSnapshot(
             q,
             (snapshot) => {
@@ -85,7 +90,7 @@ export const TasksProvider = ({ children, projectId }) => {
         );
 
         return unsubscribe;
-    }, [projectId, currentUser?.companyId]);
+    }, [projectId, currentUser?.companyId, currentUser?.uid, canViewAll, loadingPermissions]);
 
     const createTask = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)

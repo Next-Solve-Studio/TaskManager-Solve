@@ -30,11 +30,6 @@ export default function Team({ users, projects }) {
                     </p>
                 )}
                 {users.map((u) => {
-                    const activeCount = projects.filter(
-                        (p) =>
-                            p.status === "em_andamento" &&
-                            p.developers?.includes(u.id),
-                    ).length;
                     return (
                         <div
                             key={u.id}
@@ -51,12 +46,6 @@ export default function Team({ users, projects }) {
                                     <p className="text-sm font-semibold text-text-primary truncate">
                                         {u.name}
                                     </p>
-                                    {activeCount > 0 && (
-                                        <span className="text-[10px] text-cyan-400 font-semibold shrink-0">
-                                            {activeCount} ativo
-                                            {activeCount > 1 ? "s" : ""}
-                                        </span>
-                                    )}
                                 </div>
                                 <p className="text-xs text-text-muted truncate mt-0.5">
                                     {ROLE_LABELS[u.role] || u.role}

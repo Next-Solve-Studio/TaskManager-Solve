@@ -20,7 +20,7 @@ export default function ScheduleHeader({ isViewingAll, activeScheduleDoc }) {
                         Agenda
                     </span>
                 </div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">
+                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary ">
                     Minha Agenda
                 </h1>
                 <p className="text-sm text-text-secondary mt-1">

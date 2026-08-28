@@ -86,6 +86,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
         const unsubscribe = onIdTokenChanged(auth, async (user) => {
+        try {
             if (user) {
                 const token = await user.getIdToken();
                 await setSessionCookie(token);
@@ -96,12 +97,12 @@ export const AuthProvider = ({ children }) => {
                     pendingUserData.current = null;
                 } else {
                     const userRef = doc(db, "users", user.uid);
-                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    const userDoc = await getDoc(userRef);
                     userData = userDoc.exists() ? userDoc.data() : {};
 
                     if (shouldUpdateLastSeen(userData.lastSeenAt)) {
                         const now = new Date();
-                        await updateDoc(userRef, { lastSeenAt: now });
+                        updateDoc(userRef, { lastSeenAt: now }).catch(() => {});
                         userData.lastSeenAt = now;
                     }
                 }
@@ -116,10 +117,14 @@ export const AuthProvider = ({ children }) => {
                 await setSessionCookie(null);
                 setCurrentUser(null);
             }
-
+        } catch (err) {
+            console.error("Erro ao carregar dados do usuário:", err);
+            if (user) setCurrentUser(user);
+        } finally {
             setLoading(false);
-        });
-        return unsubscribe; //função de "limpeza", quando o componente for desmontado, chama unsubscribe() para remover o ouvinte
+        }
+    });
+        return unsubscribe;
     }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
     const loginWithEmail = useCallback(async (email, password) => {
