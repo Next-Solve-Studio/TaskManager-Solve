@@ -56,10 +56,13 @@ export async function POST(request) {
 
         const people = Array.from(new Set([...(peopleIds || []), caller.uid]));
 
-        let meetLink = existingData?.meetLink || null;
-        let googleEventId = existingData?.googleEventId || null;
+        let meetLink = null;
+        let googleEventId = null;
 
         if (cat === "reuniao") {
+            meetLink = existingData?.meetLink || null;
+            googleEventId = existingData?.googleEventId || null;
+
             const authClient = await getAuthorizedClientForUser(caller.uid);
             if (!authClient) {
                 return NextResponse.json(
