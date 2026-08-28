@@ -30,13 +30,7 @@ export default function UsersCards({ users, onOpenMenu }) {
     return (
         <>
             {!loading && (
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 10,
-                    }}
-                >
+                <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
                     {users.map((user) => (
                         <UserCard
                             key={user.id}

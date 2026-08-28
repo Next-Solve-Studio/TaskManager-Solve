@@ -3,20 +3,18 @@
 import { CircularProgress, Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { useClients } from "@/context/ClientsContext";
-import useIsTablet from "@/hooks/responsive/useIsTablet";
+import { useCallback } from "react";
 import ClientDeleteModal from "./modals/ClientDeleteModal";
 import ClientForm from "./modals/ClientForm";
 import ClientCard from "./sections/ClientCard";
 import ClientsHeader from "./sections/ClientsHeader";
 import ClientsStats from "./sections/ClientsStats";
-import ClientsTable from "./sections/ClientsTable";
 import SearchInput from "./sections/SearchInput";
 import { MdDelete, MdEdit } from "react-icons/md";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 
 export default function ClientsMain() {
     const { clients, loading } = useClients();
-    const isTablet = useIsTablet();
     const [searchTerm, setSearchTerm] = useState("");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null);
@@ -61,40 +59,30 @@ export default function ClientsMain() {
                 </div>
             )
         }
-        if (isTablet) {
-            if (filteredClients.length === 0){
-                return (
-                    <div className="flex flex-col gap-3">
-                        <div className="py-20 text-center text-font-gray2 text-sm bg-white/2">
-                            {searchTerm
-                                ? "Nenhum cliente encontrado para sua busca"
-                                : "Nenhum cliente cadastrado ainda"}
-                        </div>
+        if (filteredClients.length === 0){
+            return (
+                <div className="flex flex-col gap-3">
+                    <div className="py-20 text-center text-font-gray2 text-sm bg-white/2">
+                        {searchTerm
+                            ? "Nenhum cliente encontrado para sua busca"
+                            : "Nenhum cliente cadastrado ainda"}
                     </div>
-                    
-                )
-            } else {
-                return (
-                    <div className="flex flex-col gap-3">
-                        {filteredClients.map((client) => (
-                            <ClientCard
-                                key={client.id}
-                                client={client}
-                                onOpenMenu ={handleOpenMenu}
-                            />
-                        ))}
-                    </div>
-                )
-            }
+                </div>
+                
+            )
+        } else {
+            return (
+                <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
+                    {filteredClients.map((client) => (
+                        <ClientCard
+                            key={client.id}
+                            client={client}
+                            onOpenMenu ={handleOpenMenu}
+                        />
+                    ))}
+                </div>
+            )
         }
-
-        return  (
-            <ClientsTable
-                clients={filteredClients}
-                loading={loading}
-                onOpenMenu ={handleOpenMenu}
-            />
-        )
     }
 
     return (

@@ -18,12 +18,10 @@ import UserAddModal from "@/components/users/modals/UserAddModal";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 import { useUsers } from "@/context/UsersContext";
 import { useAuth } from "@/context/AuthContext";
-import useIsTablet from "@/hooks/responsive/useIsTablet";
 import { ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
 import UsersCards from "./usersCards/UsersCards";
 import UserFilters from "./sections/UserFilters";
-import UserTable from "./sections/UserTable";
 import UsersHeader from "./sections/UsersHeader";
 import CanDo from "../auth/CanDo";
 import { AddButton } from "../ui/Buttons/Buttons";
@@ -34,7 +32,6 @@ export default function UsersMain() {
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
-    const isTablet = useIsTablet();
     const [deletingUser, setDeletingUser] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
@@ -115,23 +112,10 @@ export default function UsersMain() {
                 </div>
             );
         }
-
-        if (isTablet){
-            return (
-                <UsersCards
-                    users={filtered}
-                    onOpenMenu ={handleOpenMenu}
-                />
-            );
-        }
-
         return (
-            <UserTable
-                filtered={filtered}
-                sortKey={sortKey}
-                sortDir={sortDir}
-                handleOpenMenu={handleOpenMenu}
-                handleSort={handleSort}
+            <UsersCards
+                users={filtered}
+                onOpenMenu ={handleOpenMenu}
             />
         );
     };
