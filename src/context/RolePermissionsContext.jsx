@@ -69,7 +69,7 @@ export const RolePermissionsProvider = ({children}) => {
 
     const value = useMemo(
         () => ({
-            permissions: permissions ?? buildDefaultPermissions(),
+            permissions: permissions ? { ...buildDefaultPermissions(), ...permissions } : buildDefaultPermissions(),
             loadingPermissions,
             updatePermission,
         }),[permissions,loadingPermissions, updatePermission]

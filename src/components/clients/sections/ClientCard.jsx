@@ -8,6 +8,7 @@ import {
 } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
+import CustomFieldsDisplay from "@/components/ui/CustomFieldsDisplay";
 
 export default function ClientCard({ client, onOpenMenu }) {
     const isTablet = useIsTablet();
@@ -127,6 +128,9 @@ export default function ClientCard({ client, onOpenMenu }) {
                     </span>
                 </div>
             </div>
+
+            {/* Campos personalizados */}
+            <CustomFieldsDisplay entity="client" data={client} />
         </div>
     );
 }

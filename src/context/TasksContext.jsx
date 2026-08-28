@@ -112,6 +112,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 lastModifiedBy: currentUser.uid,
                 lastModifiedByName:
                     currentUser.name || currentUser.displayname || "",
+                customData: data.customData || {},
             };
 
             // adiciona os dados do novo doc na coleção tasks
@@ -155,6 +156,7 @@ export const TasksProvider = ({ children, projectId }) => {
                 lastModifiedBy: currentUser.uid,
                 lastModifiedByName:
                     currentUser.name || currentUser.displayname || "",
+                customData: data.customData || {},
             };
 
             // localiza a task atual e substitui com os novos dados

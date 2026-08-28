@@ -5,6 +5,7 @@ import CardDevs from "./CardDevs";
 import CardFooter from "./CardFooter";
 import CardHeader from "./CardHeader";
 import CreatedModifiedBy from "./CreatedModifiedBy";
+import CustomFieldsDisplay from "@/components/ui/CustomFieldsDisplay";
 
 function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete, settings }) {
     //guarda o elemento HTML que servirá de “âncora” para o menu (que começa fechado)
@@ -63,6 +64,8 @@ function ProjectCard({ project, usersMap, clientMap, onEdit, onDelete, settings 
             )}
 
             {settings?.showDevelopers !== false && <CardDevs project={project} usersMap={usersMap} />}
+
+            <CustomFieldsDisplay entity="project" data={project} settings={settings} />
 
             <CardFooter project={project} settings={settings} />
 

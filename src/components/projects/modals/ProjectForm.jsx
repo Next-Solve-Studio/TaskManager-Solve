@@ -33,6 +33,7 @@ import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { useSettings } from "@/context/SettingsContext";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 
 export function ProjectForm({
     open,
@@ -47,6 +48,7 @@ export function ProjectForm({
     const isEdit = Boolean(project);
     const { systemSettings } = useSettings();
     const settings = systemSettings?.projectCardSettings || {};
+    const { projectFields } = useCustomFields();
 
     const defaultValues = {
         title: "",
@@ -63,6 +65,7 @@ export function ProjectForm({
         expectedDeliveryDate: "",
         totalValue: 0,
         paidValue: 0,
+        customData: {},
     };
 
     const {
@@ -101,6 +104,7 @@ export function ProjectForm({
                     hosting: project.hosting || "",
                     totalValue: project.totalValue,
                     paidValue: project.paidValue,
+                    customData: project.customData || {},
                 });
             } else {
                 // se não, criação e limpa o form
@@ -537,6 +541,35 @@ export function ProjectForm({
                                 ),
                             }}
                         />
+                    )}
+                                
+                    {projectFields.length > 0 && (
+                        <>
+                            <div className="w-full h-px bg-border-main my-2" />
+                            <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1">Campos Personalizados</p>
+                            {projectFields.map(field => (
+                                <TextField
+                                    key={field.id}
+                                    {...register(`customData.${field.id}`)}
+                                    label={field.name}
+                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                                    multiline={field.type === "textarea"}
+                                    rows={field.type === "textarea" ? 3 : 1}
+                                    select={field.type === "boolean"}
+                                    fullWidth
+                                    size="small"
+                                    InputLabelProps={field.type === "date" ? { shrink: true } : undefined}
+                                    sx={muiDark}
+                                    defaultValue={project?.customData?.[field.id] || ""}
+                                    SelectProps={field.type === "boolean" ? { MenuProps: menuPaper } : undefined}
+                                >
+                                    {field.type === "boolean" && [
+                                        <MenuItem key="sim" value="Sim" style={{ fontSize: 13 }}>Sim</MenuItem>,
+                                        <MenuItem key="nao" value="Não" style={{ fontSize: 13 }}>Não</MenuItem>
+                                    ]}
+                                </TextField>
+                            ))}
+                        </>
                     )}
                 </DialogContent>
 

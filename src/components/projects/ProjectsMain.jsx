@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { MdVisibility } from "react-icons/md";
+import { MdVisibility, MdExtension } from "react-icons/md";
 import { toast } from "sonner";
 import CanDo from "@/components/auth/CanDo";
 import ModalDelete from "@/components/projects/modals/ModalDelete";
 import ProjectForm from "@/components/projects/modals/ProjectForm";
 import ProjectCardSettingsModal from "@/components/projects/modals/ProjectCardSettingsModal";
+import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 import { useProjects } from "@/context/ProjectsContext";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useSettings } from "@/context/SettingsContext";
@@ -44,6 +45,7 @@ export default function ProjectsMain() {
     const [deleting, setDeleting] = useState(false);
     
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
     const { systemSettings, updateSystemSettings } = useSettings();
     
     const defaultSettings = {
@@ -174,6 +176,16 @@ export default function ProjectsMain() {
                             <MdVisibility size={20} />
                         </button>
                     </CanDo>
+                    <CanDo permission="canManageCustomFields">
+                        <button
+                            type="button"
+                            onClick={() => setCustomFieldsModalOpen(true)}
+                            className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                            title="Gerenciar campos personalizados"
+                        >
+                            <MdExtension size={20} />
+                        </button>
+                    </CanDo>
                     <NewProject onCreate={handleOpenCreate} />
                 </div>
             </div>
@@ -222,6 +234,13 @@ export default function ProjectsMain() {
                 onClose={() => setSettingsOpen(false)}
                 settings={settings}
                 updateSystemSettings={updateSystemSettings}
+            />
+
+            <CustomFieldFormModal
+                open={customFieldsModalOpen}
+                onClose={() => setCustomFieldsModalOpen(false)}
+                entity="project"
+                entityLabel="Projetos"
             />
 
             <ProjectForm

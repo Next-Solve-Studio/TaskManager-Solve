@@ -276,7 +276,7 @@ export const AuthProvider = ({ children }) => {
 
     // Função para registrar um NOVO FUNCIONÁRIO
     const registerEmployee = useCallback(
-        async (name, email, password, companyId, role) => {
+        async (name, email, password, companyId, role, customData) => {
 
             const token = await auth.currentUser?.getIdToken();
             if (!token) throw new Error("Usuário não autenticado.");
@@ -288,7 +288,7 @@ export const AuthProvider = ({ children }) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ name, email, password, companyId, role }),
+            body: JSON.stringify({ name, email, password, companyId, role, customData }),
             });
 
             if (!response.ok) {

@@ -29,6 +29,7 @@ import { SelectController } from "@/components/ui/SelectController";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { useSettings } from "@/context/SettingsContext";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 
 function TaskForm({
     open,
@@ -43,6 +44,7 @@ function TaskForm({
     const isEdit = Boolean(task);
     const { systemSettings } = useSettings();
     const settings = systemSettings?.taskCardSettings || {};
+    const { taskFields } = useCustomFields();
 
     const defaultValues = {
         title: "",
@@ -54,6 +56,7 @@ function TaskForm({
         priority: "media",
         status: "em_andamento",
         solution: "",
+        customData: {},
     };
 
     const {
@@ -81,6 +84,7 @@ function TaskForm({
                     priority: task.priority || "media",
                     status: task.status || "em_andamento",
                     solution: task.solution || "",
+                    customData: task.customData || {},
                 });
                 setChecklistItems(task.checklist || []);
             } else {
@@ -435,6 +439,35 @@ function TaskForm({
                                 </button>
                             </div>
                         </div>
+                    )}
+                    
+                    {taskFields.length > 0 && (
+                        <>
+                            <div className="w-full h-px bg-border-main my-2" />
+                            <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1">Campos Personalizados</p>
+                            {taskFields.map(field => (
+                                <TextField
+                                    key={field.id}
+                                    {...register(`customData.${field.id}`)}
+                                    label={field.name}
+                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                                    multiline={field.type === "textarea"}
+                                    rows={field.type === "textarea" ? 3 : 1}
+                                    select={field.type === "boolean"}
+                                    fullWidth
+                                    size="small"
+                                    InputLabelProps={field.type === "date" ? { shrink: true } : undefined}
+                                    sx={muiDark}
+                                    defaultValue={task?.customData?.[field.id] || ""}
+                                    SelectProps={field.type === "boolean" ? { MenuProps: menuPaper } : undefined}
+                                >
+                                    {field.type === "boolean" && [
+                                        <MenuItem key="sim" value="Sim" style={{ fontSize: 13 }}>Sim</MenuItem>,
+                                        <MenuItem key="nao" value="Não" style={{ fontSize: 13 }}>Não</MenuItem>
+                                    ]}
+                                </TextField>
+                            ))}
+                        </>
                     )}
                 </DialogContent>
 

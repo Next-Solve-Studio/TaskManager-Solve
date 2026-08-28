@@ -12,6 +12,7 @@ import ClientsStats from "./sections/ClientsStats";
 import ClientsTable from "./sections/ClientsTable";
 import SearchInput from "./sections/SearchInput";
 import { MdDelete, MdEdit } from "react-icons/md";
+import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 
 export default function ClientsMain() {
     const { clients, loading } = useClients();
@@ -23,6 +24,7 @@ export default function ClientsMain() {
     const [deletingClient, setDeletingClient] = useState(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
     const [menuClient, setMenuClient] = useState(null);
+    const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
 
     const handleOpenMenu = useCallback((event, client) => {
             setMenuAnchorEl(event.currentTarget)
@@ -99,7 +101,11 @@ export default function ClientsMain() {
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
             <ClientsHeader />
 
-            <ClientsStats handleOpenModal={handleOpenModal} clients={clients} />
+            <ClientsStats 
+                handleOpenModal={handleOpenModal} 
+                clients={clients} 
+                onOpenCustomFields={() => setCustomFieldsModalOpen(true)}
+            />
 
             <SearchInput
                 searchTerm={searchTerm}
@@ -123,6 +129,13 @@ export default function ClientsMain() {
                     setDeletingClient(null);
                 }}
                 client={deletingClient}
+            />
+
+            <CustomFieldFormModal
+                open={customFieldsModalOpen}
+                onClose={() => setCustomFieldsModalOpen(false)}
+                entity="client"
+                entityLabel="Clientes"
             />
 
             <Menu

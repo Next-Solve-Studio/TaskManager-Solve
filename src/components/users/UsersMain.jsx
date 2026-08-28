@@ -10,10 +10,12 @@ import {
     MdPeople,
     MdSupervisorAccount,
     MdAdd,
+    MdExtension,
 } from "react-icons/md";
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
 import UserAddModal from "@/components/users/modals/UserAddModal";
+import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 import { useUsers } from "@/context/UsersContext";
 import { useAuth } from "@/context/AuthContext";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
@@ -35,6 +37,7 @@ export default function UsersMain() {
     const isTablet = useIsTablet();
     const [deletingUser, setDeletingUser] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
     const [sortKey, setSortKey] = useState(null);
     const [sortDir, setSortDir] = useState("asc");
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
@@ -192,9 +195,21 @@ export default function UsersMain() {
                         border="rgba(75,75,75,0.3)"
                     />
                 </div>
-                <CanDo permission="canCreateUsers">
-                    <AddButton label="Cadastrar Usuário" action={() => setIsAddModalOpen(true)}/>
-                </CanDo>
+                <div className="flex gap-2 items-center justify-end">
+                    <CanDo permission="canManageCustomFields">
+                        <button
+                            type="button"
+                            onClick={() => setCustomFieldsModalOpen(true)}
+                            className="h-[38px] px-3 bg-bg-surface border border-border-main rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                            title="Gerenciar Campos Personalizados"
+                        >
+                            <MdExtension size={20} />
+                        </button>
+                    </CanDo>
+                    <CanDo permission="canCreateUsers">
+                        <AddButton label="Cadastrar Usuário" action={() => setIsAddModalOpen(true)}/>
+                    </CanDo>
+                </div>
             </div>
 
             <UserFilters
@@ -221,6 +236,13 @@ export default function UsersMain() {
                 open={Boolean(deletingUser)}
                 onClose={() => setDeletingUser(null)}
                 user={deletingUser}
+            />
+
+            <CustomFieldFormModal
+                open={customFieldsModalOpen}
+                onClose={() => setCustomFieldsModalOpen(false)}
+                entity="user"
+                entityLabel="Usuários"
             />
 
             <Menu

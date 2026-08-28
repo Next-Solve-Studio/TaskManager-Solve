@@ -1,8 +1,8 @@
-import { MdOutlineTaskAlt, MdVisibility } from "react-icons/md";
+import { MdOutlineTaskAlt, MdVisibility, MdExtension } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import { AddButton } from "@/components/ui/Buttons/Buttons";
 
-export default function TasksHeader({ handleOpenCreate, handleOpenSettings, tasks }) {
+export default function TasksHeader({ handleOpenCreate, handleOpenSettings, handleOpenCustomFields, tasks }) {
     return (
         <div className="flex items-end justify-between flex-wrap gap-4">
             <div>
@@ -29,6 +29,16 @@ export default function TasksHeader({ handleOpenCreate, handleOpenSettings, task
                         title="Configurar visualização global"
                     >
                         <MdVisibility size={20} />
+                    </button>
+                </CanDo>
+                <CanDo permission="canManageCustomFields">
+                    <button
+                        type="button"
+                        onClick={handleOpenCustomFields}
+                        className="h-10 px-3 bg-bg-surface border border-border-main2 rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                        title="Gerenciar campos personalizados"
+                    >
+                        <MdExtension size={20} />
                     </button>
                 </CanDo>
                 <CanDo permission="canCreateTasks">

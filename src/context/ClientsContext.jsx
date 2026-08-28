@@ -77,8 +77,9 @@ export const ClientsProvider = ({ children }) => {
                     name: data.name,
                     email: data.email || "",
                     contato: data.contato || "",
-                    documento: data.documento || "", // Novo campo opcional
+                    documento: data.documento || "",
                     status: data.status || "active",
+                    customData: data.customData || {},
                     companyId: currentUser.companyId,
                     createdBy: currentUser?.uid || "system",
                     createdAt: serverTimestamp(),
@@ -117,6 +118,7 @@ export const ClientsProvider = ({ children }) => {
                     contato: data.contato || "",
                     documento: data.documento || "",
                     status: data.status,
+                    customData: data.customData || {},
                     updatedAt: serverTimestamp(),
                 };
                 await updateDoc(doc(db, "clients", clientId), payload);

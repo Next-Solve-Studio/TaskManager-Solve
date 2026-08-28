@@ -95,4 +95,7 @@ export const PERMISSIONS = {
 
     // Visualização
     canManageProjectCardView: [ROLES.MASTER, ROLES.ADMIN],
+    
+    // Campos Personalizados
+    canManageCustomFields: [ROLES.MASTER, ROLES.ADMIN],
 };

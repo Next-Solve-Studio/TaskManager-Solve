@@ -6,6 +6,7 @@ import {
     Switch,
 } from "@mui/material";
 import { MdClose, MdVisibility } from "react-icons/md";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 
 export default function ProjectCardSettingsModal({
     open,
@@ -13,10 +14,14 @@ export default function ProjectCardSettingsModal({
     settings,
     updateSystemSettings,
 }) {
+    const { projectFields } = useCustomFields();
+
     const handleToggle = (key) => (e) => {
         const nextSettings = { ...settings, [key]: e.target.checked };
         updateSystemSettings({ projectCardSettings: nextSettings });
     };
+
+    const switchSx = { "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } };
 
     return (
         <Dialog
@@ -72,67 +77,57 @@ export default function ProjectCardSettingsModal({
             >
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Cliente</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showClient}
-                        onChange={handleToggle("showClient")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showClient} onChange={handleToggle("showClient")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Descrição</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showDescription}
-                        onChange={handleToggle("showDescription")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showDescription} onChange={handleToggle("showDescription")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Tech Stack</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showTechStack}
-                        onChange={handleToggle("showTechStack")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showTechStack} onChange={handleToggle("showTechStack")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Desenvolvedores</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showDevelopers}
-                        onChange={handleToggle("showDevelopers")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showDevelopers} onChange={handleToggle("showDevelopers")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Datas (Rodapé)</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showDates}
-                        onChange={handleToggle("showDates")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showDates} onChange={handleToggle("showDates")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Links (Repositório/Hosting)</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showRepository ?? true}
-                        onChange={handleToggle("showRepository")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showRepository ?? true} onChange={handleToggle("showRepository")} sx={switchSx} />
                 </div>
                 <div className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
                     <span className="text-[13px] font-semibold text-text-secondary">Criado/Modificado Por</span>
-                    <Switch
-                        size="small"
-                        checked={settings.showCreatedModifiedBy}
-                        onChange={handleToggle("showCreatedModifiedBy")}
-                        sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "var(--color-brand-500)" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "var(--color-brand-500)" } }}
-                    />
+                    <Switch size="small" checked={settings.showCreatedModifiedBy} onChange={handleToggle("showCreatedModifiedBy")} sx={switchSx} />
                 </div>
+
+                {/* Campos Personalizados */}
+                {projectFields.length > 0 && (
+                    <>
+                        <div className="flex items-center gap-2 mt-2">
+                            <div className="h-px flex-1 bg-border-main" />
+                            <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest whitespace-nowrap">Campos Personalizados</span>
+                            <div className="h-px flex-1 bg-border-main" />
+                        </div>
+                        {projectFields.map((field) => {
+                            const key = `showCustomField_${field.id}`;
+                            return (
+                                <div key={field.id} className="flex items-center justify-between bg-bg-surface px-4 py-2 rounded-xl border border-border-main2">
+                                    <span className="text-[13px] font-semibold text-text-secondary">{field.name}</span>
+                                    <Switch
+                                        size="small"
+                                        checked={settings[key] ?? true}
+                                        onChange={handleToggle(key)}
+                                        sx={switchSx}
+                                    />
+                                </div>
+                            );
+                        })}
+                    </>
+                )}
             </DialogContent>
         </Dialog>
     );

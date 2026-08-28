@@ -165,6 +165,7 @@ export const ProjectsProvider = ({ children }) => {
                 lastModifiedBy: currentUser.uid,
                 lastModifiedByName:
                     currentUser.name || currentUser.displayName || "",
+                customData: data.customData || {},
             };
             const ref = await addDoc(collection(db, "projects"), payload); // adiciona o payload como um novo documento na coleção projects
 
@@ -236,6 +237,7 @@ export const ProjectsProvider = ({ children }) => {
                 lastModifiedBy: currentUser.uid,
                 lastModifiedByName:
                     currentUser.name || currentUser.displayName || "",
+                customData: data.customData || {},
             };
             await updateDoc(doc(db, "projects", projectId), payload); // localiza o documento pelo caminho projects/projectId e aplica as alterações
 

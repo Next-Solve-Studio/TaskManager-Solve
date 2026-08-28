@@ -2,6 +2,7 @@ import { memo } from "react";
 import CardChecklist from "./sections/CardChecklist";
 import CardFooter from "./sections/CardFooter";
 import CardHeader from "./sections/CardHeader";
+import CustomFieldsDisplay from "@/components/ui/CustomFieldsDisplay";
 
 function TaskCard({ task, usersMap, onEdit, onDelete, settings }) {
     const assignedUsers = (task.assignedTo || [])
@@ -28,6 +29,9 @@ function TaskCard({ task, usersMap, onEdit, onDelete, settings }) {
 
             {/* Checklist progress */}
             {settings?.showChecklist !== false && <CardChecklist task={task} />}
+
+            {/* Campos personalizados */}
+            <CustomFieldsDisplay entity="task" data={task} settings={settings} />
 
             {/* Footer: responsáveis + datas */}
             <CardFooter task={task} assignedUsers={assignedUsers} settings={settings} />

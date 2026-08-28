@@ -18,7 +18,7 @@ export async function POST(request) {
         }
 
         const { db, auth } = getFirebaseAdmin();
-        const { name, email, password, companyId, role } = await request.json();
+        const { name, email, password, companyId, role, customData } = await request.json();
 
         if (!email || !companyId || !password) {
             return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
@@ -86,6 +86,7 @@ export async function POST(request) {
             email,
             role: safeRole,
             companyId,
+            customData: customData || {},
             createdAt: new Date(),
             lastLoginAt: null,
             lastSeenAt: null,

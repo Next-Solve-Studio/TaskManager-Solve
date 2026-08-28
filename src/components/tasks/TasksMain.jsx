@@ -12,6 +12,7 @@ import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { useSettings } from "@/context/SettingsContext";
+import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 
 export default function TasksMain() {
     const {
@@ -39,6 +40,7 @@ export default function TasksMain() {
     const [filterMonth, setFilterMonth] = useState("all");
     
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
     const { systemSettings, updateSystemSettings } = useSettings();
     
     const defaultSettings = {
@@ -96,7 +98,12 @@ export default function TasksMain() {
 
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
-            <TasksHeader handleOpenCreate={handleOpenCreate} handleOpenSettings={() => setSettingsOpen(true)} tasks={tasks} />
+            <TasksHeader 
+                handleOpenCreate={handleOpenCreate} 
+                handleOpenSettings={() => setSettingsOpen(true)} 
+                handleOpenCustomFields={() => setCustomFieldsModalOpen(true)}
+                tasks={tasks} 
+            />
 
             {/* Stats */}
             <TasksStats tasks={tasks} />
@@ -150,6 +157,13 @@ export default function TasksMain() {
                 onClose={() => setSettingsOpen(false)}
                 settings={settings}
                 updateSystemSettings={updateSystemSettings}
+            />
+
+            <CustomFieldFormModal
+                open={customFieldsModalOpen}
+                onClose={() => setCustomFieldsModalOpen(false)}
+                entity="task"
+                entityLabel="Tarefas"
             />
 
             <TaskForm

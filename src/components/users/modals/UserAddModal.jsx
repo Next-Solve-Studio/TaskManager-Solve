@@ -20,6 +20,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 
 const schema = yup.object({
     name: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
@@ -30,6 +31,7 @@ const schema = yup.object({
 
 export default function UserAddModal({ open, onClose }) {
     const { currentUser, registerEmployee } = useAuth();
+    const { userFields } = useCustomFields();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
 
@@ -45,7 +47,8 @@ export default function UserAddModal({ open, onClose }) {
             name: "",       
             email: "",      
             password: "",   
-            role: ROLES.DEVELOPER 
+            role: ROLES.DEVELOPER,
+            customData: {},
         },
     });
 
@@ -65,6 +68,7 @@ export default function UserAddModal({ open, onClose }) {
                 data.password,
                 currentUser.companyId,
                 data.role,
+                data.customData,
             );
             toast.success("Usuário cadastrado com sucesso!");
             reset();
@@ -229,6 +233,34 @@ export default function UserAddModal({ open, onClose }) {
                             </TextField>
                         )}
                     />
+
+                    {userFields.length > 0 && (
+                        <>
+                            <div className="w-full h-px bg-border-main my-2" />
+                            <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1">Campos Personalizados</p>
+                            {userFields.map(field => (
+                                <TextField
+                                    key={field.id}
+                                    {...register(`customData.${field.id}`)}
+                                    label={field.name}
+                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                                    multiline={field.type === "textarea"}
+                                    rows={field.type === "textarea" ? 3 : 1}
+                                    select={field.type === "boolean"}
+                                    fullWidth
+                                    size="small"
+                                    InputLabelProps={field.type === "date" ? { shrink: true } : undefined}
+                                    sx={muiDark}
+                                    SelectProps={field.type === "boolean" ? { MenuProps: menuPaper } : undefined}
+                                >
+                                    {field.type === "boolean" && [
+                                        <MenuItem key="sim" value="Sim" style={{ fontSize: 13 }}>Sim</MenuItem>,
+                                        <MenuItem key="nao" value="Não" style={{ fontSize: 13 }}>Não</MenuItem>
+                                    ]}
+                                </TextField>
+                            ))}
+                        </>
+                    )}
                 </DialogContent>
 
                 <DialogActions

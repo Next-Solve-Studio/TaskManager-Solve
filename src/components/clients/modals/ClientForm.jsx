@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { MdClose, MdOutlinePeople } from "react-icons/md";
 import * as yup from "yup";
 import { useClients } from "@/context/ClientsContext";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import { FormatPhone } from "@/utils/FormatPhone";
@@ -47,6 +48,7 @@ const schema = yup.object().shape({
 
 function ClientForm({ isOpen, onClose, client }) {
     const { createClient, updateClient } = useClients();
+    const { clientFields } = useCustomFields();
     const isEditing = !!client;
 
     const {
@@ -63,6 +65,7 @@ function ClientForm({ isOpen, onClose, client }) {
             contato: client?.contato || "",
             documento: client?.documento || "",
             status: client?.status || "active",
+            customData: client?.customData || {},
         },
     });
 
@@ -211,6 +214,35 @@ function ClientForm({ isOpen, onClose, client }) {
                             Inativo
                         </MenuItem>
                     </TextField>
+
+                    {clientFields.length > 0 && (
+                        <>
+                            <div className="w-full h-px bg-border-main my-2" />
+                            <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1">Campos Personalizados</p>
+                            {clientFields.map(field => (
+                                <TextField
+                                    key={field.id}
+                                    {...register(`customData.${field.id}`)}
+                                    label={field.name}
+                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : "text"}
+                                    multiline={field.type === "textarea"}
+                                    rows={field.type === "textarea" ? 3 : 1}
+                                    select={field.type === "boolean"}
+                                    fullWidth
+                                    size="small"
+                                    InputLabelProps={field.type === "date" ? { shrink: true } : undefined}
+                                    sx={muiDark}
+                                    defaultValue={client?.customData?.[field.id] || ""}
+                                    SelectProps={field.type === "boolean" ? { MenuProps: menuPaper } : undefined}
+                                >
+                                    {field.type === "boolean" && [
+                                        <MenuItem key="sim" value="Sim" style={{ fontSize: 13 }}>Sim</MenuItem>,
+                                        <MenuItem key="nao" value="Não" style={{ fontSize: 13 }}>Não</MenuItem>
+                                    ]}
+                                </TextField>
+                            ))}
+                        </>
+                    )}
                 </DialogContent>
 
                 <DialogActions className="gap-2 border-t border-border-main py-4 px-6">

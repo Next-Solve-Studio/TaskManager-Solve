@@ -5,6 +5,7 @@ import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { AuthBadge } from "../AuthBadge";
+import CustomFieldsDisplay from "@/components/ui/CustomFieldsDisplay";
 
 export function UserCard({ user, onOpenMenu }) {
     const formattedDate = useMemo(() => {
@@ -67,6 +68,8 @@ export function UserCard({ user, onOpenMenu }) {
 
             {/* Divider */}
             <div className="h-px bg-border-main" />
+
+            <CustomFieldsDisplay entity="user" data={user} />
 
             {/* Bottom row: role + auth + date */}
             <div
