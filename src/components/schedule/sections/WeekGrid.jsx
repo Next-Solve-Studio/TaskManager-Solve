@@ -35,6 +35,46 @@ function toDisplayMinutes(time) {
     return (real - HOUR_START * 60 + 24 * 60) % (24 * 60);
 }
 
+function layoutDayEvents(dayEvs, maxCols) {
+    if (!dayEvs.length) return [];
+    const evs = dayEvs.map(ev => ({
+        ...ev,
+        _s: toDisplayMinutes(ev.start),
+        _e: toDisplayMinutes(ev.end),
+        _col: 0,
+        _total: 1,
+        _overflow: 0,
+    }));
+    evs.sort((a, b) => a._s - b._s);
+
+    // Atribui coluna greedy (primeira coluna livre)
+    const colEnds = [];
+    evs.forEach(ev => {
+        const c = colEnds.findIndex(end => end <= ev._s);
+        if (c === -1) { ev._col = colEnds.length; colEnds.push(ev._e); }
+        else { ev._col = c; colEnds[c] = ev._e; }
+    });
+
+    // Calcula totalCols por cluster de sobreposição
+    evs.forEach(ev => {
+        const concurrent = evs.filter(o => o._s < ev._e && o._e > ev._s);
+        const used = Math.max(...concurrent.map(o => o._col)) + 1;
+        concurrent.forEach(o => { if (o._total < used) o._total = used; });
+    });
+
+    if (maxCols) {
+        evs.forEach(ev => {
+            if (ev._col < maxCols) {
+                ev._total = Math.min(ev._total, maxCols);
+                const concurrent = evs.filter(o => o._s < ev._e && o._e > ev._s);
+                ev._overflow = concurrent.filter(o => o._col >= maxCols).length;
+            }
+        });
+        return evs.filter(ev => ev._col < maxCols);
+    }
+    return evs;
+}
+
 export default function WeekGrid({
     weekStart,
     events,
@@ -177,8 +217,9 @@ export default function WeekGrid({
                                     const day = WEEK_DAYS[dayIndex];
                                     const date = addDays(weekStart, dayIndex);
                                     const today = isToday(date);
-                                    const dayEvents = events.filter(
-                                        (e) => e.dayKey === day.key,
+                                    const dayEvents = layoutDayEvents(
+                                        events.filter((e) => e.dayKey === day.key),
+                                        isMobile ? 2 : undefined,
                                     );
 
                                     return (
@@ -287,11 +328,17 @@ export default function WeekGrid({
                                                 return (
                                                     <div
                                                         key={ev.id}
-                                                        className="absolute w-full transition-transform duration-150 hover:-translate-y-0.5"
+                                                        className="absolute transition-transform duration-150 hover:-translate-y-0.5"
                                                         style={{
                                                             top,
                                                             height,
                                                             zIndex: 10,
+                                                            left: ev._total > 1
+                                                                ? `calc(${(ev._col / ev._total) * 100}% + ${ev._col > 0 ? 2 : 0}px)`
+                                                                : 0,
+                                                            width: ev._total > 1
+                                                                ? `calc(${(1 / ev._total) * 100}% - 2px)`
+                                                                : "100%",
                                                         }}
                                                     >
                                                         <button
@@ -365,6 +412,18 @@ export default function WeekGrid({
                                                                                 " ",
                                                                             )[0]
                                                                         }
+                                                                    </span>
+                                                                )}
+                                                                {ev._overflow > 0 && (
+                                                                    <span
+                                                                        className="absolute bottom-1 right-1 text-[9px] font-bold px-1 rounded-md"
+                                                                        style={{
+                                                                            background: "var(--color-bg-card)",
+                                                                            color: cat.color,
+                                                                            border: `1px solid ${cat.color}`,
+                                                                        }}
+                                                                    >
+                                                                        +{ev._overflow}
                                                                     </span>
                                                                 )}
                                                         </button>
