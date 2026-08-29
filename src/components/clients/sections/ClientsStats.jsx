@@ -37,7 +37,7 @@ export default function ClientsStats({ clients, handleOpenModal, onOpenCustomFie
                     <button
                         type="button"
                         onClick={() => setViewMode("table")}
-                        className={`px-3 flex items-center justify-center transition-all ${viewMode === "table" ? "bg-bg-card border-r border-border-main2 text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                        className={`px-3 cursor-pointer flex items-center justify-center transition-all ${viewMode === "table" ? "bg-bg-card text-brand-500" : "text-text-muted hover:text-text-primary"}`}
                         title="Visualização em Tabela"
                     >
                         <MdViewList size={20} />
@@ -45,7 +45,7 @@ export default function ClientsStats({ clients, handleOpenModal, onOpenCustomFie
                     <button
                         type="button"
                         onClick={() => setViewMode("grid")}
-                        className={`px-3 flex items-center justify-center transition-all ${viewMode === "grid" ? "bg-bg-card border-l border-border-main2 text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                        className={`px-3 cursor-pointer flex items-center justify-center transition-all ${viewMode === "grid" ? "bg-bg-card text-brand-500" : "text-text-muted hover:text-text-primary"}`}
                         title="Visualização em Grade"
                     >
                         <MdViewModule size={20} />
