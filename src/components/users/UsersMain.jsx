@@ -143,24 +143,6 @@ export default function UsersMain() {
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
             <div className="flex justify-between items-start flex-wrap gap-4">
                 <UsersHeader users={users}/>
-                {currentUser?.role === ROLES.ADMIN && (
-                    <Button
-                        variant="contained"
-                        startIcon={<MdAdd />}
-                        onClick={() => setIsAddModalOpen(true)}
-                        sx={{
-                            bgcolor: "var(--color-brand-500)",
-                            borderRadius: "12px",
-                            textTransform: "none",
-                            fontWeight: "bold",
-                            px: 3,
-                            py: 1.2,
-                            "&:hover": { bgcolor: "var(--color-brand-600)" }
-                        }}
-                    >
-                        Cadastrar Usuário
-                    </Button>
-                )}
             </div>
 
             <div className="flex justify-between items-center flex-wrap gap-4">
