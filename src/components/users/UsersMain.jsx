@@ -11,6 +11,8 @@ import {
     MdSupervisorAccount,
     MdAdd,
     MdExtension,
+    MdViewList,
+    MdViewModule,
 } from "react-icons/md";
 import UserDeleteModal from "@/components/users/modals/UserDeleteModal";
 import UserEditModal from "@/components/users/modals/UserEditModal";
@@ -23,8 +25,10 @@ import { StatPill } from "../ui/StatPill";
 import UsersCards from "./usersCards/UsersCards";
 import UserFilters from "./sections/UserFilters";
 import UsersHeader from "./sections/UsersHeader";
+import UserTable from "./sections/UserTable";
 import CanDo from "../auth/CanDo";
 import { AddButton } from "../ui/Buttons/Buttons";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function UsersMain() {
     const { users, loadingUsers } = useUsers();
@@ -39,6 +43,8 @@ export default function UsersMain() {
     const [sortDir, setSortDir] = useState("asc");
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const [menuUser, setMenuUser] = useState(null);
+    const [viewMode, setViewMode] = useState("table");
+    const isMobile = useIsMobile();
 
     const handleOpenMenu = useCallback((event, user) => {
         setMenuAnchorEl(event.currentTarget);
@@ -112,10 +118,23 @@ export default function UsersMain() {
                 </div>
             );
         }
+        
+        if (isMobile || viewMode === "grid") {
+            return (
+                <UsersCards
+                    users={filtered}
+                    onOpenMenu={handleOpenMenu}
+                />
+            );
+        }
+
         return (
-            <UsersCards
-                users={filtered}
-                onOpenMenu ={handleOpenMenu}
+            <UserTable
+                filtered={filtered}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                handleOpenMenu={handleOpenMenu}
+                handleSort={handleSort}
             />
         );
     };
@@ -180,6 +199,24 @@ export default function UsersMain() {
                     />
                 </div>
                 <div className="flex gap-2 items-center justify-end">
+                    <div className="flex bg-bg-surface border border-border-main rounded-xl overflow-hidden h-[38px]">
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("table")}
+                            className={`px-3 flex items-center justify-center transition-all ${viewMode === "table" ? "bg-bg-card border-r border-border-main text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                            title="Visualização em Tabela"
+                        >
+                            <MdViewList size={20} />
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setViewMode("grid")}
+                            className={`px-3 flex items-center justify-center transition-all ${viewMode === "grid" ? "bg-bg-card border-l border-border-main text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                            title="Visualização em Grade"
+                        >
+                            <MdViewModule size={20} />
+                        </button>
+                    </div>
                     <CanDo permission="canManageCustomFields">
                         <button
                             type="button"

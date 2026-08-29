@@ -9,8 +9,10 @@ import ClientForm from "./modals/ClientForm";
 import ClientCard from "./sections/ClientCard";
 import ClientsHeader from "./sections/ClientsHeader";
 import ClientsStats from "./sections/ClientsStats";
+import ClientsTable from "./sections/ClientsTable";
 import SearchInput from "./sections/SearchInput";
 import { MdDelete, MdEdit } from "react-icons/md";
+import useIsMobile from "@/hooks/responsive/useIsMobile";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 
 export default function ClientsMain() {
@@ -23,6 +25,8 @@ export default function ClientsMain() {
     const [menuAnchorEl, setMenuAnchorEl] = useState(null)
     const [menuClient, setMenuClient] = useState(null);
     const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
+    const [viewMode, setViewMode] = useState("table");
+    const isMobile = useIsMobile();
 
     const handleOpenMenu = useCallback((event, client) => {
             setMenuAnchorEl(event.currentTarget)
@@ -70,7 +74,9 @@ export default function ClientsMain() {
                 </div>
                 
             )
-        } else {
+        }
+        
+        if (isMobile || viewMode === "grid") {
             return (
                 <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
                     {filteredClients.map((client) => (
@@ -83,6 +89,14 @@ export default function ClientsMain() {
                 </div>
             )
         }
+
+        return  (
+            <ClientsTable
+                clients={filteredClients}
+                loading={loading}
+                onOpenMenu ={handleOpenMenu}
+            />
+        )
     }
 
     return (
@@ -93,6 +107,8 @@ export default function ClientsMain() {
                 handleOpenModal={handleOpenModal} 
                 clients={clients} 
                 onOpenCustomFields={() => setCustomFieldsModalOpen(true)}
+                viewMode={viewMode}
+                setViewMode={setViewMode}
             />
 
             <SearchInput

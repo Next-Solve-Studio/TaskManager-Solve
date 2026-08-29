@@ -113,14 +113,20 @@ export default function CustomFieldFormModal({ open, onClose, entity, entityLabe
 
             <DialogContent className="p-4 flex flex-col gap-6 mt-3">
                 <form onSubmit={handleSubmit(onSubmit)} className="flex items-start pt-2 gap-4">
-                    <TextField
-                        {...register("name")}
-                        label="Nome do Campo"
-                        size="small"
-                        fullWidth
-                        error={!!errors.name}
-                        helperText={errors.name?.message}
-                        sx={muiDark}
+                    <Controller
+                        name="name"
+                        control={control}
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                label="Nome do Campo"
+                                size="small"
+                                fullWidth
+                                error={!!errors.name}
+                                helperText={errors.name?.message}
+                                sx={muiDark}
+                            />
+                        )}
                     />
 
                     <FormControl size="small" fullWidth sx={muiDark} error={!!errors.type}>

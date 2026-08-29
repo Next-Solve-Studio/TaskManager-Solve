@@ -1,12 +1,12 @@
 "use client";
 
-import { MdCheckCircle, MdPeople, MdExtension } from "react-icons/md";
+import { MdCheckCircle, MdPeople, MdExtension, MdViewList, MdViewModule } from "react-icons/md";
 import { StatPill } from "@/components/ui/StatPill";
 import { useRole } from "@/hooks/useRole";
 import CanDo from "@/components/auth/CanDo";
 import NewClient from "../button/NewClient";
 
-export default function ClientsStats({ clients, handleOpenModal, onOpenCustomFields }) {
+export default function ClientsStats({ clients, handleOpenModal, onOpenCustomFields, viewMode, setViewMode }) {
     const { can } = useRole();
 
     const totalClients = clients.length;
@@ -33,6 +33,24 @@ export default function ClientsStats({ clients, handleOpenModal, onOpenCustomFie
                 />
             </div>
             <div className="flex items-center gap-2">
+                <div className="flex bg-bg-surface border border-border-main2 rounded-xl overflow-hidden h-[40px]">
+                    <button
+                        type="button"
+                        onClick={() => setViewMode("table")}
+                        className={`px-3 flex items-center justify-center transition-all ${viewMode === "table" ? "bg-bg-card border-r border-border-main2 text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                        title="Visualização em Tabela"
+                    >
+                        <MdViewList size={20} />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setViewMode("grid")}
+                        className={`px-3 flex items-center justify-center transition-all ${viewMode === "grid" ? "bg-bg-card border-l border-border-main2 text-brand-500" : "text-text-muted hover:text-text-primary"}`}
+                        title="Visualização em Grade"
+                    >
+                        <MdViewModule size={20} />
+                    </button>
+                </div>
                 <CanDo permission="canManageCustomFields">
                     <button
                         type="button"

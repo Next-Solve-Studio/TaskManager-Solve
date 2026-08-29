@@ -5,7 +5,7 @@ import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
 
-export default function UserRow({ user, onOpenMenu }) {
+export default function UserRow({ user, onOpenMenu, gridCols, userFields }) {
     const formattedDate = useMemo(() => {
         if (!user.createdAt) return "—";
         const date = user.createdAt?.toDate?.() ?? new Date(user.createdAt);
@@ -28,10 +28,10 @@ export default function UserRow({ user, onOpenMenu }) {
 
     return (
         <div
-            className="grid grid-cols-[48px_1fr_160px_100px_100px_72px] 
-            gap-4 items-center px-5 py-3 bg-bg-card
+            className="grid gap-4 items-center px-5 py-3 bg-bg-card
             rounded-xl border border-border-main shadow-sm
             transition-[border-color_0.2s,transform_0.2s] hover:border-brand-500/30 group sm:hover:-translate-y-px"
+            style={{ gridTemplateColumns: gridCols }}
         >
             {/* Avatar */}
             <div style={{ display: "flex", justifyContent: "center" }}>
@@ -44,7 +44,7 @@ export default function UserRow({ user, onOpenMenu }) {
             </div>
 
             {/* Nome + Email */}
-            <div>
+            <div className="min-w-0">
                 <p className="text-text-primary font-bold text-sm m-0 mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.name}
                 </p>
@@ -72,7 +72,17 @@ export default function UserRow({ user, onOpenMenu }) {
                 </span>
             </div>
 
-            
+            {userFields?.map(field => {
+                let value = user.customData?.[field.id];
+                if (value === undefined || value === null || value === "") {
+                    value = "—";
+                }
+                return (
+                    <div key={field.id} className="flex items-center text-[12px] text-text-secondary whitespace-nowrap overflow-hidden text-ellipsis min-w-0">
+                        {value}
+                    </div>
+                );
+            })}
 
             {/* Ações */}
             <CanDo permission="canManageUsers">
