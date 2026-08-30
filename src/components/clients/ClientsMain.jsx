@@ -14,6 +14,7 @@ import SearchInput from "./sections/SearchInput";
 import { MdDelete, MdEdit } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
+import { useEffect } from "react";
 
 export default function ClientsMain() {
     const { clients, loading } = useClients();
@@ -27,6 +28,14 @@ export default function ClientsMain() {
     const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
     const [viewMode, setViewMode] = useState("table");
     const isMobile = useIsMobile();
+
+    useEffect(() => {
+        if (isMobile) {
+            setViewMode("grid");
+        } else {
+            setViewMode("table");
+        }
+    }, [isMobile]);
 
     const handleOpenMenu = useCallback((event, client) => {
             setMenuAnchorEl(event.currentTarget)
@@ -76,7 +85,7 @@ export default function ClientsMain() {
             )
         }
         
-        if (isMobile || viewMode === "grid") {
+        if (viewMode === "grid") {
             return (
                 <div className="grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(240px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]">
                     {filteredClients.map((client) => (

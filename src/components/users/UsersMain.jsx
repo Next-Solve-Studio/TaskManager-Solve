@@ -1,7 +1,7 @@
 "use client";
 
 import { CircularProgress, Menu, MenuItem, Button } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
     MdAdminPanelSettings,
     MdCode,
@@ -45,6 +45,14 @@ export default function UsersMain() {
     const [menuUser, setMenuUser] = useState(null);
     const [viewMode, setViewMode] = useState("table");
     const isMobile = useIsMobile();
+
+    useEffect(() => {
+        if (isMobile) {
+            setViewMode("grid");
+        } else {
+            setViewMode("table");
+        }
+    }, [isMobile]);
 
     const handleOpenMenu = useCallback((event, user) => {
         setMenuAnchorEl(event.currentTarget);
@@ -119,7 +127,7 @@ export default function UsersMain() {
             );
         }
         
-        if (isMobile || viewMode === "grid") {
+        if (viewMode === "grid") {
             return (
                 <UsersCards
                     users={filtered}
