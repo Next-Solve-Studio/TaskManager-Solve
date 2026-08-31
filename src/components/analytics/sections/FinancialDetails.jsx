@@ -4,7 +4,11 @@ import { MdTrendingUp } from 'react-icons/md';
 
 export default function FinancialDetails({filteredProjects}) {
     return (
-        <div className="bg-bg-card border border-border-main rounded-2xl overflow-hidden shadow-sm">
+        <div className="rounded-2xl overflow-hidden" style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+            border: '1px solid rgba(255,255,255,0.09)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)',
+        }}>
             <div className="p-6 border-b border-border-main flex items-center justify-between">
                 <h3 className="text-lg font-bold flex items-center gap-2">
                     <MdTrendingUp className="text-brand-500" /> Saúde Financeira dos Projetos

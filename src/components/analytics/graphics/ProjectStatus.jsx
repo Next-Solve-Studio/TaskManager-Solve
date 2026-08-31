@@ -43,7 +43,12 @@ export default function ProjectStatus({ filteredProjects }) {
     };
 
     return (
-        <div className="bg-bg-card border border-border-main rounded-2xl p-3 sm:p-6 shadow-sm">
+        <div className="rounded-2xl p-3 sm:p-6" style={{
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+            border: '1px solid rgba(255,255,255,0.09)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)',
+        }}>
+
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <MdLayers className="text-purple-400" /> Distribuição de
                 Projetos por Status
