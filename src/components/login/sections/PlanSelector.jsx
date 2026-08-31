@@ -97,7 +97,7 @@ export default function PlanSelector({ selected, onSelect, billing, onBillingCha
             </div>
 
             {/* Cards */}
-            <div className="grid grid-cols-3 mb-10 gap-4 w-full max-w-3xl mx-auto">
+            <div className="grid sm:grid-cols-3 mb-10 gap-10 sm:gap-4 w-full max-w-3xl mx-auto">
                 {PLANS.map((plan) => {
                     const isSelected = selected === plan.id;
                     const isPro = plan.highlight;
@@ -107,7 +107,7 @@ export default function PlanSelector({ selected, onSelect, billing, onBillingCha
                             key={plan.id}
                             type="button"
                             onClick={() => onSelect(plan.id)}
-                            className={`relative flex flex-col rounded-2xl border transition-all duration-200 overflow-hidden text-left cursor-pointer w-full min-h-110
+                            className={`relative flex flex-col rounded-2xl border transition-all duration-200 overflow-hidden text-left cursor-pointer w-full sm:min-h-110
                                 ${isPro && isSelected
                                     ? "border-purple-500 shadow-[0_0_32px_rgba(168,85,247,0.25)]"
                                     : isPro
