@@ -5,12 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
 import { COLORS } from "../AnalyticsMain";
 import { formatCurrency } from "@/utils/FormatCurrency";
-
-const GLASS_CARD = {
-    background: "linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
-    border: "1px solid rgba(255,255,255,0.09)",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)",
-};
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 const CustomBarLabel = ({ x, y, width, height, value }) => (
     <text x={(x || 0) + (width || 0) + 8} y={(y || 0) + (height || 0) / 2}

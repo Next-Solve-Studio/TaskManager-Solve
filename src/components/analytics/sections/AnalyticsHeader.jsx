@@ -1,10 +1,11 @@
 import { MdFilterList, MdTrendingUp } from "react-icons/md";
-
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 export default function AnalyticsHeader({timeFilter, setTimeFilter}) {
     
     return (
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-bg-card p-6 rounded-2xl border border-border-main shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 p-6 rounded-2xl"
+            style={GLASS_CARD}>
             <div className="flex flex-col gap-1">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <MdTrendingUp className="text-brand-500" /> Dashboard Estratégico

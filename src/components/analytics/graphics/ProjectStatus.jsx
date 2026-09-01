@@ -3,7 +3,8 @@ import { useMemo } from "react";
 import { MdLayers } from "react-icons/md";
 import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
-import { COLORS, GLASS_CARD } from "../AnalyticsMain";
+import { COLORS } from "../AnalyticsMain";
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 export default function ProjectStatus({ filteredProjects }) {
     const { projectStats, total } = useMemo(() => {

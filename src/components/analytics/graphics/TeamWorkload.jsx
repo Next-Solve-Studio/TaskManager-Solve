@@ -3,7 +3,8 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { MdPeople, MdKeyboardArrowDown } from "react-icons/md";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
-import { COLORS, GLASS_CARD } from "../AnalyticsMain";
+import { COLORS } from "../AnalyticsMain";
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 
 function getUserById(users, id) { return users.find((u) => u.id === id); }

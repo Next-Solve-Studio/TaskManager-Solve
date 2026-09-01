@@ -3,7 +3,7 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { MdAttachMoney, MdKeyboardArrowDown } from "react-icons/md";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
-import { GLASS_CARD } from "../AnalyticsMain";
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 const BRAND = "#19CA68";
 const BRAND_MUTED = "rgba(25,202,104,0.35)";
