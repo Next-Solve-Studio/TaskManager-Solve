@@ -18,7 +18,6 @@ import UserEditModal from "@/components/users/modals/UserEditModal";
 import UserAddModal from "@/components/users/modals/UserAddModal";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 import { useUsers } from "@/context/UsersContext";
-import { useAuth } from "@/context/AuthContext";
 import { ROLES } from "@/lib/roles";
 import { StatPill } from "../ui/StatPill";
 import UsersCards from "./usersCards/UsersCards";
@@ -31,7 +30,6 @@ import useIsMobile from "@/hooks/responsive/useIsMobile";
 
 export default function UsersMain() {
     const { users, loadingUsers } = useUsers();
-    const { currentUser } = useAuth();
     const [search, setSearch] = useState("");
     const [filterRole, setFilterRole] = useState("all");
     const [editingUser, setEditingUser] = useState(null);
@@ -188,7 +186,7 @@ export default function UsersMain() {
                     />
                 </div>
                 <div className="flex gap-2 items-center justify-end">
-                    <div className="flex bg-bg-surface border border-border-main rounded-xl overflow-hidden h-[38px]">
+                    <div className="flex bg-bg-surface border border-border-main rounded-xl overflow-hidden h-9.5">
                         <button
                             type="button"
                             onClick={() => setViewMode("table")}
@@ -210,7 +208,7 @@ export default function UsersMain() {
                         <button
                             type="button"
                             onClick={() => setCustomFieldsModalOpen(true)}
-                            className="h-[38px] px-3 bg-bg-surface border border-border-main rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
+                            className="h-9.5 px-3 bg-bg-surface border border-border-main rounded-xl text-text-muted hover:text-brand-500 hover:border-brand-500/50 transition-all cursor-pointer flex items-center justify-center"
                             title="Gerenciar Campos Personalizados"
                         >
                             <MdExtension size={20} />
