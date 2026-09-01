@@ -3,16 +3,12 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { MdAttachMoney, MdKeyboardArrowDown } from "react-icons/md";
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
+import { GLASS_CARD } from "../AnalyticsMain";
 
 const BRAND = "#19CA68";
 const BRAND_MUTED = "rgba(25,202,104,0.35)";
 const PERIODS = ['Mensal', 'Semanal', 'Anual'];
 
-const GLASS_CARD = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-    border: '1px solid rgba(255,255,255,0.09)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)',
-};
 
 export default function FinancialTrend({ filteredProjects, getDateObject }) {
     const [period, setPeriod] = useState('Mensal');
@@ -66,14 +62,14 @@ export default function FinancialTrend({ filteredProjects, getDateObject }) {
                     <MdAttachMoney className="text-brand-500" /> Evolução de Faturamento
                 </h3>
                 <div ref={dropRef} className="relative">
-                    <button onClick={() => setOpen(o => !o)}
+                    <button type="button" onClick={() => setOpen(o => !o)}
                         className="flex items-center gap-1 text-sm text-text-secondary bg-bg-surface border border-border-main rounded-lg px-3 py-1.5 hover:border-brand-500 transition-colors">
                         {period} <MdKeyboardArrowDown size={16} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
                     </button>
                     {open && (
-                        <div className="absolute right-0 top-full mt-1 bg-bg-card border border-border-main rounded-xl shadow-xl z-20 min-w-[120px] overflow-hidden">
+                        <div className="absolute right-0 top-full mt-1 bg-bg-card border border-border-main rounded-xl shadow-xl z-20 min-w-30 overflow-hidden">
                             {PERIODS.map(p => (
-                                <button key={p} onClick={() => { setPeriod(p); setOpen(false); }}
+                                <button type="button" key={p} onClick={() => { setPeriod(p); setOpen(false); }}
                                     className={`w-full text-left px-4 py-2 text-sm hover:bg-bg-surface transition-colors ${p === period ? 'text-brand-500 font-medium' : 'text-text-secondary'}`}>
                                     {p}
                                 </button>

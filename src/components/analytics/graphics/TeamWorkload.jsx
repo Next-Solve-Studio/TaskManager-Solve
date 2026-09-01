@@ -3,15 +3,10 @@ import { useMemo, useState, useRef, useEffect } from "react";
 import { MdPeople, MdKeyboardArrowDown } from "react-icons/md";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
-import { COLORS } from "../AnalyticsMain";
+import { COLORS, GLASS_CARD } from "../AnalyticsMain";
+
 
 function getUserById(users, id) { return users.find((u) => u.id === id); }
-
-const GLASS_CARD = {
-    background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-    border: '1px solid rgba(255,255,255,0.09)',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)',
-};
 
 const CustomBarLabel = ({ x, y, width, height, value }) => (
     <text x={(x || 0) + (width || 0) + 8} y={(y || 0) + (height || 0) / 2}
@@ -63,14 +58,14 @@ export default function TeamWorkload({ filteredTasks, users }) {
                     <MdPeople className="text-cyan-400" /> Carga de Trabalho (Pendentes)
                 </h3>
                 <div ref={dropRef} className="relative">
-                    <button onClick={() => setOpen(o => !o)}
+                    <button type="button" onClick={() => setOpen(o => !o)}
                         className="flex items-center gap-1 text-sm text-text-secondary bg-bg-surface border border-border-main rounded-lg px-3 py-1.5 hover:border-brand-500 transition-colors">
                         {selectedUser} <MdKeyboardArrowDown size={16} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
                     </button>
                     {open && (
                         <div className="absolute right-0 top-full mt-1 bg-bg-card border border-border-main rounded-xl shadow-xl z-20 min-w-[140px] max-h-48 overflow-y-auto overflow-hidden">
                             {userOptions.map(u => (
-                                <button key={u} onClick={() => { setSelectedUser(u); setOpen(false); }}
+                                <button type="button" key={u} onClick={() => { setSelectedUser(u); setOpen(false); }}
                                     className={`w-full text-left px-4 py-2 text-sm hover:bg-bg-surface transition-colors ${u === selectedUser ? 'text-brand-500 font-medium' : 'text-text-secondary'}`}>
                                     {u}
                                 </button>

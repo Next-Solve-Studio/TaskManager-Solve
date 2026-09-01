@@ -1,90 +1,70 @@
+"use client";
 import { useMemo } from "react";
 import { MdLayers } from "react-icons/md";
-import {
-    Legend,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-} from "recharts";
+import { Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { CustomTooltip } from "@/components/ui/CustomTooltip";
-import useIsTablet from "@/hooks/responsive/useIsTablet";
-import { COLORS } from "../AnalyticsMain";
+import { COLORS, GLASS_CARD } from "../AnalyticsMain";
 
 export default function ProjectStatus({ filteredProjects }) {
-    const IsTablet = useIsTablet();
-
-    const projectStats = useMemo(() => {
-        // Conta os status
-        const statusCounts = filteredProjects.reduce((acc, p) => {
+    const { projectStats, total } = useMemo(() => {
+        const counts = filteredProjects.reduce((acc, p) => {
             acc[p.status] = (acc[p.status] || 0) + 1;
             return acc;
         }, {});
-
-        //  Calcula o total de projetos para podermos achar a %
-        const total = Object.values(statusCounts).reduce(
-            (sum, val) => sum + val,
-            0,
-        );
-
-        // Retorna o array incluindo a porcentagem calculada
-        return Object.entries(statusCounts).map(([name, value], index) => ({
-            name: name.replace("_", " ").toUpperCase(),
+        const tot = Object.values(counts).reduce((s, v) => s + v, 0);
+        const stats = Object.entries(counts).map(([name, value], i) => ({
+            name: name.replace(/_/g, ' '),
             value,
-            percentage: total > 0 ? (value / total) * 100 : 0,
-            fill: COLORS[(index + 2) % COLORS.length],
+            percentage: tot > 0 ? (value / tot) * 100 : 0,
+            fill: COLORS[(i + 2) % COLORS.length],
         }));
+        return { projectStats: stats, total: tot };
     }, [filteredProjects]);
 
-    // Função que formata o texto da legenda
-    const renderLegendText = (value, entry) => {
-        const { payload } = entry; // payload contém as informações do item (name, value, percent)
-        return `${value}: ${payload.value} (${payload.percentage.toFixed(0)}%)`;
-    };
-
     return (
-        <div className="rounded-2xl p-3 sm:p-6" style={{
-            background: 'linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
-            border: '1px solid rgba(255,255,255,0.09)',
-            boxShadow: '0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.07)',
-        }}>
-
+        <div className="rounded-2xl p-6" style={GLASS_CARD}>
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <MdLayers className="text-purple-400" /> Distribuição de
-                Projetos por Status
+                <MdLayers className="text-purple-400" /> Distribuição de Projetos por Status
             </h3>
-            <div className={`w-full ${IsTablet ? "h-96" : "h-80"}`}>
-                <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                        <Pie
-                            data={projectStats}
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={70}
-                            outerRadius={110}
-                            paddingAngle={5}
-                            dataKey="value"
-                            label={
-                                IsTablet
-                                    ? false
-                                    : ({ name, percent }) =>
-                                          `${name} ${(percent * 100).toFixed(0)}%`
-                            }
-                        />
-                            
-                        
-
-                        <Tooltip content={<CustomTooltip />} />
-
-                        {IsTablet && (
-                            <Legend
-                                verticalAlign="bottom"
-                                wrapperStyle={{ paddingTop: "20px" }}
-                                formatter={renderLegendText} // Chama a nossa função para customizar o texto
+            <div className="flex items-center gap-4">
+                <div className="relative shrink-0" style={{ width: '52%', height: 240 }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={projectStats}
+                                cx="50%" cy="50%"
+                                innerRadius={62} outerRadius={100}
+                                paddingAngle={4}
+                                dataKey="value"
                             />
-                        )}
-                    </PieChart>
-                </ResponsiveContainer>
+                            <Tooltip content={<CustomTooltip />} />
+                        </PieChart>
+                    </ResponsiveContainer>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                        <span className="text-3xl font-black text-text-primary">{total}</span>
+                        <span className="text-xs text-text-muted mt-0.5">Projetos</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-3 flex-1 min-w-0">
+                    {projectStats.length === 0 && (
+                        <p className="text-sm text-text-muted">Nenhum projeto no período.</p>
+                    )}
+                    {projectStats.map(item => (
+                        <div key={item.name} className="flex items-center gap-2">
+                            <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: item.fill }} />
+                            <span className="text-sm text-text-secondary capitalize truncate flex-1">
+                                {item.name.toLowerCase()}
+                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                                <span className="text-sm font-semibold text-text-primary">
+                                    {item.percentage.toFixed(0)}%
+                                </span>
+                                <span className="text-xs text-text-muted w-5 text-right">{item.value}</span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
