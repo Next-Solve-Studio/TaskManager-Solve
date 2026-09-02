@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { MdDownload } from "react-icons/md";
 import { exportProjectsToExcel, exportProjectsToPDF } from "@/utils/ExportUtils";
+import { GLASS_CARD } from "@/styles/StylesCard";
 
 export function StatCard({ 
     icon: Icon,
@@ -10,6 +11,7 @@ export function StatCard({
     color,
     bg,
     border,
+    glass = false,
     status,
     projects = [],
     clientMap = {}
@@ -107,11 +109,15 @@ export function StatCard({
     return (
         <div
             className="shadow-md select-none relative flex flex-col gap-3 p-5 rounded-2xl overflow-hidden transition-transform duration-200 hover:-translate-y-0.5"
-            style={{
-                background: `linear-gradient(to bottom right, ${bg}, var(--bg-card))`,
-                border: `1px solid ${border}`,
-                boxShadow: `0 4px 20px ${color}18, 0 1px 4px ${color}10`
-            }}
+            style={
+                glass
+                    ? { ...GLASS_CARD, border: `1px solid ${border}` }
+                    : {
+                        background: `linear-gradient(to bottom right, ${bg}, var(--bg-card))`,
+                        border: `1px solid ${border}`,
+                        boxShadow: `0 4px 20px ${color}18, 0 1px 4px ${color}10`,
+                    }
+            }
         >
             {/* ÍCONE FIXO NO CANTO SUPERIOR DIREITO */}
             <div className="absolute top-4 right-4">

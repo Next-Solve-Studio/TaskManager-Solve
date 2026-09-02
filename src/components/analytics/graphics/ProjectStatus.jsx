@@ -14,7 +14,7 @@ export default function ProjectStatus({ filteredProjects }) {
         }, {});
         const tot = Object.values(counts).reduce((s, v) => s + v, 0);
         const stats = Object.entries(counts).map(([name, value], i) => ({
-            name: name.replace(/_/g, ' '),
+            name: name.replaceAll('_', ' '),
             value,
             percentage: tot > 0 ? (value / tot) * 100 : 0,
             fill: COLORS[(i + 2) % COLORS.length],
@@ -27,8 +27,8 @@ export default function ProjectStatus({ filteredProjects }) {
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                 <MdLayers className="text-purple-400" /> Distribuição de Projetos por Status
             </h3>
-            <div className="flex items-center gap-4">
-                <div className="relative shrink-0" style={{ width: '52%', height: 240 }}>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="relative shrink-0 w-full sm:w-[52%]" style={{ height: 240 }}>
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie
