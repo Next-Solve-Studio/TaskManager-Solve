@@ -101,7 +101,7 @@ export default function AnalyticsMain() {
             />
 
             {/* Barra de abas */}
-            <div className="bg-bg-card border border-border-main rounded-xl overflow-hidden shadow-2xl max-w-150">
+            <div className="bg-bg-card border border-border-main rounded-lg overflow-hidden shadow-2xl max-w-150">
                 <Tabs
                     value={activeTab}
                     onChange={(_, newVal) => setActiveTab(newVal)}
@@ -109,30 +109,29 @@ export default function AnalyticsMain() {
                     indicatorColor="primary"
                     variant="scrollable"
                     scrollButtons="auto"
-                    allowScrollButtonsMobile
+                    
                     sx={{
                         ...GLASS_CARD,
-                        "& .MuiTabs-flexContainer": { width: "100%" },
+                        "& .MuiTabs-flexContainer": {
+                            width: isMobile ? "auto" : "100%",
+                            backgroundColor: "var(--color-bg-surface)"
+                        },
                         "& .MuiTab-root": {
                             color: "var(--color-text-muted)",
-                            flex: 1,
+                            backgroundColor: "var(--color-bg-surface)",
+                            flex: isMobile ? "0 0 auto" : 1,
+                            minWidth: isMobile ? "auto" : undefined,
                             maxWidth: "none",
-                            minHeight: isMobile ? 48 : 56,
+                            minHeight: isMobile ? 48 : 64,
                             fontSize: isMobile ? "0.75rem" : "0.875rem",
                             fontWeight: 600,
                             textTransform: "none",
+                            whiteSpace: "nowrap",
+                            gap: isMobile ? "4px" : "8px",
+                            padding: isMobile ? "8px 10px" : "12px 16px",
                         },
-                        "& .Mui-selected": {
-                            color: "var(--color-brand-500) !important",
-                        },
-                        "& .MuiTabs-indicator": {
-                            backgroundColor: "var(--color-brand-500)",
-                            height: 3,
-                            borderRadius: "3px 3px 0 0",
-                        },
-                        "& .MuiTabScrollButton-root": {
-                            color: "var(--color-text-muted)",
-                        },
+                        "& .Mui-selected": { color: "var(--color-brand-500) !important" },
+                        "& .MuiTabs-indicator": { backgroundColor: "var(--color-brand-500)", height: "3px", borderRadius: "3px 3px 0 0" }, 
                     }}
                 >
                     {TABS.map((tab) => (
@@ -141,7 +140,7 @@ export default function AnalyticsMain() {
                             value={tab.id}
                             icon={<tab.icon size={18} />}
                             iconPosition="start"
-                            label={isMobile ? undefined : tab.label}
+                            label={tab.label}
                             disableRipple={false}
                         />
                     ))}
