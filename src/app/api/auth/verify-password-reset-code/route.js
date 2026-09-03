@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const MAX_ATTEMPTS = 5;
 
 export async function POST(request) {
     try {
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `pwreset-verify:${ip}`, windowSeconds: 300, max: 20 });
+        if (!allowed) {
+            return NextResponse.json({ message: "Muitas tentativas. Tente novamente em alguns minutos." }, { status: 429 });
+        }
+
         const { email, code, newPassword } = await request.json();
 
         if (!email || !code || !newPassword || newPassword.length < 6) {
@@ -33,6 +40,7 @@ export async function POST(request) {
             await codeRef.delete();
             return NextResponse.json({ message: "Código expirado. Solicite um novo." }, { status: 410 });
         }
+
 
         if (data.code.toUpperCase() !== code.toUpperCase()) {
             const attempts = (data.attempts || 0) + 1;

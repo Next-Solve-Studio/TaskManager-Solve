@@ -130,7 +130,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
 
     return (
         <div className="space-y-3 max-w-full overflow-x-auto pb-2">
-            <div className="inline-flex flex-col min-w-full min-w-[800px] space-y-2">
+            <div className="inline-flex flex-col min-w-200 space-y-2">
                 <div 
                     className="grid px-8 mb-2 gap-4"
                     style={{ gridTemplateColumns: gridCols }}

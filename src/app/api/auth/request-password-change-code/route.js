@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 function generateCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -23,6 +24,11 @@ export async function POST(request) {
             caller = await verifyFirebaseToken(token);
         } catch {
             return NextResponse.json({ message: "Token inválido." }, { status: 401 });
+        }
+
+        const { allowed } = await checkRateLimit({ key: `pwchange-req:${caller.uid}`, windowSeconds: 300, max: 3 });
+        if (!allowed) {
+            return NextResponse.json({ message: "Muitas tentativas. Tente novamente em alguns minutos." }, { status: 429 });
         }
 
         const { db } = getFirebaseAdmin();

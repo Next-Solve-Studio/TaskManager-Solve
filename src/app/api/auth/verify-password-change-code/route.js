@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const MAX_ATTEMPTS = 5;
 
@@ -18,11 +19,17 @@ export async function POST(request) {
             return NextResponse.json({ message: "Token inválido." }, { status: 401 });
         }
 
+        const { allowed } = await checkRateLimit({ key: `pwchange-verify:${caller.uid}`, windowSeconds: 300, max: 20 });
+        if (!allowed) {
+            return NextResponse.json({ message: "Muitas tentativas. Tente novamente em alguns minutos." }, { status: 429 });
+        }
+
         const { code, newPassword } = await request.json();
 
         if (!code || !newPassword || newPassword.length < 6) {
             return NextResponse.json({ message: "Dados inválidos." }, { status: 400 });
         }
+    
 
         const { db, auth } = getFirebaseAdmin();
         const codeRef = db.collection("password_change_codes").doc(caller.uid);

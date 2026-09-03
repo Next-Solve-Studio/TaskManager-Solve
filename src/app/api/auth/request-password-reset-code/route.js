@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 function generateCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -14,6 +15,12 @@ const GENERIC_MESSAGE = "Se esse e-mail estiver cadastrado, você vai receber um
 
 export async function POST(request) {
     try {
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `pwreset-req:${ip}`, windowSeconds: 300, max: 3 });
+        if (!allowed) {
+            return NextResponse.json({ message: "Muitas tentativas. Tente novamente em alguns minutos." }, { status: 429 });
+        }
+
         const { email } = await request.json();
         if (!email || typeof email !== "string") {
             return NextResponse.json({ message: "Informe um e-mail válido." }, { status: 400 });
