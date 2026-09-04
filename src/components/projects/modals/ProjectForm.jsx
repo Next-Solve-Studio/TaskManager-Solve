@@ -16,7 +16,7 @@ import {
     Select,
     TextField,
 } from "@mui/material";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
     MdAttachMoney,
@@ -24,7 +24,16 @@ import {
     MdCode,
     MdComputer,
     MdOutlineRocketLaunch,
-} from "react-icons/md";
+    MdAttachFile,
+    MdDownload,
+    MdDelete,
+    MdPictureAsPdf,
+    MdTableChart,
+    MdDescription, MdTextSnippet, MdUpload
+} from "react-icons/md"; 
+import { useProjectAttachments } from "@/hooks/useProjectAttachments";
+import { useAuth } from "@/context/AuthContext";
+import { ROLES } from "@/lib/roles";
 import { RiGitBranchLine } from "react-icons/ri";
 import CanDo from "@/components/auth/CanDo";
 import { projectSchema } from "@/components/projects/schema/ProjectsConfig";
@@ -49,6 +58,21 @@ export function ProjectForm({
     const { systemSettings } = useSettings();
     const settings = systemSettings?.projectCardSettings || {};
     const { projectFields } = useCustomFields();
+    const { currentUser } = useAuth();
+    const fileInputRef = useRef(null);
+    const { attachments, uploading, error: attError, upload, download, remove, setError: setAttError } =
+    
+    useProjectAttachments(isEdit ? project?.id : null, isEdit ? project?.companyId : null);
+
+    function AttachFileIcon({ type }) {
+        if (type === "application/pdf") return <MdPictureAsPdf size={18} className="text-red-400 shrink-0" />;
+        if (type?.includes("word") || type?.includes("rtf")) return <MdDescription size={18} className="text-blue-400 shrink-0" />;
+        if (type?.includes("excel") || type?.includes("spreadsheet") || type === "text/csv") return <MdTableChart size={18} className="text-green-400 shrink-0" />;
+        return <MdTextSnippet size={18} className="text-text-muted shrink-0" />;
+    }
+
+    const formatSize = (b) => b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / (1024 * 1024)).toFixed(1)} MB`;
+    const canDeleteAtt = (att) => att.uploadedBy === currentUser?.uid || currentUser?.role === ROLES.ADMIN;
 
     const defaultValues = {
         title: "",
@@ -569,6 +593,79 @@ export function ProjectForm({
                                     ]}
                                 </TextField>
                             ))}
+                        </>
+                    )}
+                    {isEdit && (
+                        <>
+                            <div className="w-full h-px bg-border-main my-1" />
+                            <div>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <MdAttachFile className="text-text-muted" size={16} />
+                                    <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                                        Anexos ({attachments.length})
+                                    </p>
+                                </div>
+
+                                {/* Upload zone */}
+                                <div
+                                    onClick={() => !uploading && fileInputRef.current?.click()}
+                                    className="rounded-xl border-2 border-dashed flex items-center gap-3 px-4 py-3 mb-3 transition-all"
+                                    style={{
+                                        borderColor: "rgba(255,255,255,0.1)",
+                                        background: "rgba(255,255,255,0.02)",
+                                        cursor: uploading ? "not-allowed" : "pointer",
+                                    }}
+                                >
+                                    <MdUpload size={20} className="text-text-muted shrink-0" />
+                                    <div>
+                                        <p className="text-sm text-text-secondary">
+                                            {uploading ? "Enviando..." : "Clique para anexar arquivo"}
+                                        </p>
+                                        <p className="text-xs text-text-muted">PDF, DOC, XLS, PPT, TXT, CSV · máx. 10 MB</p>
+                                    </div>
+                                    <input ref={fileInputRef} type="file" className="hidden"
+                                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.rtf,.odt,.ods"
+                                        multiple
+                                        onChange={e => { Array.from(e.target.files).forEach(f => upload(f)); }}
+                                    />
+                                </div>
+
+                                {attError && (
+                                    <p className="text-xs text-red-400 mb-2" onClick={() => setAttError(null)} style={{ cursor: "pointer" }}>
+                                        {attError}
+                                    </p>
+                                )}
+
+                                {/* Lista */}
+                                <div className="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
+                                    {attachments.length === 0 ? (
+                                        <p className="text-xs text-text-muted text-center py-3">Nenhum arquivo anexado</p>
+                                    ) : (
+                                        attachments.map(att => (
+                                            <div key={att.id} className="flex items-center gap-2 p-2 rounded-lg"
+                                                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                                                <AttachFileIcon type={att.type} />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-xs font-medium text-text-primary truncate">{att.name}</p>
+                                                    <p className="text-[10px] text-text-muted">{formatSize(att.size)} · {att.uploadedByName}</p>
+                                                </div>
+                                                <div className="flex items-center gap-0.5 shrink-0">
+                                                    <button type="button" onClick={() => download(att)}
+                                                        className="w-7 h-7 rounded flex items-center justify-center text-text-muted hover:text-brand-500 transition-colors">
+                                                        <MdDownload size={15} />
+                                                    </button>
+                                                    {canDeleteAtt(att) && (
+                                                        <button type="button" onClick={() => remove(att)}
+                                                            className="w-7 h-7 rounded flex items-center justify-center text-text-muted hover:text-red-400 transition-colors">
+                                                            <MdDelete size={15} />
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
                         </>
                     )}
                 </DialogContent>
