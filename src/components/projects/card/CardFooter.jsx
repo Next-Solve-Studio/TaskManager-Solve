@@ -14,6 +14,33 @@ export default function CardFooter({ project, settings }) {
         return null;
     }
 
+    const showSupportInfo =()=>{
+        if (supportInfo) {
+            return (
+                <span className="flex items-center gap-1 text-[11px] font-semibold text-purple-500">
+                    <MdOutlineTimer size={11} />
+                    Final do suporte: {supportInfo.formatted}
+                </span>
+            )
+        }
+        return null
+    }
+
+    const showExpectedInfo = () => {
+        if (expectedInfo) {
+            return (
+                <span className="flex items-center gap-1 text-[11px] font-semibold"
+                    style={{ color: expectedInfo.color }}>
+                    <MdOutlineTimer size={11} />
+                    {expectedInfo.text !== expectedInfo.formatted
+                        ? `Previsão: ${expectedInfo.formatted} · ${expectedInfo.text}`
+                        : `Previsão: ${expectedInfo.formatted}`}
+                </span>
+            )
+        }
+        return null
+    }
+
     return (
         <>
             <div className="flex items-center justify-between pt-3 gap-2 flex-wrap border-t border-border-main">
@@ -30,22 +57,8 @@ export default function CardFooter({ project, settings }) {
                                 <MdOutlineTimer size={11} />
                                 Entregue em: {deliveredInfo.formatted}
                             </span>
-                        ) : supportInfo ? (
-                            <span className="flex items-center gap-1 text-[11px] font-semibold text-purple-500">
-                                <MdOutlineTimer size={11} />
-                                Final do suporte: {supportInfo.formatted}
-                            </span>
-                        ) : (
-                            expectedInfo && (
-                                <span className="flex items-center gap-1 text-[11px] font-semibold"
-                                    style={{ color: expectedInfo.color }}>
-                                    <MdOutlineTimer size={11} />
-                                    {expectedInfo.text !== expectedInfo.formatted
-                                        ? `Previsão: ${expectedInfo.formatted} · ${expectedInfo.text}`
-                                        : `Previsão: ${expectedInfo.formatted}`}
-                                </span>
-                            )
-                        )}
+                        ) : showSupportInfo() || showExpectedInfo()
+                        }
                         {deliveryStatus && deliveredInfo && (
                             <span style={{ fontSize: 10, color: deliveryStatus.color }}>
                                 {deliveryStatus.text}
@@ -82,7 +95,7 @@ export default function CardFooter({ project, settings }) {
                     <Tooltip title="Anexos" arrow>
                         <button type="button"
                             onClick={e => { e.stopPropagation(); setAttachmentsOpen(true); }}
-                            className="flex items-center justify-center w-7 h-7 rounded-[7px] text-text-secondary bg-bg-surface
+                            className="flex cursor-pointer items-center justify-center w-7 h-7 rounded-[7px] text-text-secondary bg-bg-surface
                                 border border-border-main transition-all duration-150
                                 sm:hover:text-brand-500 sm:hover:border-brand-500/30">
                             <MdAttachFile size={14} />

@@ -23,14 +23,19 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCustomFields } from "@/context/CustomFieldsContext";
 
 const schema = yup.object({
+    mode: yup.string().oneOf(["invite", "direct"]).required(),
     name: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
     email: yup.string().email("E-mail inválido").required("Obrigatório"),
-    password: yup.string().min(6, "Mínimo 6 caracteres").required("Obrigatório"),
+    password: yup.string().when("mode", {
+        is: "direct",
+        then: (s) => s.min(6, "Mínimo 6 caracteres").required("Obrigatório"),
+        otherwise: (s) => s.notRequired(),
+    }),
     role: yup.string().required("Obrigatório"),
 }).required();
 
 export default function UserAddModal({ open, onClose }) {
-    const { currentUser, registerEmployee } = useAuth();
+    const { currentUser, registerEmployee, inviteEmployee } = useAuth();
     const { userFields } = useCustomFields();
     const [loading, setLoading] = useState(false);
     const [seePassword, setSeePassword] = useState(false);
@@ -40,17 +45,22 @@ export default function UserAddModal({ open, onClose }) {
         handleSubmit,
         reset,
         control,
+        watch,
+        setValue,
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
-        defaultValues: { 
-            name: "",       
-            email: "",      
-            password: "",   
+        defaultValues: {
+            mode: "invite",
+            name: "",
+            email: "",
+            password: "",
             role: ROLES.DEVELOPER,
             customData: {},
         },
     });
+
+    const mode = watch("mode");
 
     const handleClose = () => {
         if (!loading) {
@@ -62,15 +72,26 @@ export default function UserAddModal({ open, onClose }) {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            await registerEmployee(
-                data.name,
-                data.email,
-                data.password,
-                currentUser.companyId,
-                data.role,
-                data.customData,
-            );
-            toast.success("Usuário cadastrado com sucesso!");
+            if (data.mode === "direct") {
+                await registerEmployee(
+                    data.name,
+                    data.email,
+                    data.password,
+                    currentUser.companyId,
+                    data.role,
+                    data.customData,
+                );
+                toast.success("Usuário cadastrado com sucesso!");
+            } else {
+                await inviteEmployee(
+                    data.name,
+                    data.email,
+                    currentUser.companyId,
+                    data.role,
+                    data.customData,
+                );
+                toast.success("Convite enviado! A pessoa recebe um e-mail para criar a própria senha.");
+            }
             reset();
             onClose();
         } catch (err) {
@@ -114,7 +135,7 @@ export default function UserAddModal({ open, onClose }) {
                             width: 32,
                             height: 32,
                             borderRadius: 8,
-                            background: "rgba(26, 215, 111, 0.12)", // Fundo sutil com base no verde brand
+                            background: "rgba(26, 215, 111, 0.12)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -146,6 +167,27 @@ export default function UserAddModal({ open, onClose }) {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <DialogContent className="flex flex-col gap-4 py-5 px-6">
+                    <div className="flex bg-bg-surface border border-border-main rounded-xl overflow-hidden">
+                        <button
+                            type="button"
+                            onClick={() => setValue("mode", "invite")}
+                            className={`flex-1 py-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                                mode === "invite" ? "bg-bg-card text-brand-500" : "text-text-muted hover:text-text-primary"
+                            }`}
+                        >
+                            Convite por e-mail
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setValue("mode", "direct")}
+                            className={`flex-1 py-2.5 text-xs font-semibold transition-all cursor-pointer ${
+                                mode === "direct" ? "bg-bg-card text-brand-500" : "text-text-muted hover:text-text-primary"
+                            }`}
+                        >
+                            Criar com senha agora
+                        </button>
+                    </div>
+
                     <TextField
                         {...register("name")}
                         fullWidth
@@ -180,33 +222,37 @@ export default function UserAddModal({ open, onClose }) {
                             },
                         }}
                     />
-                    <div className="flex w-full relative items-center">
-                        <TextField
-                            {...register("password")}
-                            fullWidth
-                            label="Senha"
-                            type={seePassword ? "text" : "password"}
-                            error={!!errors.password}
-                            helperText={errors.password?.message}
-                            sx={muiDark}
-                            slotProps={{
-                                input: {
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <IoMdLock className="text-brand-500" size={18} />
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                        />
-                        <button
-                            type="button"
-                            className="absolute right-3 text-text-muted hover:text-brand-500"
-                            onClick={() => setSeePassword(!seePassword)}
-                        >
-                            {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                        </button>
-                    </div>
+
+                    {mode === "direct" && (
+                        <div className="flex w-full relative items-center">
+                            <TextField
+                                {...register("password")}
+                                fullWidth
+                                label="Senha"
+                                type={seePassword ? "text" : "password"}
+                                error={!!errors.password}
+                                helperText={errors.password?.message}
+                                sx={muiDark}
+                                slotProps={{
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <IoMdLock className="text-brand-500" size={18} />
+                                            </InputAdornment>
+                                        ),
+                                    },
+                                }}
+                            />
+                            <button
+                                type="button"
+                                className="absolute right-3 text-text-muted hover:text-brand-500"
+                                onClick={() => setSeePassword(!seePassword)}
+                            >
+                                {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+                            </button>
+                        </div>
+                    )}
+
                     <Controller
                         name="role"
                         control={control}
@@ -222,8 +268,8 @@ export default function UserAddModal({ open, onClose }) {
                                 SelectProps={{ MenuProps: menuPaper }}
                             >
                                 {Object.entries(ROLE_LABELS).map(([value, label]) => (
-                                    <MenuItem 
-                                        key={value} 
+                                    <MenuItem
+                                        key={value}
                                         value={value}
                                         sx={{ fontSize: 13, color: "var(--color-text-primary)" }}
                                     >
@@ -292,7 +338,7 @@ export default function UserAddModal({ open, onClose }) {
                                 : "linear-gradient(135deg, var(--color-brand-400), var(--color-brand-500))",
                             border: "none",
                             borderRadius: 8,
-                            color: loading ? "#6b7280" : "#000", // Texto preto para melhor contraste com o verde/brand
+                            color: loading ? "#6b7280" : "#000",
                             padding: "8px 24px",
                             cursor: loading ? "not-allowed" : "pointer",
                             fontSize: 13,
@@ -309,7 +355,7 @@ export default function UserAddModal({ open, onClose }) {
                         {loading && (
                             <CircularProgress size={13} style={{ color: "#000" }} />
                         )}
-                        Cadastrar Usuário
+                        {mode === "direct" ? "Cadastrar Usuário" : "Enviar Convite"}
                     </button>
                 </DialogActions>
             </form>

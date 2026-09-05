@@ -101,7 +101,7 @@ export default function AnalyticsMain() {
             />
 
             {/* Barra de abas */}
-            <div className="bg-bg-card border border-border-main rounded-lg overflow-hidden shadow-2xl max-w-150">
+            <div className="bg-bg-card border border-border-main rounded-xl overflow-hidden shadow-2xl max-w-150">
                 <Tabs
                     value={activeTab}
                     onChange={(_, newVal) => setActiveTab(newVal)}
@@ -113,12 +113,10 @@ export default function AnalyticsMain() {
                     sx={{
                         ...GLASS_CARD,
                         "& .MuiTabs-flexContainer": {
-                            width: isMobile ? "auto" : "100%",
-                            backgroundColor: "var(--color-bg-surface)"
+                            width: isMobile ? "auto" : "100%"
                         },
                         "& .MuiTab-root": {
                             color: "var(--color-text-muted)",
-                            backgroundColor: "var(--color-bg-surface)",
                             flex: isMobile ? "0 0 auto" : 1,
                             minWidth: isMobile ? "auto" : undefined,
                             maxWidth: "none",

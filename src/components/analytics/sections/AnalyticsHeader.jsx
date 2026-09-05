@@ -1,5 +1,29 @@
 import { MdFilterList, MdTrendingUp } from "react-icons/md";
 import { GLASS_CARD } from "@/styles/StylesCard";
+import {
+    Checkbox,
+    Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    TextField,
+} from "@mui/material";
+import { muiDark } from "@/styles/StyleInputs";
+import FilterSelect from "@/components/ui/FilterSelect";
+
+const TIME_FILTER_OPTIONS = [
+    { value: "year", label: "Este Ano" },
+    { value: "month", label: "Este Mês" },
+    { value: "week", label: "Esta Semana" }
+];
 
 export default function AnalyticsHeader({timeFilter, setTimeFilter}) {
     
@@ -15,16 +39,29 @@ export default function AnalyticsHeader({timeFilter, setTimeFilter}) {
             
             <div className="flex items-center gap-3">
                 <MdFilterList className="text-text-muted text-xl" />
-                <select 
-                    value={timeFilter} 
-                    onChange={(e) => setTimeFilter(e.target.value)}
-                    className="bg-bg-surface border border-border-main text-text-primary rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 outline-none"
+                {/* <FormControl
+                    size="small"
+                    sx={muiDark}
                 >
-                    <option value="all">Todo o Período</option>
-                    <option value="year">Este Ano</option>
-                    <option value="month">Este Mês</option>
-                    <option value="week">Esta Semana</option>
-                </select>
+                    <Select
+                        value={timeFilter}
+                        onChange={(e) => setTimeFilter(e.target.value)}
+                        sx={muiDark}
+                    >
+                        <MenuItem value="all">Todo o Período</MenuItem>
+                        <MenuItem value="year">Este Ano</MenuItem>
+                        <MenuItem value="month">Este Mês</MenuItem>
+                        <MenuItem value="week">Esta Semana</MenuItem>
+                    </Select>
+                      
+                </FormControl> */}
+                <FilterSelect
+                    value={timeFilter}
+                    onChange={(value) => setTimeFilter(value)}
+                    items={TIME_FILTER_OPTIONS}
+                    allLabel="Todo o Período"
+                    // isMobile={isMobile}
+                    />
             </div>
         </div>
     )

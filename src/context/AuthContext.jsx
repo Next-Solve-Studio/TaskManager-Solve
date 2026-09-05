@@ -308,6 +308,30 @@ export const AuthProvider = ({ children }) => {
         [],
     );
 
+    const inviteEmployee = useCallback(
+        async (name, email, companyId, role, customData) => {
+            const token = await auth.currentUser?.getIdToken();
+            if (!token) throw new Error("Usuário não autenticado.");
+
+            const response = await fetch("/api/invites", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ name, email, companyId, role, customData }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || "Erro ao enviar convite");
+            }
+
+            return await response.json();
+        },
+        [],
+    );
+
     const logout = useCallback(async () => {
         try {
             await signOut(auth);
@@ -320,13 +344,14 @@ export const AuthProvider = ({ children }) => {
     }, [setSessionCookie, router]);
 
     const value = useMemo(
-        () => ({
+         () => ({
             currentUser,
             loading,
             loginWithEmail,
             loginWithGoogle,
             registerCompany,
             registerEmployee,
+            inviteEmployee,
             logout,
             setJustLoggedIn,
         }),
@@ -337,6 +362,7 @@ export const AuthProvider = ({ children }) => {
             loginWithGoogle,
             registerCompany,
             registerEmployee,
+            inviteEmployee,
             logout,
             setJustLoggedIn,
         ],
