@@ -1,4 +1,6 @@
-import { MdCheckCircleOutline, MdOutlineChecklist } from "react-icons/md";
+"use client";
+import { MdCheckCircleOutline, MdDelete, MdOutlineChecklist } from "react-icons/md";
+import { toast } from "sonner";
 import { useTasks } from "@/context/TasksContext";
 
 export default function CardChecklist({ task }) {
@@ -15,7 +17,6 @@ export default function CardChecklist({ task }) {
 
     // função para alterar estado de um item da checklist
     const toggleItem = async (id) => {
-        // se o id do item, for igual o clicado pelo user, invertemos a propriedade done
         const updated = checklist.map((item) =>
             item.id === id ? { ...item, done: !item.done } : item,
         );
@@ -26,6 +27,18 @@ export default function CardChecklist({ task }) {
             toast.error("Erro ao atualizar checklist");
         }
     };
+
+    // função para remover um item da checklist
+    const removeItem = async (id) => {
+        const updated = checklist.filter((item) => item.id !== id);
+        try {
+            await updateChecklist(task.id, updated);
+        } catch (err) {
+            console.error("Erro ao remover item da checklist: ", err);
+            toast.error("Erro ao remover item");
+        }
+    };
+
     return (
         <>
             {checklist.length > 0 && (
@@ -48,35 +61,47 @@ export default function CardChecklist({ task }) {
                             style={{ width: `${progress}%` }}
                         />
                     </div>
-                    {/* Items do checklist (máx 3 visíveis) */}
+                    {/* Items do checklist */}
                     <div className="flex flex-col gap-2 max-h-44 overflow-y-auto scroll-hidden">
                         {checklist.map((item, index) => (
-                            <button
+                            <div
                                 key={item.id}
-                                type="button"
-                                onClick={() => toggleItem(item.id)}
-                                className={`flex items-center gap-2 text-left group cursor-pointer pb-1.5
+                                className={`flex items-center gap-2 group pb-1.5
                                     ${index === checklist.length - 1 ? "" : "border-b border-[#a1a1a15e]"}
                                 `}
                             >
-                                <MdCheckCircleOutline
-                                    size={14}
-                                    className={`shrink-0 transition-colors ${
-                                        item.done
-                                            ? "text-brand-500"
-                                            : "text-text-muted group-hover:text-text-secondary"
-                                    }`}
-                                />
-                                <span
-                                    className={`text-[11px] ${
-                                        item.done
-                                            ? "line-through text-text-muted"
-                                            : "text-text-secondary group-hover:text-text-primary"
-                                    }`}
+                                <button
+                                    type="button"
+                                    onClick={() => toggleItem(item.id)}
+                                    className="flex items-center gap-2 text-left cursor-pointer flex-1 min-w-0"
                                 >
-                                    {item.text}
-                                </span>
-                            </button>
+                                    <MdCheckCircleOutline
+                                        size={14}
+                                        className={`shrink-0 transition-colors ${
+                                            item.done
+                                                ? "text-brand-500"
+                                                : "text-text-muted group-hover:text-text-secondary"
+                                        }`}
+                                    />
+                                    <span
+                                        className={`text-[11px] truncate ${
+                                            item.done
+                                                ? "line-through text-text-muted"
+                                                : "text-text-secondary group-hover:text-text-primary"
+                                        }`}
+                                    >
+                                        {item.text}
+                                    </span>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => removeItem(item.id)}
+                                    className="shrink-0 text-error sm:text-text-muted hover:text-error transition-colors cursor-pointer"
+                                    title="Excluir item"
+                                >
+                                    <MdDelete size={13} />
+                                </button>
+                            </div>
                         ))}
                     </div>
                 </div>
