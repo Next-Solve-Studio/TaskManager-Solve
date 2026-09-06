@@ -69,6 +69,16 @@ export default function AnalyticsMain() {
                 date.getMonth() === now.getMonth() &&
                 date.getFullYear() === now.getFullYear()
             );
+        if (timeFilter === "quarter") {
+            const currentQuarter = Math.floor(now.getMonth() / 3);
+            const dateQuarter = Math.floor(date.getMonth() / 3);
+            return dateQuarter === currentQuarter && date.getFullYear() === now.getFullYear();
+        }
+        if (timeFilter === "semester") {
+            const currentSemester = Math.floor(now.getMonth() / 6);
+            const dateSemester = Math.floor(date.getMonth() / 6);
+            return dateSemester === currentSemester && date.getFullYear() === now.getFullYear();
+        }
         if (timeFilter === "year")
             return date.getFullYear() === now.getFullYear();
         return true;
@@ -101,7 +111,7 @@ export default function AnalyticsMain() {
             />
 
             {/* Barra de abas */}
-            <div className="bg-bg-card border border-border-main rounded-xl overflow-hidden shadow-2xl max-w-150">
+            <div className="rounded-xl overflow-hidden max-w-150" style={GLASS_CARD}>
                 <Tabs
                     value={activeTab}
                     onChange={(_, newVal) => setActiveTab(newVal)}
@@ -111,7 +121,6 @@ export default function AnalyticsMain() {
                     scrollButtons="auto"
                     
                     sx={{
-                        ...GLASS_CARD,
                         "& .MuiTabs-flexContainer": {
                             width: isMobile ? "auto" : "100%"
                         },

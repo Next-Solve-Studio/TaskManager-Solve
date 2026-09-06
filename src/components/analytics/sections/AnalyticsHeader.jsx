@@ -20,10 +20,13 @@ import { muiDark } from "@/styles/StyleInputs";
 import FilterSelect from "@/components/ui/FilterSelect";
 
 const TIME_FILTER_OPTIONS = [
-    { value: "year", label: "Este Ano" },
+    { value: "week", label: "Esta Semana" },
     { value: "month", label: "Este Mês" },
-    { value: "week", label: "Esta Semana" }
+    { value: "quarter", label: "Este Trimestre" },
+    { value: "semester", label: "Este Semestre" },
+    { value: "year", label: "Este Ano" },
 ];
+
 
 export default function AnalyticsHeader({timeFilter, setTimeFilter}) {
     
