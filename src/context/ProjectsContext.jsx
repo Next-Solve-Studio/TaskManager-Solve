@@ -192,14 +192,14 @@ export const ProjectsProvider = ({ children }) => {
 
             // preenchida apenas quando muda para "concluido", zera se sair
             let deliveryDate = currentProject.deliveryDate || null;
-
-            // se antes não era concluido e virou concluido, gera a data de entraga, se vice versa, vira null
-            if (prevStatus !== "concluido" && nextStatus === "concluido") {
-                deliveryDate = serverTimestamp();
-            } else if (
-                prevStatus === "concluido" &&
-                nextStatus !== "concluido"
-            ) {
+            
+            if (nextStatus === "concluido") {
+                // usa a data escolhida no formulário, se houver; só cai pra "agora"
+                // quando o projeto vira concluído sem nenhuma data definida ainda
+                deliveryDate = data.deliveryDate
+                    ? new Date(data.deliveryDate)
+                    : deliveryDate || serverTimestamp();
+            } else if (prevStatus === "concluido" && nextStatus !== "concluido") {
                 deliveryDate = null;
             }
 
