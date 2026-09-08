@@ -42,7 +42,7 @@ export default function Header({ onMenuClick, isMobile }) {
         <header
             className={`fixed top-0 ${isMobile ? "left-0" : "left-20"} right-0 z-30 h-14 flex items-center`}
             style={{
-                background: "rgba(10, 10, 13, 0.75)",
+                background: "",
                 backdropFilter: "blur(16px)",
                 WebkitBackdropFilter: "blur(16px)",
                 borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
@@ -59,7 +59,7 @@ export default function Header({ onMenuClick, isMobile }) {
 
                     {/* Centro: busca centralizada */}
                     <div className="flex-1 flex justify-center">
-                        <div className="w-full max-w-[440px]">
+                        <div className="w-full max-w-110">
                             <GlobalSearch isMobile={false} searchOpen={true} setSearchOpen={() => {}} />
                         </div>
                     </div>
