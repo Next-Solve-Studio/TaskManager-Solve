@@ -26,7 +26,11 @@ export function buildWeeklyData(projects) {
     }));
 
     projects.forEach((p) => {
-        const date = toDate(p.createdAt);
+        const rawDate = p.status === "concluido"
+            ? (p.deliveryDate ?? p.createdAt)
+            : p.createdAt;
+
+        const date = toDate(rawDate);
         if (!date) return;
         const dayOfMonth = differenceInDays(date, monthStart);
         if (dayOfMonth < 0 || dayOfMonth > 31) return;
