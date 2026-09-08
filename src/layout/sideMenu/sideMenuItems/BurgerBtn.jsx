@@ -14,10 +14,13 @@ export function BurgerButton({ isOpen, onClick }) {
                 position: "relative",
                 width: "24px",
                 height: "18px",
+                minHeight: "18px",
                 background: "transparent",
                 cursor: "pointer",
                 display: "block",
                 flexShrink: 0,
+                alignSelf: "center",
+                padding: 0,
                 marginRight: 0,
             }}
         >

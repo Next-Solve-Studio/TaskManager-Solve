@@ -75,7 +75,7 @@ export default function MainLayout({ children }) {
                             onToggle={toggleSidebar}
                             isMobile={isMobile}
                         />
-                        <main className="w-full px-3 sm:px-10 max-w-450">{children}</main>
+                        <main className="w-full px-3 sm:px-10 max-w-450 pt-14">{children}</main>
                     </div>
                 </div>
             </LicenseGuard>
