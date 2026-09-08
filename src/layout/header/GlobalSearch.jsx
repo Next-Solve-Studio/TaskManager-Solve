@@ -115,7 +115,9 @@ export default function GlobalSearch({ isMobile, searchOpen, setSearchOpen }) {
                     background: "rgba(255,255,255,0.04)",
                     border: "1px solid rgba(255,255,255,0.08)",
                     backdropFilter: "blur(8px)",
-                    boxShadow: open ? "0 0 0 2px rgba(25,202,104,0.18), inset 0 1px 0 rgba(255,255,255,0.04)" : "inset 0 1px 0 rgba(255,255,255,0.04)",
+                    boxShadow: open
+                        ? "0 0 0 2px rgba(25,202,104,0.2), 0 2px 8px rgba(0,0,0,0.1)"
+                        : "0 1px 3px rgba(0, 0, 0, 0.35)",
                 }}>
                 <MdSearch size={17} className="text-text-muted shrink-0" />
                 <input
