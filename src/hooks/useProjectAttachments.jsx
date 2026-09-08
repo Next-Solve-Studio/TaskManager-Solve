@@ -1,12 +1,11 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
-import { db } from "@/lib/firebaseConfig";
+import { db, auth } from "@/lib/firebaseConfig";
 import {
     collection, addDoc, deleteDoc, doc,
     query, orderBy, onSnapshot, serverTimestamp,
 } from "firebase/firestore";
 import { useAuth } from "@/context/AuthContext";
-import { auth } from "@/lib/firebaseConfig";
 
 const ALLOWED_TYPES = [
     "application/pdf",

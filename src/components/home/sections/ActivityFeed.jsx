@@ -10,6 +10,7 @@ import {
     query,
     where
 } from "firebase/firestore";
+import { ROLES } from "@/lib/roles";
 import { useEffect, useState } from "react";
 import { MdHistory, MdNotificationsNone } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
@@ -47,9 +48,11 @@ export default function ActivityFeed() {
         });
 
         // Limpa logs com mais de 2 dias ao carregar o feed
-        const LOG_RETENTION = { FREE: 7, BASIC: 15, PRO: 30, ADMIN: 3 };
-        const days = LOG_RETENTION[currentUser?.plan] ?? 7;
-        cleanOldLogs(currentUser?.companyId, days);
+        if ([ROLES.MASTER, ROLES.ADMIN].includes(currentUser?.role)) {
+            const LOG_RETENTION = { FREE: 7, BASIC: 15, PRO: 30, ADMIN: 3 };
+            const days = LOG_RETENTION[currentUser?.plan] ?? 7;
+            cleanOldLogs(currentUser?.companyId, days);
+        }
 
         return () => unsubscribe();
     }, [currentUser]);
