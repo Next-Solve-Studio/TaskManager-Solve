@@ -281,7 +281,7 @@ export const AuthProvider = ({ children }) => {
 
     // Função para registrar um NOVO FUNCIONÁRIO
     const registerEmployee = useCallback(
-        async (name, email, password, companyId, role, customData) => {
+        async (name, email, password, companyId, role, customData, details = {}) => {
 
             const token = await auth.currentUser?.getIdToken();
             if (!token) throw new Error("Usuário não autenticado.");
@@ -293,7 +293,7 @@ export const AuthProvider = ({ children }) => {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ name, email, password, companyId, role, customData }),
+            body: JSON.stringify({ name, email, password, companyId, role, customData, cpf: details.cpf, endereco: details.endereco }),
             });
 
             if (!response.ok) {
@@ -309,7 +309,7 @@ export const AuthProvider = ({ children }) => {
     );
 
     const inviteEmployee = useCallback(
-        async (name, email, companyId, role, customData) => {
+        async (name, email, companyId, role, customData, details = {}) => {
             const token = await auth.currentUser?.getIdToken();
             if (!token) throw new Error("Usuário não autenticado.");
 
@@ -319,7 +319,7 @@ export const AuthProvider = ({ children }) => {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ name, email, companyId, role, customData }),
+                body: JSON.stringify({ name, email, companyId, role, customData, cpf: details.cpf, endereco: details.endereco }),
             });
 
             if (!response.ok) {

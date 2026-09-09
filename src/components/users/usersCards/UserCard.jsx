@@ -1,6 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { MdCalendarToday, MdEmail, MdMoreVert } from "react-icons/md";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
@@ -68,6 +69,14 @@ export function UserCard({ user, onOpenMenu }) {
 
             {/* Divider */}
             <div className="h-px bg-border-main" />
+
+
+                {user.cpf && (
+                    <p className="text-text-secondary text-xs break-words">CPF: {FormatDocument(user.cpf)}</p>
+                )}
+                {user.endereco && (
+                    <p className="text-text-secondary text-xs break-words">Endereço: {user.endereco}</p>
+                )}
 
             <CustomFieldsDisplay entity="user" data={user} />
 

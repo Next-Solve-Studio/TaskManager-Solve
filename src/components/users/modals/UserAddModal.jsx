@@ -16,13 +16,15 @@ import { IoMdLock } from "react-icons/io";
 import { MdAdd, MdClose, MdOutlineEmail, MdPerson } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
+import { userDetailsSchema } from "@/utils/userDetailsSchema";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCustomFields } from "@/context/CustomFieldsContext";
 
-const schema = yup.object({
+const schema = userDetailsSchema.shape({
     mode: yup.string().oneOf(["invite", "direct"]).required(),
     name: yup.string().min(3, "Mínimo 3 caracteres").required("Obrigatório"),
     email: yup.string().email("E-mail inválido").required("Obrigatório"),
@@ -57,6 +59,8 @@ export default function UserAddModal({ open, onClose }) {
             password: "",
             role: ROLES.DEVELOPER,
             customData: {},
+            cpf: "",
+            endereco: "",
         },
     });
 
@@ -80,6 +84,7 @@ export default function UserAddModal({ open, onClose }) {
                     currentUser.companyId,
                     data.role,
                     data.customData,
+                    { cpf: data.cpf, endereco: data.endereco },
                 );
                 toast.success("Usuário cadastrado com sucesso!");
             } else {
@@ -89,6 +94,7 @@ export default function UserAddModal({ open, onClose }) {
                     currentUser.companyId,
                     data.role,
                     data.customData,
+                    { cpf: data.cpf, endereco: data.endereco },
                 );
                 toast.success("Convite enviado! A pessoa recebe um e-mail para criar a própria senha.");
             }
@@ -252,6 +258,31 @@ export default function UserAddModal({ open, onClose }) {
                             </button>
                         </div>
                     )}
+
+                    <TextField
+                        {...register("cpf")}
+                        label="CPF (Opcional)"
+                        fullWidth
+                        value={FormatDocument(watch("cpf"))}
+                        onChange={(e) => {
+                            setValue(
+                                "cpf",
+                                e.target.value.replace(/\D/g, "").slice(0, 11),
+                                { shouldValidate: true },
+                            );
+                        }}
+                        error={!!errors.cpf}
+                        helperText={errors.cpf?.message}
+                        sx={muiDark}
+                    />
+                    <TextField
+                        {...register("endereco")}
+                        label="Endereço (Opcional)"
+                        fullWidth
+                        error={!!errors.endereco}
+                        helperText={errors.endereco?.message}
+                        sx={muiDark}
+                    />
 
                     <Controller
                         name="role"

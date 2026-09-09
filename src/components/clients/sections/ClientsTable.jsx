@@ -8,6 +8,8 @@ import {
     MdMoreVert,
     MdPhone,
 } from "react-icons/md";
+import { FormatPhone } from "@/utils/FormatPhone";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import CanDo from "@/components/auth/CanDo";
 import { useCustomFields } from "@/context/CustomFieldsContext";
 
@@ -58,7 +60,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                                 {client.documento && (
                                     <span className="text-text-muted text-[11px] font-medium flex items-center gap-1 uppercase tracking-wider">
                                         <MdFingerprint className="text-brand-500/50" />{" "}
-                                        {client.documento}
+                                        {FormatDocument(client.documento)}
                                     </span>
                                 )}
                             </div>
@@ -72,10 +74,15 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                                     {client.email}
                                 </div>
                             )}
+                            {client.endereco && (
+                                <p className="text-text-secondary text-xs break-words" title={client.endereco}>
+                                    {client.endereco}
+                                </p>
+                            )}
                             {client.contato && (
                                 <div className="flex items-center gap-2 text-text-secondary text-xs font-medium">
                                     <MdPhone className="text-cyan-400" />{" "}
-                                    {client.contato}
+                                    {FormatPhone(client.contato)}
                                 </div>
                             )}
                         </div>

@@ -30,7 +30,7 @@ const schema = yup.object().shape({
         .test("phone-format", "Telefone inválido", (value) => {
             if (!value) return false;
             const numbers = value.replace(/\D/g, ""); // remove tudo que não é número
-            return numbers.length === 11; // DDD + 9 dígitos
+            return numbers.length === 10 || numbers.length === 11; // DDD + telefone fixo ou celular
         }),
     documento: yup
         .string()
@@ -40,6 +40,7 @@ const schema = yup.object().shape({
             const numbers = value.replace(/\D/g, "");
             return numbers.length === 11 || numbers.length === 14;
         }),
+    endereco: yup.string().trim().max(300, "Máximo de 300 caracteres"),
     status: yup
         .string()
         .oneOf(["active", "inactive"])
@@ -64,6 +65,7 @@ function ClientForm({ isOpen, onClose, client }) {
             email: client?.email || "",
             contato: client?.contato || "",
             documento: client?.documento || "",
+            endereco: client?.endereco || "",
             status: client?.status || "active",
             customData: client?.customData || {},
         },
@@ -168,6 +170,16 @@ function ClientForm({ isOpen, onClose, client }) {
                         }}
                         error={!!errors.documento}
                         helperText={errors.documento?.message}
+                        sx={muiDark}
+                    />
+
+                    <TextField
+                        {...register("endereco")}
+                        label="Endereço (Opcional)"
+                        fullWidth
+                        size="small"
+                        error={!!errors.endereco}
+                        helperText={errors.endereco?.message}
                         sx={muiDark}
                     />
 

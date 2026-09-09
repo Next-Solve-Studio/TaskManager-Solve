@@ -1,6 +1,7 @@
 "use client";
 import { useMemo } from "react";
 import { MdMoreVert } from "react-icons/md";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import CanDo from "@/components/auth/CanDo";
 import RoleBadge from "@/components/auth/RoleBadge";
 import { Avatar } from "@/components/ui/AvatarBadge";
@@ -51,6 +52,13 @@ export default function UserRow({ user, onOpenMenu, gridCols, userFields }) {
                 <p className="text-text-secondary text-xs m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                     {user.email}
                 </p>
+                {user.cpf && (
+                    <p className="text-text-secondary text-xs break-words">CPF: {FormatDocument(user.cpf)}</p>
+                )}
+                {user.endereco && (
+                    <p className="text-text-secondary text-xs break-words">Endereço: {user.endereco}</p>
+                )}
+
             </div>
 
             {/* Cargo */}

@@ -6,6 +6,8 @@ import {
     MdMoreVert,
     MdPhone,
 } from "react-icons/md";
+import { FormatPhone } from "@/utils/FormatPhone";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import CanDo from "@/components/auth/CanDo";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
 import CustomFieldsDisplay from "@/components/ui/CustomFieldsDisplay";
@@ -56,7 +58,7 @@ export default function ClientCard({ client, onOpenMenu }) {
                                 ${isTablet ? "text-[10px]" : "text-xs"}
                             `}
                             >
-                                {client.documento}
+                                {FormatDocument(client.documento)}
                             </p>
                         </div>
                     )}
@@ -97,6 +99,11 @@ export default function ClientCard({ client, onOpenMenu }) {
                             <span>{client.email}</span>
                         </div>
                     )}
+                    {client.endereco && (
+                        <p className="text-text-secondary text-xs break-words" title={client.endereco}>
+                            {client.endereco}
+                        </p>
+                    )}
                     {client.contato && (
                         <div
                             className={`
@@ -108,7 +115,7 @@ export default function ClientCard({ client, onOpenMenu }) {
                                 size={isTablet ? 12 : 14}
                                 className="text-cyan-400"
                             />
-                            <span>{client.contato}</span>
+                            <span>{FormatPhone(client.contato)}</span>
                         </div>
                     )}
                 </div>

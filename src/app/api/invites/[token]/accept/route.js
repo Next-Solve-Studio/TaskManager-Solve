@@ -53,6 +53,8 @@ export async function POST(request, { params }) {
             role: invite.role,
             companyId: invite.companyId,
             customData: invite.customData || {},
+            cpf: invite.cpf || "",
+            endereco: invite.endereco || "",
             createdAt: new Date(),
             lastLoginAt: null,
             lastSeenAt: null,

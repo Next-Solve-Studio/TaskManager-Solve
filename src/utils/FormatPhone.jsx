@@ -7,5 +7,6 @@ export const FormatPhone = (value) => {
     if (numbers.length <= 7)
         return `${numbers.slice(0, 2)} ${numbers.slice(2)}`;
 
-    return `${numbers.slice(0, 2)} ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+    const prefixEnd = numbers.length === 10 ? 6 : 7;
+    return `${numbers.slice(0, 2)} ${numbers.slice(2, prefixEnd)}-${numbers.slice(prefixEnd)}`;
 };

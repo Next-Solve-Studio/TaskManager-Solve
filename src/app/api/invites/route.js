@@ -1,3 +1,4 @@
+import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
@@ -25,7 +26,14 @@ export async function POST(request) {
         }
 
         const { db, auth } = getFirebaseAdmin();
-        const { name, email, role, companyId, customData } = await request.json();
+        const { name, email, role, companyId, customData, cpf, endereco } = await request.json();
+
+        let details;
+        try {
+            details = await userDetailsSchema.validate({ cpf, endereco });
+        } catch (error) {
+            return NextResponse.json({ message: error.message }, { status: 400 });
+        }
 
         if (!email || !companyId || !name) {
             return NextResponse.json({ message: "Dados incompletos" }, { status: 400 });
@@ -101,6 +109,8 @@ export async function POST(request) {
             companyId,
             companyName: companyData.name || "",
             customData: customData || {},
+            cpf: details.cpf,
+            endereco: details.endereco,
             invitedBy: caller.uid,
             invitedByName: callerData.name || "",
             status: "pending",

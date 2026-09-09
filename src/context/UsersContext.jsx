@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
+import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
 const UsersContext = createContext(); // Contexto criado
@@ -65,8 +66,15 @@ export const UsersProvider = ({ children }) => {
         return unSubscribe;
     }, [currentUser?.companyId]);
 
-    const updateUser = useCallback(async (userId, newRole) => {
-        await updateDoc(doc(db, "users", userId), { role: newRole }); // localiza o documento e aplica o novo cargo
+    const updateUser = useCallback(async (userId, newRole, details) => {
+        const payload = { role: newRole };
+        if (details) {
+            Object.assign(
+                payload,
+                await userDetailsSchema.validate(details, { stripUnknown: true }),
+            );
+        }
+        await updateDoc(doc(db, "users", userId), payload); // localiza o documento e aplica as alterações
     }, []);
 
      const deleteUser = useCallback(async (userId) => {

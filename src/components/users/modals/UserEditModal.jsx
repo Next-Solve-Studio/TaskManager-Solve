@@ -9,11 +9,14 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { MdClose, MdEdit } from "react-icons/md";
 import { toast } from "sonner";
 import { Avatar } from "@/components/ui/AvatarBadge";
+import { FormatDocument } from "@/utils/FormatCnpj/CPF";
+import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { useUsers } from "@/context/UsersContext";
 import { ROLE_LABELS, ROLES_STYLES } from "@/lib/roles";
 import { menuPaper, muiDark2 } from "@/styles/StyleInputs";
@@ -22,10 +25,18 @@ export default function UserEditModal({ open, onClose, user }) {
     const { updateUser } = useUsers(); // função para editar user
     const [selectedRole, setSelectedRole] = useState("");
     const [loading, setLoading] = useState(false);
+    const [cpf, setCpf] = useState("");
+    const [endereco, setEndereco] = useState("");
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         //se o pop up abrir e tiver um user logado, pega o cargo atual dele
-        if (open && user) setSelectedRole(user.role || "");
+        if (open && user) {
+            setSelectedRole(user.role || "");
+            setCpf(user.cpf || "");
+            setEndereco(user.endereco || "");
+            setErrors({});
+        }
     }, [open, user]);
 
     const handleClose = () => {
@@ -33,25 +44,40 @@ export default function UserEditModal({ open, onClose, user }) {
     };
 
     const handleSave = async () => {
-        if (!user || selectedRole === user.role) {
+        if (!user || !changed) {
             onClose();
             return;
         }
         setLoading(true);
         try {
-            await updateUser(user.id, selectedRole); // Chama a função do contexto para atualizar o cargo no servidor
-            toast.success(`Cargo de ${user.name} atualizado!`);
+            const details = await userDetailsSchema.validate(
+                { cpf, endereco },
+                { abortEarly: false },
+            );
+            await updateUser(user.id, selectedRole, details);
+            toast.success(`Usuário ${user.name} atualizado!`);
             onClose();
         } catch (err) {
-            console.error(err);
-            toast.error("Erro ao atualizar cargo: ", err);
+            if (err.name === "ValidationError") {
+                setErrors(
+                    Object.fromEntries(
+                        err.inner.map((error) => [error.path, error.message]),
+                    ),
+                );
+            } else {
+                console.error(err);
+                toast.error(err.message || "Erro ao atualizar usuário");
+            }
         } finally {
             setLoading(false);
         }
     };
 
     const meta = ROLES_STYLES[selectedRole]; // Pega do objeto ROLES_STYLES as informações dele
-    const changed = selectedRole !== user?.role; // Verifica se o cargo selecionado é diferente do cargo original do usuário
+    const changed =
+        selectedRole !== user?.role ||
+        cpf !== (user?.cpf || "") ||
+        endereco !== (user?.endereco || "");
 
     return (
         <Dialog
@@ -95,7 +121,7 @@ export default function UserEditModal({ open, onClose, user }) {
                         <MdEdit className={`text-brand-500 text-[17px]`} />
                     </div>
                     <span className="text-text-primary font-bold text-base">
-                        Editar Cargo
+                        Editar Usuário
                     </span>
                 </div>
                 <button
@@ -135,6 +161,29 @@ export default function UserEditModal({ open, onClose, user }) {
                         </div>
                     </div>
                 )}
+
+                <TextField
+                    label="CPF (Opcional)"
+                    value={FormatDocument(cpf)}
+                    onChange={(e) => {
+                        setCpf(e.target.value.replace(/\D/g, "").slice(0, 11));
+                    }}
+                    error={!!errors.cpf}
+                    helperText={errors.cpf}
+                    size="small"
+                    fullWidth
+                    sx={muiDark2}
+                />
+                <TextField
+                    label="Endereço (Opcional)"
+                    value={endereco}
+                    onChange={(e) => setEndereco(e.target.value)}
+                    error={!!errors.endereco}
+                    helperText={errors.endereco}
+                    size="small"
+                    fullWidth
+                    sx={muiDark2}
+                />
 
                 <FormControl size="small" fullWidth sx={muiDark2}>
                     <InputLabel>Cargo</InputLabel>
@@ -241,7 +290,7 @@ export default function UserEditModal({ open, onClose, user }) {
                     {loading && (
                         <CircularProgress size={13} style={{ color: "#fff" }} />
                     )}
-                    Salvar Cargo
+                    Salvar Alterações
                 </button>
             </DialogActions>
         </Dialog>
