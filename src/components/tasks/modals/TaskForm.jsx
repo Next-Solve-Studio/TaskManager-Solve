@@ -407,7 +407,7 @@ function TaskForm({
                                             onClick={() =>
                                                 removeChecklistItem(item.id)
                                             }
-                                            className="text-text-muted hover:text-error transition-colors cursor-pointer"
+                                            className="text-error sm:text-text-muted hover:text-error transition-colors cursor-pointer"
                                             title="Excluir item"
                                         >
                                             <MdDelete size={14} />
