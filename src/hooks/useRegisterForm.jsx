@@ -49,7 +49,72 @@ export function useRegisterForm({ onStepChange }) {
         onStepChange?.(n);
     };
 
-    async function doRegister(data, billingType = "PIX", cardForm) {
+    async function processSubscription(appKey, data, billingType, cardForm){
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Erro de autenticação após registro.");
+
+        const cpfCnpjRaw = data.cnpj.replace(/\D/g, "");
+
+        // Setup de faturamento
+        const setupRes = await fetch("/api/billing/setup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ appKey, name: data.name, email: data.email, cpfCnpj: cpfCnpjRaw }),
+        });
+        
+        if (!setupRes.ok) {
+            const e = await setupRes.json();
+            throw new Error(e.error || "Erro ao configurar pagamento.");
+        }
+
+        // Montando o body da assinatura
+        const subscribeBody = { 
+            appKey, 
+            plan: selectedPlan, 
+            billingType, 
+            billingCycle: billingCycle.toUpperCase() 
+        };
+
+        if (billingType === "CREDIT_CARD" && cardForm) {
+            subscribeBody.creditCard = {
+                holderName: cardForm.holderName,
+                number: cardForm.number.replace(/\s/g, ""),
+                expiryMonth: cardForm.expiryMonth,
+                expiryYear: cardForm.expiryYear,
+                ccv: cardForm.ccv,
+            };
+            subscribeBody.creditCardHolderInfo = {
+                name: data.name,
+                email: data.email,
+                cpfCnpj: cpfCnpjRaw,
+                postalCode: cardForm.postalCode.replace(/\D/g, ""),
+                addressNumber: cardForm.addressNumber,
+            };
+        }
+
+        // Criar assinatura
+        const subRes = await fetch("/api/billing/subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(subscribeBody),
+        });
+        
+        const subData = await subRes.json();
+        if (!subRes.ok) throw new Error(subData.error || "Erro ao criar assinatura.");
+
+        // Ações pós-assinatura baseadas no tipo de pagamento
+        if (billingType === "PIX") {
+            if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
+            setPixAppKey(appKey);
+            setPixData(subData.pixInfo);
+            return;
+        }
+
+        setPixAppKey(appKey);
+        setConfirmingCard(true);
+    }
+
+    async function doRegister(data, billingType, cardForm) {
         setLoading(true);
         try {
             const appKey = await registerCompany(
@@ -63,57 +128,9 @@ export function useRegisterForm({ onStepChange }) {
             );
 
             if (!isFreePlan && appKey) {
-                const token = await auth.currentUser?.getIdToken();
-                if (!token) throw new Error("Erro de autenticação após registro.");
-
-                const cpfCnpjRaw = data.cnpj.replace(/\D/g, "");
-
-                const setupRes = await fetch("/api/billing/setup", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify({ appKey, name: data.name, email: data.email, cpfCnpj: cpfCnpjRaw }),
-                });
-                if (!setupRes.ok) {
-                    const e = await setupRes.json();
-                    throw new Error(e.error || "Erro ao configurar pagamento.");
-                }
-
-                const subscribeBody = { appKey, plan: selectedPlan, billingType, billingCycle: billingCycle.toUpperCase() };
-                if (billingType === "CREDIT_CARD" && cardForm) {
-                    subscribeBody.creditCard = {
-                        holderName: cardForm.holderName,
-                        number: cardForm.number.replace(/\s/g, ""),
-                        expiryMonth: cardForm.expiryMonth,
-                        expiryYear: cardForm.expiryYear,
-                        ccv: cardForm.ccv,
-                    };
-                    subscribeBody.creditCardHolderInfo = {
-                        name: data.name,
-                        email: data.email,
-                        cpfCnpj: cpfCnpjRaw,
-                        postalCode: cardForm.postalCode.replace(/\D/g, ""),
-                        addressNumber: cardForm.addressNumber,
-                    };
-                }
-
-                const subRes = await fetch("/api/billing/subscribe", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                    body: JSON.stringify(subscribeBody),
-                });
-                const subData = await subRes.json();
-                if (!subRes.ok) throw new Error(subData.error || "Erro ao criar assinatura.");
-
-                if (billingType === "PIX") {
-                    if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
-                    setPixAppKey(appKey);
-                    setPixData(subData.pixInfo);
-                    return;
-                }
-
-                setPixAppKey(appKey);
-                setConfirmingCard(true);
+                await processSubscription(appKey, data, billingType, cardForm);
                 return;
+
             }
 
             toast.success("Empresa cadastrada com sucesso!", { description: "Bem-vindo ao TaskManager!" });
