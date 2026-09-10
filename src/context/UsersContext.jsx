@@ -5,6 +5,7 @@ import {
     onSnapshot,
     orderBy,
     query,
+    serverTimestamp,
     updateDoc,
     where
 } from "firebase/firestore";
@@ -21,11 +22,11 @@ import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
 import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { logActivity } from "@/utils/ActivityLogger";
 
-const UsersContext = createContext(); // Contexto criado
+const UsersContext = createContext();
 
 export const useUsers = () => useContext(UsersContext);
-// hook personalizado, para usar useUsers, ao invés se sempre escrever useContext(UsersContext)
 
 export const UsersProvider = ({ children }) => {
     const { currentUser } = useAuth();
@@ -33,7 +34,6 @@ export const UsersProvider = ({ children }) => {
     const [loadingUsers, setLoadingUsers] = useState(true);
 
     useEffect(() => {
-        // só busca dados da empresa que o usuário estiver logado.
         if (!currentUser?.companyId) {
             setUsers([]);
             setLoadingUsers(false);
@@ -41,16 +41,14 @@ export const UsersProvider = ({ children }) => {
         }
 
         const q = query(
-            collection(db, "users"), 
+            collection(db, "users"),
             where("companyId", "==", currentUser.companyId),
             orderBy("createdAt", "desc")
         );
 
         const unSubscribe = onSnapshot(
-            //onSnapshot pois escuta mudanças na coleção users e atualiza automaticamente
             q,
             (snapshot) => {
-                //converte cada documento em um objeto com id e os dados e guarda no estado users
                 setUsers(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
                 setLoadingUsers(false);
             },
@@ -66,18 +64,29 @@ export const UsersProvider = ({ children }) => {
         return unSubscribe;
     }, [currentUser?.companyId]);
 
-    const updateUser = useCallback(async (userId, newRole, details) => {
-        const payload = { role: newRole };
+    const updateUser = useCallback(async (userId, newRole, details, userName = "") => {
+        const payload = { role: newRole, updatedAt: serverTimestamp() };
         if (details) {
             Object.assign(
                 payload,
                 await userDetailsSchema.validate(details, { stripUnknown: true }),
             );
         }
-        await updateDoc(doc(db, "users", userId), payload); // localiza o documento e aplica as alterações
-    }, []);
+        await updateDoc(doc(db, "users", userId), payload);
 
-     const deleteUser = useCallback(async (userId) => {
+        await logActivity({
+            userId: currentUser.uid,
+            userName: currentUser.name || currentUser.displayName,
+            userPhoto: currentUser.photo || currentUser.photoURL,
+            companyId: currentUser.companyId,
+            action: "update",
+            resourceType: "user",
+            resourceId: userId,
+            resourceName: userName,
+        });
+    }, [currentUser]);
+
+    const deleteUser = useCallback(async (userId) => {
         const token = await auth.currentUser?.getIdToken();
         if (!token) throw new Error("Usuário não autenticado.");
 
@@ -96,13 +105,12 @@ export const UsersProvider = ({ children }) => {
         }
     }, []);
 
-    const value = useMemo(()=>({
+    const value = useMemo(() => ({
         loadingUsers,
         users,
         updateUser,
         deleteUser,
-    }), 
-    [
+    }), [
         loadingUsers,
         users,
         updateUser,

@@ -21,9 +21,8 @@ import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import { FormatPhone } from "@/utils/FormatPhone";
 
 const schema = yup.object().shape({
-    name: yup.string().required("O nome é obrigatório"),
+    name: yup.string().required("O nome é obrigatório").max(100, "Máximo de 100 caracteres"),
     email: yup.string().email("E-mail inválido"),
-
     contato: yup
         .string()
         .required("O telefone é obrigatório")

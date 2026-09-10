@@ -18,23 +18,26 @@ import { Avatar } from "@/components/ui/AvatarBadge";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { useUsers } from "@/context/UsersContext";
+import { useCustomFields } from "@/context/CustomFieldsContext";
 import { ROLE_LABELS, ROLES_STYLES } from "@/lib/roles";
 import { menuPaper, muiDark2 } from "@/styles/StyleInputs";
 
 export default function UserEditModal({ open, onClose, user }) {
-    const { updateUser } = useUsers(); // função para editar user
+    const { updateUser } = useUsers();
+    const { userFields } = useCustomFields();
     const [selectedRole, setSelectedRole] = useState("");
     const [loading, setLoading] = useState(false);
     const [cpf, setCpf] = useState("");
     const [endereco, setEndereco] = useState("");
+    const [customData, setCustomData] = useState({});
     const [errors, setErrors] = useState({});
 
     useEffect(() => {
-        //se o pop up abrir e tiver um user logado, pega o cargo atual dele
         if (open && user) {
             setSelectedRole(user.role || "");
             setCpf(user.cpf || "");
             setEndereco(user.endereco || "");
+            setCustomData(user.customData || {});
             setErrors({});
         }
     }, [open, user]);
@@ -51,10 +54,10 @@ export default function UserEditModal({ open, onClose, user }) {
         setLoading(true);
         try {
             const details = await userDetailsSchema.validate(
-                { cpf, endereco },
+                { cpf, endereco, customData },
                 { abortEarly: false },
             );
-            await updateUser(user.id, selectedRole, details);
+            await updateUser(user.id, selectedRole, details, user.name);
             toast.success(`Usuário ${user.name} atualizado!`);
             onClose();
         } catch (err) {
@@ -73,11 +76,12 @@ export default function UserEditModal({ open, onClose, user }) {
         }
     };
 
-    const meta = ROLES_STYLES[selectedRole]; // Pega do objeto ROLES_STYLES as informações dele
+    const meta = ROLES_STYLES[selectedRole];
     const changed =
         selectedRole !== user?.role ||
         cpf !== (user?.cpf || "") ||
-        endereco !== (user?.endereco || "");
+        endereco !== (user?.endereco || "") ||
+        JSON.stringify(customData) !== JSON.stringify(user?.customData || {});
 
     return (
         <Dialog
@@ -118,7 +122,7 @@ export default function UserEditModal({ open, onClose, user }) {
                             justifyContent: "center",
                         }}
                     >
-                        <MdEdit className={`text-brand-500 text-[17px]`} />
+                        <MdEdit className="text-brand-500 text-[17px]" />
                     </div>
                     <span className="text-text-primary font-bold text-base">
                         Editar Usuário
@@ -205,17 +209,9 @@ export default function UserEditModal({ open, onClose, user }) {
                                         color: "var(--color-text-primary)",
                                     }}
                                 >
-                                    <div
-                                        style={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: 8,
-                                        }}
-                                    >
+                                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                         {Icon && (
-                                            <Icon
-                                                className={`${m.color} text-[15px]`}
-                                            />
+                                            <Icon className={`${m.color} text-[15px]`} />
                                         )}
                                         <span>{label}</span>
                                     </div>
@@ -229,15 +225,63 @@ export default function UserEditModal({ open, onClose, user }) {
                     <div
                         className={`${meta.bg} ${meta.border} rounded-md border flex items-start gap-2.5 py-2.5 px-3.5`}
                     >
-                        <meta.icon
-                            className={`${meta.color} mt-px text-base shrink-0`}
-                        />
-                        <p
-                            className={`${meta.color} m-0 opacity-[0.9] text-[12px] leading-normal`}
-                        >
+                        <meta.icon className={`${meta.color} mt-px text-base shrink-0`} />
+                        <p className={`${meta.color} m-0 opacity-[0.9] text-[12px] leading-normal`}>
                             {meta.description}
                         </p>
                     </div>
+                )}
+
+                {userFields?.length > 0 && (
+                    <>
+                        <div className="w-full h-px bg-border-main my-1" />
+                        <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-1 px-1">
+                            Campos Personalizados
+                        </p>
+                        {userFields.map((field) => (
+                            <TextField
+                                key={field.id}
+                                label={field.name}
+                                value={customData[field.id] || ""}
+                                onChange={(e) =>
+                                    setCustomData((prev) => ({
+                                        ...prev,
+                                        [field.id]: e.target.value,
+                                    }))
+                                }
+                                type={
+                                    field.type === "number"
+                                        ? "number"
+                                        : field.type === "date"
+                                        ? "date"
+                                        : "text"
+                                }
+                                multiline={field.type === "textarea"}
+                                rows={field.type === "textarea" ? 3 : 1}
+                                select={field.type === "boolean"}
+                                InputLabelProps={
+                                    field.type === "date" ? { shrink: true } : undefined
+                                }
+                                size="small"
+                                fullWidth
+                                sx={muiDark2}
+                                SelectProps={
+                                    field.type === "boolean"
+                                        ? { MenuProps: menuPaper }
+                                        : undefined
+                                }
+                            >
+                                {field.type === "boolean" && [
+                                    <MenuItem key="sim" value="Sim" style={{ fontSize: 13 }}>
+                                        Sim
+                                    </MenuItem>,
+                                    <MenuItem key="nao" value="Não" style={{ fontSize: 13 }}>
+                                        Não
+                                    </MenuItem>,
+                                ]}
+                            </TextField>
+                        ))}
+                    </>
                 )}
             </DialogContent>
 

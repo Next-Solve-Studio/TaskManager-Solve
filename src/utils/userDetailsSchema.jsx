@@ -11,4 +11,6 @@ export const userDetailsSchema = yup.object({
             (value) => !value || value.length === 11,
         ),
     endereco: yup.string().trim().max(300, "Máximo de 300 caracteres").default(""),
+    customData: yup.object().nullable().default({}),
+
 });

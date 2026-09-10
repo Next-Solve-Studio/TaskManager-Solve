@@ -3,6 +3,7 @@
 import {
     MdEmail,
     MdFingerprint,
+    MdLocationOn,
     MdMoreVert,
     MdPhone,
 } from "react-icons/md";
@@ -100,9 +101,18 @@ export default function ClientCard({ client, onOpenMenu }) {
                         </div>
                     )}
                     {client.endereco && (
-                        <p className="text-text-secondary text-xs break-words" title={client.endereco}>
-                            {client.endereco}
-                        </p>
+                        <div
+                            className={`
+                            flex items-center gap-1 text-text-secondary
+                            ${isTablet ? "text-[10px]" : "text-xs"}
+                        `}
+                        >
+                            <MdLocationOn
+                                size={isTablet ? 12 : 14}
+                                className="text-purple-400 shrink-0"
+                            />
+                            <span className="wrap-break-word">{client.endereco}</span>
+                        </div>
                     )}
                     {client.contato && (
                         <div
