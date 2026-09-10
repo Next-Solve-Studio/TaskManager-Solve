@@ -11,7 +11,7 @@ export default function UserTable({filtered, sortKey, sortDir, handleSort, handl
 
     return (
         <div className="max-w-full overflow-x-auto pb-2">
-            <div className="inline-flex flex-col gap-1.5 min-w-full min-w-[800px]">
+            <div className="inline-flex flex-col gap-1.5 min-w-full">
                 {/* Cabeçalho */}
                 <div 
                     className="grid gap-4 px-5 mb-2"

@@ -21,8 +21,8 @@ import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 import { useAuth } from "@/context/AuthContext";
 import { ROLE_LABELS, ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCustomFields } from "@/context/CustomFieldsContext";
+import ShowPassword from "@/components/ui/Buttons/ShowPassword";
 
 const schema = userDetailsSchema.shape({
     mode: yup.string().oneOf(["invite", "direct"]).required(),
@@ -249,13 +249,10 @@ export default function UserAddModal({ open, onClose }) {
                                     },
                                 }}
                             />
-                            <button
-                                type="button"
-                                className="absolute right-3 text-text-muted hover:text-brand-500"
-                                onClick={() => setSeePassword(!seePassword)}
-                            >
-                                {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                            </button>
+                            <ShowPassword
+                                setSeePassword={setSeePassword}
+                                seePassword={seePassword}
+                            />
                         </div>
                     )}
 

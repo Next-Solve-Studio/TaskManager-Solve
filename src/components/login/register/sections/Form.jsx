@@ -1,9 +1,10 @@
 "use client";
 import { CircularProgress, InputAdornment, TextField } from "@mui/material";
 import { AiOutlineUser } from "react-icons/ai";
-import { FaBuilding, FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaBuilding } from "react-icons/fa";
 import { IoMdLock } from "react-icons/io";
 import { MdOutlineEmail } from "react-icons/md";
+import ShowPassword from "@/components/ui/Buttons/ShowPassword";
 import { muiDark } from "@/styles/StyleInputs";
 import { FormatDocument } from "@/utils/FormatCnpj/CPF";
 
@@ -18,6 +19,13 @@ export default function Form({
     setSeePassword,
     isFreePlan,
 }) {
+    const freePlan = () => {
+        if (isFreePlan) {
+            return "Cadastrar Empresa";
+        } else {
+            return "Continuar para Pagamento";
+        }
+    };
     return (
         <form onSubmit={onSubmit} className="flex flex-col gap-4">
             <TextField
@@ -31,7 +39,10 @@ export default function Form({
                     input: {
                         startAdornment: (
                             <InputAdornment position="start">
-                                <FaBuilding color="var(--color-brand-500)" size={19} />
+                                <FaBuilding
+                                    color="var(--color-brand-500)"
+                                    size={19}
+                                />
                             </InputAdornment>
                         ),
                     },
@@ -48,7 +59,10 @@ export default function Form({
                     input: {
                         startAdornment: (
                             <InputAdornment position="start">
-                                <AiOutlineUser color="var(--color-brand-500)" size={19} />
+                                <AiOutlineUser
+                                    color="var(--color-brand-500)"
+                                    size={19}
+                                />
                             </InputAdornment>
                         ),
                     },
@@ -65,7 +79,10 @@ export default function Form({
                     input: {
                         startAdornment: (
                             <InputAdornment position="start">
-                                <MdOutlineEmail color="var(--color-brand-500)" size={19} />
+                                <MdOutlineEmail
+                                    color="var(--color-brand-500)"
+                                    size={19}
+                                />
                             </InputAdornment>
                         ),
                     },
@@ -85,19 +102,19 @@ export default function Form({
                         input: {
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <IoMdLock color="var(--color-brand-500)" size={19} />
+                                    <IoMdLock
+                                        color="var(--color-brand-500)"
+                                        size={19}
+                                    />
                                 </InputAdornment>
                             ),
                         },
                     }}
                 />
-                <button
-                    type="button"
-                    className="absolute right-3 text-text-muted hover:text-brand-500"
-                    onClick={() => setSeePassword(!seePassword)}
-                >
-                    {seePassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
-                </button>
+                <ShowPassword
+                    setSeePassword={setSeePassword}
+                    seePassword={seePassword}
+                />
             </div>
             <TextField
                 {...register("cnpj")}
@@ -106,19 +123,33 @@ export default function Form({
                 error={!!errors.cnpj}
                 value={FormatDocument(documentValue)}
                 onChange={(e) => {
-                    setValue("cnpj", FormatDocument(e.target.value), { shouldValidate: true });
+                    setValue("cnpj", FormatDocument(e.target.value), {
+                        shouldValidate: true,
+                    });
                 }}
-                helperText={errors.cnpj?.message ?? "Obrigatório — verificação de uso do plano gratuito"}
+                helperText={
+                    errors.cnpj?.message ??
+                    "Obrigatório — verificação de uso do plano gratuito"
+                }
                 sx={muiDark}
             />
-            <TextField {...register("endereco")} label="Endereço (Opcional)" variant="outlined" sx={muiDark} />
+            <TextField
+                {...register("endereco")}
+                label="Endereço (Opcional)"
+                variant="outlined"
+                sx={muiDark}
+            />
 
             <button
                 type="submit"
                 disabled={loading}
                 className="h-12 w-full rounded-xl font-bold text-base tracking-wide text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer flex items-center justify-center"
             >
-                {loading ? <CircularProgress size={22} color="inherit" /> : isFreePlan ? "Cadastrar Empresa" : "Continuar para Pagamento"}
+                {loading ? (
+                    <CircularProgress size={22} color="inherit" />
+                ) : (
+                    freePlan()
+                )}
             </button>
         </form>
     );

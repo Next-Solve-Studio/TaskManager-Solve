@@ -109,7 +109,7 @@ export default function ClientsMain() {
     }
 
     return (
-        <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
+        <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-6 font-sans flex flex-col">
             <ClientsHeader />
 
             <ClientsStats 

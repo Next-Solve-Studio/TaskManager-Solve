@@ -75,7 +75,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                                 </div>
                             )}
                             {client.endereco && (
-                                <p className="text-text-secondary text-xs break-words" title={client.endereco}>
+                                <p className="text-text-secondary text-xs wrap-break-word" title={client.endereco}>
                                     {client.endereco}
                                 </p>
                             )}
@@ -136,8 +136,8 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
         }
 
     return (
-        <div className="space-y-3 max-w-full overflow-x-auto pb-2">
-            <div className="inline-flex flex-col min-w-200 space-y-2">
+        <div className="max-w-full overflow-x-auto pb-2">
+            <div className="inline-flex flex-col min-w-full space-y-2">
                 <div 
                     className="grid px-8 mb-2 gap-4"
                     style={{ gridTemplateColumns: gridCols }}

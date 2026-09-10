@@ -4,6 +4,7 @@ import { TextField, InputAdornment } from "@mui/material";
 import { MdLock, } from "react-icons/md";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { muiDark } from "@/styles/StyleInputs";
+import ShowPassword from "@/components/ui/Buttons/ShowPassword";
 
 export default function SetPassword({confirmPassword, setConfirmPassword, setPassword, password }) {
     const [seePassword, setSeePassword] = useState(false);
@@ -23,9 +24,10 @@ export default function SetPassword({confirmPassword, setConfirmPassword, setPas
                                 startAdornment: <InputAdornment position="start"><MdLock className="text-brand-500" size={18} /></InputAdornment>,
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <button type="button" onClick={() => setSeePassword((s) => !s)} className="text-text-muted hover:text-brand-500">
-                                            {seePassword ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
-                                        </button>
+                                        <ShowPassword
+                                            setSeePassword={setSeePassword}
+                                            seePassword={seePassword}
+                                        />
                                     </InputAdornment>
                                 ),
                             },
@@ -43,9 +45,10 @@ export default function SetPassword({confirmPassword, setConfirmPassword, setPas
                                 startAdornment: <InputAdornment position="start"><MdLock className="text-brand-500" size={18} /></InputAdornment>,
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        <button type="button" onClick={() => setSeeConfirm((s) => !s)} className="text-text-muted hover:text-brand-500">
-                                            {seeConfirm ? <FaEyeSlash size={16} /> : <FaEye size={16} />}
-                                        </button>
+                                        <ShowPassword
+                                            setSeePassword={setSeeConfirm}
+                                            seePassword={seeConfirm}
+                                        />
                                     </InputAdornment>
                                 ),
                             },

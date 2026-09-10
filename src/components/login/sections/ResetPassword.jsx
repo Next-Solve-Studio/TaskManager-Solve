@@ -281,7 +281,7 @@ export default function ResetPassword() {
                                 type="button"
                                 onClick={handleSendCode}
                                 disabled={requesting}
-                                className="flex-1 py-3 px-4 rounded-xl font-semibold text-white bg-brand-500 hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[120px]"
+                                className="flex-1 py-3 px-4 rounded-xl font-semibold text-white bg-brand-500 hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-30"
                             >
                                 {requesting ? (
                                     <CircularProgress
