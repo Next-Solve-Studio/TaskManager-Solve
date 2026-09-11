@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { MdFilterList, MdGroup, MdPerson } from "react-icons/md";
+import {MdGroup, MdPerson } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import { Avatar, avatarColor } from "@/components/ui/AvatarBadge";
-import useIsMobile from "@/hooks/responsive/useIsMobile";
 import UserPickerModal from "../modals/UserPickerModal";
 
 export default function UsersFiltersSchedule({
@@ -15,7 +14,6 @@ export default function UsersFiltersSchedule({
     loadingUsers,
     currentUser,
 }) {
-    const isMobile = useIsMobile();
     const [modalOpen, setModalOpen] = useState(false);
 
     const otherUsers = loadingUsers
@@ -35,8 +33,7 @@ export default function UsersFiltersSchedule({
 
     return (
         <>
-            <div className="flex items-center gap-2 flex-wrap">
-                <MdFilterList size={16} className="text-text-muted" />
+            <div className="flex items-center gap-2 flex-wrap">       
                 <button
                     type="button"
                     onClick={() => setFilterUserId("me")}
@@ -69,22 +66,22 @@ export default function UsersFiltersSchedule({
                         <MdGroup size={15} />
                         Todos
                     </button>
-                    {isMobile ? (
+     
                         <button
                             type="button"
                             onClick={() => setModalOpen(true)}
-                            className="shadow-sm flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-150 "
-                            style={{
-                                background: selectedUser
-                                    ? `${avatarColor(selectedUser.id)}20`
-                                    : "var(--color-bg-card)",
-                                border: selectedUser
-                                    ? `1px solid ${avatarColor(selectedUser.id)}60`
-                                    : "1px solid var(--color-bg-surface)",
-                                color: selectedUser
-                                    ? avatarColor(selectedUser.id)
-                                    : "var(--color-text-secondary)",
-                            }}
+                            className={`
+                                shadow-sm flex items-center gap-2 px-3 py-1.5 cursor-pointer 
+                                rounded-full text-sm font-medium transition-all duration-150 
+                                bg-(--btn-bg) border-(--btn-border) text-(--btn-color)
+                                hover:bg-(--btn-hover)
+                            `}
+                        style={{
+                            '--btn-bg': selectedUser ? `${avatarColor(selectedUser.id)}20` : 'var(--color-bg-card)',
+                            '--btn-border': selectedUser ? `1px solid ${avatarColor(selectedUser.id)}60` : '1px solid var(--color-bg-surface)',
+                            '--btn-color': selectedUser ? avatarColor(selectedUser.id) : 'var(--color-text-secondary)',
+                            '--btn-hover': selectedUser ? `${avatarColor(selectedUser.id)}40` : 'color-mix(in srgb, var(--color-bg-card) 50%, transparent)'
+                        }}
                         >
                             {selectedUser ? (
                                 <>
@@ -105,47 +102,11 @@ export default function UsersFiltersSchedule({
                                 </>
                             )}
                         </button>
-                    ) : (
-                        !loadingUsers &&
-                        otherUsers.map((u) => {
-                            const selected = filterUserId === u.id;
-                            const color = avatarColor(u.id);
-                            return (
-                                <button
-                                    key={u.id}
-                                    type="button"
-                                    onClick={() =>
-                                        setFilterUserId(
-                                            filterUserId === u.id ? "me" : u.id,
-                                        )
-                                    }
-                                    className="shadow-sm flex cursor-pointer items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
-                                    style={{
-                                        background: selected
-                                            ? `${color}20`
-                                            : "var(--color-bg-card)",
-                                        border: selected
-                                            ? `1px solid ${color}60`
-                                            : "1px solid var(--color-border-main)",
-                                        color: selected
-                                            ? color
-                                            : "var(--color-text-secondary)",
-                                    }}
-                                >
-                                    <Avatar
-                                        name={u.name}
-                                        uid={u.id}
-                                        src={u.photo}
-                                    />
-                                    <span>{u.name.split(" ")[0]}</span>
-                                </button>
-                            );
-                        })
-                    )}
+                    
                 </CanDo>
             </div>
 
-            {isMobile &&
+            {
                 modalOpen &&
                 createPortal(
                     <UserPickerModal

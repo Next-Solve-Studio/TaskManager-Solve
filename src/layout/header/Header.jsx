@@ -45,7 +45,7 @@ function BellButton({ count, onClick }) {
         >
             <MdNotificationsNone size={21} />
             {count > 0 && (
-                <span className="absolute top-1 right-1 min-w-[14px] h-[14px] flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-black leading-none px-0.5">
+                <span className="absolute top-1 right-1 min-w-3.5 h-3.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-black leading-none px-0.5">
                     {count > 9 ? "9+" : count}
                 </span>
             )}

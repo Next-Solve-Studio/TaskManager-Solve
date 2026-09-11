@@ -1,11 +1,12 @@
 "use client";
-import { CircularProgress, MenuItem, Stack, TextField } from "@mui/material";
+import { CircularProgress, Stack, TextField } from "@mui/material";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { toast } from "sonner";
 import { Avatar } from "@/components/ui/AvatarBadge";
-import { CATEGORIES, WEEK_DAYS } from "@/context/ScheduleContext";
-import { menuPaper, muiDark } from "@/styles/StyleInputs";
+import { CATEGORIES } from "@/context/ScheduleContext";
+import { muiDark } from "@/styles/StyleInputs";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 
 function addOneHour(time) {
@@ -16,18 +17,19 @@ function addOneHour(time) {
     return `${String(eh).padStart(2, "0")}:${String(em).padStart(2, "0")}`;
 }
 
-const emptyForm = (dayKey, start) => {
+const todayStr = () => format(new Date(), "yyyy-MM-dd");
+
+const emptyForm = (date, start) => {
     const s = start || "09:00";
-    
     return {
         title: "",
-        dayKey: dayKey || WEEK_DAYS[0].key,
+        date: date || todayStr(),
         start: s,
         end: addOneHour(s),
         cat: "reuniao",
         description: "",
         people: [],
-     }
+    };
 };
 
 export default function NewMeetingModal({
@@ -39,7 +41,7 @@ export default function NewMeetingModal({
     saveMeeting,
     googleStatus,
     connectGoogle,
-    initialDayKey,
+    initialDate,
     initialStart,
     editingEvent,
 }) {
@@ -52,37 +54,32 @@ export default function NewMeetingModal({
         if (editingEvent) {
             setForm({
                 title: editingEvent.title,
-                dayKey: editingEvent.dayKey,
+                date: editingEvent.date || todayStr(),
                 start: editingEvent.start,
                 end: editingEvent.end,
                 cat: editingEvent.cat,
                 description: editingEvent.description || "",
-                people: editingEvent.people.filter(
-                    (id) => id !== currentUserId,
-                ),
+                people: editingEvent.people.filter((id) => id !== currentUserId),
             });
         } else {
-            setForm(emptyForm(initialDayKey, initialStart));
+            setForm(emptyForm(initialDate, initialStart));
         }
         setError("");
-    }, [open, editingEvent, initialDayKey, initialStart, currentUserId]);
+    }, [open, editingEvent, initialDate, initialStart, currentUserId]);
 
     if (!open) return null;
 
-    const togglePerson = (id) => {
+    const togglePerson = (id) =>
         setForm((f) => ({
             ...f,
             people: f.people.includes(id)
                 ? f.people.filter((p) => p !== id)
                 : [...f.people, id],
         }));
-    };
 
     const handleSubmit = async () => {
         if (!form.title.trim() || form.start >= form.end) {
-            setError(
-                "Dê um título e confira o horário (fim depois do início).",
-            );
+            setError("Dê um título e confira o horário (fim depois do início).");
             return;
         }
         if (form.cat === "reuniao" && !googleStatus.connected) {
@@ -95,18 +92,14 @@ export default function NewMeetingModal({
             await saveMeeting({
                 id: editingEvent?.id,
                 title: form.title.trim(),
-                dayKey: form.dayKey,
+                date: form.date,
                 start: form.start,
                 end: form.end,
                 cat: form.cat,
                 description: form.description.trim(),
                 peopleIds: form.people,
             });
-            toast.success(
-                editingEvent
-                    ? "Evento atualizado."
-                    : "Evento criado na agenda.",
-            );
+            toast.success(editingEvent ? "Evento atualizado." : "Evento criado na agenda.");
             onSaved?.();
         } catch (err) {
             toast.error(getErrorMessage(err, "Erro ao salvar evento"));
@@ -119,7 +112,6 @@ export default function NewMeetingModal({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Fundo escuro atuando como botão nativo para capturar o clique fora */}
             <button
                 type="button"
                 className="absolute inset-0 w-full h-full m-0 p-0 border-none cursor-default"
@@ -136,25 +128,15 @@ export default function NewMeetingModal({
                     <h3 className="text-base font-semibold text-text-primary">
                         {editingEvent ? "Editar evento" : "Nova Atividade"}
                     </h3>
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        className="text-text-muted hover:text-text-primary"
-                    >
+                    <button type="button" onClick={onClose} className="text-text-muted hover:text-text-primary">
                         <MdClose size={18} />
                     </button>
                 </div>
 
                 {form.cat === "reuniao" && !googleStatus.connected && (
                     <div className="mb-4 p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-500 flex items-center justify-between gap-2">
-                        <span>
-                            Conecte o Google Calendar para gerar o link do Meet.
-                        </span>
-                        <button
-                            type="button"
-                            onClick={connectGoogle}
-                            className="font-semibold underline shrink-0"
-                        >
+                        <span>Conecte o Google Calendar para gerar o link do Meet.</span>
+                        <button type="button" onClick={connectGoogle} className="font-semibold underline shrink-0">
                             Conectar
                         </button>
                     </div>
@@ -165,30 +147,21 @@ export default function NewMeetingModal({
                         type="text"
                         placeholder="Título"
                         value={form.title}
-                        onChange={(e) =>
-                            setForm((f) => ({ ...f, title: e.target.value }))
-                        }
+                        onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                         className="w-full rounded-lg px-3 py-2.5 text-sm bg-bg-side border border-border-main2 text-text-primary outline-none focus:border-brand-500"
                     />
 
+                    {/* Data específica */}
                     <TextField
-                        select
+                        type="date"
                         fullWidth
                         size="small"
-                        label="Dia da Semana"
-                        value={form.dayKey}
-                        onChange={(e) =>
-                            setForm((f) => ({ ...f, dayKey: e.target.value }))
-                        }
+                        label="Data"
+                        value={form.date}
+                        onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
                         sx={muiDark}
-                        slotProps={{ select: { MenuProps: menuPaper } }}
-                    >
-                        {WEEK_DAYS.map((d) => (
-                            <MenuItem key={d.key} value={d.key}>
-                                {d.label}
-                            </MenuItem>
-                        ))}
-                    </TextField>
+                        slotProps={{ inputLabel: { shrink: true } }}
+                    />
 
                     <Stack direction="row" spacing={2}>
                         <TextField
@@ -197,12 +170,7 @@ export default function NewMeetingModal({
                             size="small"
                             label="Início"
                             value={form.start}
-                            onChange={(e) =>
-                                setForm((f) => ({
-                                    ...f,
-                                    start: e.target.value,
-                                }))
-                            }
+                            onChange={(e) => setForm((f) => ({ ...f, start: e.target.value }))}
                             sx={muiDark}
                             slotProps={{ inputLabel: { shrink: true } }}
                         />
@@ -212,9 +180,7 @@ export default function NewMeetingModal({
                             size="small"
                             label="Fim"
                             value={form.end}
-                            onChange={(e) =>
-                                setForm((f) => ({ ...f, end: e.target.value }))
-                            }
+                            onChange={(e) => setForm((f) => ({ ...f, end: e.target.value }))}
                             sx={muiDark}
                             slotProps={{ inputLabel: { shrink: true } }}
                         />
@@ -225,15 +191,14 @@ export default function NewMeetingModal({
                             <button
                                 key={key}
                                 type="button"
-                                onClick={() =>
-                                    setForm((f) => ({ ...f, cat: key }))
-                                }
-                                className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-full text-xs border ${form.cat === key ? "border-brand-500 text-text-primary bg-bg-surface" : "border-border-main2 bg-bg-side text-text-secondary"}`}
+                                onClick={() => setForm((f) => ({ ...f, cat: key }))}
+                                className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-full text-xs border transition-colors ${
+                                    form.cat === key
+                                        ? "border-brand-500 text-text-primary bg-bg-surface"
+                                        : "border-border-main2 bg-bg-side text-text-secondary"
+                                }`}
                             >
-                                <span
-                                    className="w-1.5 h-1.5 rounded-full"
-                                    style={{ background: c.color }}
-                                />
+                                <span className="w-1.5 h-1.5 rounded-full" style={{ background: c.color }} />
                                 {c.label}
                             </button>
                         ))}
@@ -243,19 +208,12 @@ export default function NewMeetingModal({
                         rows={3}
                         placeholder="Descrição"
                         value={form.description}
-                        onChange={(e) =>
-                            setForm((f) => ({
-                                ...f,
-                                description: e.target.value,
-                            }))
-                        }
+                        onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                         className="w-full resize-none rounded-lg px-3 py-2.5 text-sm bg-bg-side border border-border-main2 text-text-primary outline-none focus:border-brand-500"
                     />
                 </div>
 
-                <p className="text-[11px] uppercase tracking-wide text-text-muted mb-2">
-                    Participantes
-                </p>
+                <p className="text-[11px] uppercase tracking-wide text-text-muted mb-2">Participantes</p>
                 <div className="flex flex-wrap gap-2 mb-4">
                     {otherUsers.map((u) => {
                         const selected = form.people.includes(u.id);
@@ -264,14 +222,13 @@ export default function NewMeetingModal({
                                 key={u.id}
                                 type="button"
                                 onClick={() => togglePerson(u.id)}
-                                className={`flex items-center gap-1.5 pl-1 pr-3 py-1 sm:cursor-pointer rounded-full text-xs border ${selected ? "border-brand-500 text-text-primary bg-brand-500/10" : "border-border-main2 bg-bg-side text-text-secondary"}`}
+                                className={`flex items-center gap-1.5 pl-1 pr-3 py-1 sm:cursor-pointer rounded-full text-xs border transition-colors ${
+                                    selected
+                                        ? "border-brand-500 text-text-primary bg-brand-500/10"
+                                        : "border-border-main2 bg-bg-side text-text-secondary"
+                                }`}
                             >
-                                <Avatar
-                                    name={u.name}
-                                    uid={u.id}
-                                    src={u.photo}
-                                    size={20}
-                                />
+                                <Avatar name={u.name} uid={u.id} src={u.photo} size={20} />
                                 {u.name.split(" ")[0]}
                             </button>
                         );
@@ -292,14 +249,9 @@ export default function NewMeetingModal({
                         type="button"
                         onClick={handleSubmit}
                         disabled={saving}
-                        className="flex-1 flex items-center sm:cursor-pointer justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold bg-brand-500 text-white text-shadow-md hover:brightness-110 disabled:opacity-60"
+                        className="flex-1 flex items-center sm:cursor-pointer justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold bg-brand-500 text-white hover:brightness-110 disabled:opacity-60"
                     >
-                        {saving && (
-                            <CircularProgress
-                                size={14}
-                                style={{ color: "#000" }}
-                            />
-                        )}
+                        {saving && <CircularProgress size={14} style={{ color: "#000" }} />}
                         {editingEvent ? "Salvar" : "Criar evento"}
                     </button>
                 </div>

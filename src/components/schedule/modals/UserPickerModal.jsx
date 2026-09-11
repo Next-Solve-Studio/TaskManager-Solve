@@ -12,7 +12,7 @@ export default function UserPickerModal({
         /* overlay */
         <div
             role="none"
-            className="fixed inset-0 z-50 flex flex-col justify-center"
+            className="fixed inset-0 z-50 flex flex-col justify-center items-center"
             style={{
                 background: "rgba(0,0,0,0.6)",
                 backdropFilter: "blur(4px)",
@@ -21,7 +21,7 @@ export default function UserPickerModal({
         >
             <div
                 role="none"
-                className="rounded-3xl p-5 space-y-4 mx-2 bg-bg-card border border-border-main shadow-2xl"
+                className="rounded-3xl p-5 space-y-4 mx-2 bg-bg-card border border-border-main shadow-2xl max-w-250 sm:min-w-150 "
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* handle + cabeçalho */}
