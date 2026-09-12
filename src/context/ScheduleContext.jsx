@@ -126,18 +126,22 @@ export const ScheduleProvider = ({ children }) => {
     const disconnectGoogle = useCallback(async () => { await authedFetch("/api/google/disconnect", { method: "POST" }); await refreshGoogleStatus(); }, [refreshGoogleStatus]);
 
     const saveMeeting = useCallback(async (eventData) => {
-        let date, wKey;
+        let date, wKey, dKey;
         if (eventData.date) {
             date = eventData.date;
             wKey = getWeekKey(eventData.date);
+            const [y, m, d] = date.split("-").map(Number);
+            const dow = new Date(y, m - 1, d).getDay();
+            dKey = WEEK_DAYS[dow === 0 ? 6 : dow - 1].key;
         } else {
             const dayIndex = WEEK_DAYS.findIndex(d => d.key === eventData.dayKey);
             date = format(addDays(weekStart, dayIndex), "yyyy-MM-dd");
             wKey = weekKey;
+            dKey = eventData.dayKey;
         }
         return authedFetch("/api/schedule/meetings", {
             method: "POST",
-            body: JSON.stringify({ ...eventData, weekKey: wKey, date }),
+            body: JSON.stringify({ ...eventData, weekKey: wKey, dayKey: dKey, date }),
         });
     }, [weekKey, weekStart]);
 

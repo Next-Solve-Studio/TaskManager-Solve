@@ -118,7 +118,6 @@ export default function NewMeetingModal({
                 style={{ background: "rgba(0,0,0,0.55)" }}
                 onClick={onClose}
                 tabIndex={-1}
-                aria-hidden="true"
             />
             <dialog
                 open={open}
