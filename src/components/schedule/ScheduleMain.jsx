@@ -39,7 +39,12 @@ export default function ScheduleMain() {
 
     const isViewingAll   = filterUserId === "all";
     const isViewingMe    = filterUserId === "me";
-    const activePersonId = isViewingMe ? currentUser?.uid : isViewingAll ? null : filterUserId;
+
+    const viewingAll = () => {
+        const value =isViewingAll ? null : filterUserId
+        return value
+    }  
+    const activePersonId = isViewingMe ? currentUser?.uid : viewingAll();
 
     const visibleWeekEvents = useMemo(
         () => activePersonId ? events.filter(e => e.people?.includes(activePersonId)) : events,
@@ -72,6 +77,51 @@ export default function ScheduleMain() {
         setModalState({ create: true, date: dateStr, dayKey });
     };
 
+    const loadingMonthEventsView = () => {
+        if (loadingMonthEvents) {
+            return (
+                <div className="flex items-center justify-center py-20 gap-3">
+                    <CircularProgress size={24} style={{ color: "#19CA68" }} />
+                </div>
+            )
+        }else {
+            return (
+                <MonthCalendar
+                    monthBase={monthBase}
+                    calGridStart={calGridStart}
+                    calGridEnd={calGridEnd}
+                    events={visibleMonthEvents}
+                    selectedDate={selectedDate}
+                    onSelectDate={setSelectedDate}
+                    onSelectEvent={setSelectedEvent}
+                    onDayCreate={handleDayCreate}
+                    isMobile={isMobile}
+                />
+            )
+        }
+    }
+
+    const loadingSchedulesView = () =>{
+        if (loadingSchedules) {
+            return (
+                <div className="flex items-center justify-center py-20 gap-3">
+                    <CircularProgress size={24} style={{ color: "#19CA68" }} />
+                    <span className="text-text-secondary text-sm">Carregando agenda...</span>
+                </div>
+            )
+        } else {
+            return (
+                <WeekGrid
+                    weekStart={weekStart}
+                    events={visibleWeekEvents}
+                    users={users}
+                    onSelectEvent={setSelectedEvent}
+                    onCreateAt={(dayKey, start) => setModalState({ create: true, dayKey, start })}
+                />
+            )
+        }
+    }
+
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-4 font-sans">
 
@@ -103,7 +153,7 @@ export default function ScheduleMain() {
                             className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors">
                             <MdChevronLeft size={20} />
                         </button>
-                        <span className="text-text-primary font-bold text-base min-w-[170px] text-center select-none">
+                        <span className="text-text-primary font-bold text-base min-w-42.5 text-center select-none">
                             {monthLabel}
                         </span>
                         <button type="button" onClick={goToNextMonth}
@@ -161,38 +211,9 @@ export default function ScheduleMain() {
 
             {/* ── Conteúdo principal ── */}
             {effectiveView === "month" ? (
-                loadingMonthEvents ? (
-                    <div className="flex items-center justify-center py-20 gap-3">
-                        <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    </div>
-                ) : (
-                    <MonthCalendar
-                        monthBase={monthBase}
-                        calGridStart={calGridStart}
-                        calGridEnd={calGridEnd}
-                        events={visibleMonthEvents}
-                        selectedDate={selectedDate}
-                        onSelectDate={setSelectedDate}
-                        onSelectEvent={setSelectedEvent}
-                        onDayCreate={handleDayCreate}
-                        isMobile={isMobile}
-                    />
-                )
+                loadingMonthEventsView()
             ) : (
-                loadingSchedules ? (
-                    <div className="flex items-center justify-center py-20 gap-3">
-                        <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                        <span className="text-text-secondary text-sm">Carregando agenda...</span>
-                    </div>
-                ) : (
-                    <WeekGrid
-                        weekStart={weekStart}
-                        events={visibleWeekEvents}
-                        users={users}
-                        onSelectEvent={setSelectedEvent}
-                        onCreateAt={(dayKey, start) => setModalState({ create: true, dayKey, start })}
-                    />
-                )
+                loadingSchedulesView()
             )}
 
             {/* ── Modais ── */}
@@ -215,7 +236,7 @@ export default function ScheduleMain() {
                 saveMeeting={saveMeeting}
                 googleStatus={googleStatus}
                 connectGoogle={connectGoogle}
-                initialDayKey={modalState?.date}
+                initialDate={modalState?.date}
                 initialStart={modalState?.start}
                 editingEvent={modalState?.editingEvent}
             />
