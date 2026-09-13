@@ -90,18 +90,15 @@ export default function Header({ onMenuClick, isMobile }) {
         >
             {/* ── DESKTOP ── */}
             {!isMobile && (
-                <div className="flex items-center w-full px-5 gap-4">
-                    <div className="w-44 shrink-0">
+                <div className="flex items-center justify-between w-full px-5 gap-4">
+                    <div className="w-44 shrink-0 ">
                         <PageTitle pathname={pathname} />
                     </div>
 
-                    <div className="flex-1 flex justify-center">
-                        <div className="w-full max-w-110">
+                    <div className="w-auto flex items-center justify-end gap-2">
+                        <div className="min-w-[95%] max-w-110">
                             <GlobalSearch isMobile={false} searchOpen={true} setSearchOpen={() => {}} />
                         </div>
-                    </div>
-
-                    <div className="w-44 shrink-0 flex items-center justify-end gap-2">
                         <div className="relative">
                             <div ref={bellRef}>
                                 <BellButton count={count} onClick={toggleNotif} />
