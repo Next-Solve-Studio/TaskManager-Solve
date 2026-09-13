@@ -21,7 +21,7 @@ export default function UserPickerModal({
         >
             <div
                 role="none"
-                className="rounded-3xl p-5 space-y-4 mx-2 bg-bg-card border border-border-main shadow-2xl max-w-250 sm:min-w-150 "
+                className="rounded-3xl p-5 space-y-4 mx-2 bg-bg-card border border-border-main shadow-2xl max-w-250 min-w-[90%] sm:min-w-150 "
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* handle + cabeçalho */}
@@ -37,7 +37,7 @@ export default function UserPickerModal({
                     <button
                         type="button"
                         onClick={onClose}
-                        className="flex items-center justify-center w-8 h-8 rounded-full transition-colors bg-bg-surface text-text-muted"
+                        className="flex sm:cursor-pointer items-center justify-center w-8 h-8 rounded-full transition-colors bg-bg-surface text-text-muted"
                     >
                         <MdClose size={16} />
                     </button>
@@ -53,7 +53,7 @@ export default function UserPickerModal({
                                 key={u.id}
                                 type="button"
                                 onClick={() => onSelect(u.id)}
-                                className={`flex items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150
+                                className={`flex sm:cursor-pointer items-center gap-3 w-full px-3 py-3 rounded-2xl text-left transition-all duration-150
                                     ${
                                         selected
                                             ? "bg-(--btn-bg) border-(--btn-border)"
