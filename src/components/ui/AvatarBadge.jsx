@@ -24,7 +24,7 @@ export function getInitials(name = "") {
 
 export function avatarColor(seed = "") {
     let hash = 0;
-    for (const c of seed) hash = (hash * 31 + c.charCodeAt(0)) & 0xffffffff;
+    for (const c of seed) hash = (hash * 31 + c.codePointAt(0)) & 0xffffffff;
     return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
@@ -43,6 +43,7 @@ export function Avatar({ name = "", uid = "", src = "", size = 32 }) {
                         overflow: "hidden",
                         position: "relative",
                         flexShrink: 0,
+                        userSelect: 'none'
                     }}
                 >
                     <Image
@@ -50,7 +51,7 @@ export function Avatar({ name = "", uid = "", src = "", size = 32 }) {
                         alt="Foto de perfil"
                         fill
                         sizes={`${size}px`}
-                        className="object-cover"
+                        className="object-cover select-none"
                     />
                 </div>
             ) : (
@@ -59,8 +60,8 @@ export function Avatar({ name = "", uid = "", src = "", size = 32 }) {
                         width: size,
                         height: size,
                         borderRadius: "50%",
-                        background: `${color}33`, // 20% -> 20% hex is 33
-                        border: `2px solid ${color}80`, // 31% -> 50% hex is 80
+                        background: `${color}33`, 
+                        border: `2px solid ${color}80`,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -68,6 +69,7 @@ export function Avatar({ name = "", uid = "", src = "", size = 32 }) {
                         fontWeight: 700,
                         color,
                         flexShrink: 0,
+                        userSelect: 'none'
                     }}
                 >
                     {getInitials(name)}

@@ -1,18 +1,19 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
-import { MdNotificationsNone, MdSearch } from "react-icons/md";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
-import { BurgerButton } from "../sideMenu/sideMenuItems/BurgerBtn";
-import GlobalSearch from "./GlobalSearch";
-import NotificationPanel from "./NotificationPanel";
+import { useEffect, useRef, useState } from "react";
+import { MdSearch } from "react-icons/md";
+import { Avatar } from "@/components/ui/AvatarBadge";
 import { useAuth } from "@/context/AuthContext";
-import { menuItems } from "../sideMenu/sideMenuItems/MenuItems";
 import { useNotifications } from "@/hooks/useNotifications";
+import { BurgerButton } from "../sideMenu/sideMenuItems/BurgerBtn";
+import { menuItems } from "../sideMenu/sideMenuItems/MenuItems";
+import GlobalSearch from "./GlobalSearch";
+import BellButton from "./notifications/BellButton";
+import NotificationPanel from "./notifications/NotificationPanel";
 
 function PageTitle({ pathname }) {
-    const item = menuItems.find(m =>
-        m.href === "/" ? pathname === "/" : pathname.startsWith(m.href)
+    const item = menuItems.find((m) =>
+        m.href === "/" ? pathname === "/" : pathname.startsWith(m.href),
     );
     return (
         <span className="text-sm font-semibold text-text-secondary truncate">
@@ -21,44 +22,13 @@ function PageTitle({ pathname }) {
     );
 }
 
-function UserAvatar({ currentUser }) {
-    const name = currentUser?.name || currentUser?.displayName || "";
-    const initial = name.charAt(0).toUpperCase();
-    return (
-        <div className="w-8 h-8 rounded-full overflow-hidden border border-border-main bg-bg-surface flex items-center justify-center shrink-0">
-            {currentUser?.photoURL ? (
-                <Image src={currentUser.photoURL} alt="avatar" width={32} height={32} className="object-cover" />
-            ) : (
-                <span className="text-xs font-bold text-text-primary">{initial}</span>
-            )}
-        </div>
-    );
-}
-
-function BellButton({ count, onClick }) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            title="Notificações"
-            className="relative w-9 h-9 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
-        >
-            <MdNotificationsNone size={21} />
-            {count > 0 && (
-                <span className="absolute top-1 right-1 min-w-3.5 h-3.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[9px] font-black leading-none px-0.5">
-                    {count > 9 ? "9+" : count}
-                </span>
-            )}
-        </button>
-    );
-}
-
 export default function Header({ onMenuClick, isMobile }) {
     const [searchOpen, setSearchOpen] = useState(false);
     const [notifOpen, setNotifOpen] = useState(false);
     const pathname = usePathname();
     const { currentUser } = useAuth();
-    const { notifications, loading, count, markRead, clearAll } = useNotifications();
+    const { notifications, loading, count, markRead, clearAll } =
+        useNotifications();
     const bellRef = useRef(null);
     const panelRef = useRef(null);
 
@@ -70,12 +40,19 @@ export default function Header({ onMenuClick, isMobile }) {
             if (!inBell && !inPanel) setNotifOpen(false);
         }
         document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
+        return () =>
+            document.removeEventListener("mousedown", handleClickOutside);
     }, [notifOpen]);
 
-    const toggleNotif = () => setNotifOpen(o => !o);
+    const toggleNotif = () => setNotifOpen((o) => !o);
 
-    const panelProps = { notifications, loading, markRead, clearAll, onClose: () => setNotifOpen(false) };
+    const panelProps = {
+        notifications,
+        loading,
+        markRead,
+        clearAll,
+        onClose: () => setNotifOpen(false),
+    };
 
     return (
         <header
@@ -85,7 +62,8 @@ export default function Header({ onMenuClick, isMobile }) {
                 backdropFilter: "blur(16px)",
                 WebkitBackdropFilter: "blur(16px)",
                 borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
-                boxShadow: "0 1px 0 rgba(255,255,255,0.03), 0 4px 24px rgba(0,0,0,0.25)",
+                boxShadow:
+                    "0 1px 0 rgba(255,255,255,0.03), 0 4px 24px rgba(0,0,0,0.25)",
             }}
         >
             {/* ── DESKTOP ── */}
@@ -97,19 +75,34 @@ export default function Header({ onMenuClick, isMobile }) {
 
                     <div className="w-auto flex items-center justify-end gap-2">
                         <div className="min-w-[95%] max-w-110">
-                            <GlobalSearch isMobile={false} searchOpen={true} setSearchOpen={() => {}} />
+                            <GlobalSearch
+                                isMobile={false}
+                                searchOpen={true}
+                                setSearchOpen={() => {}}
+                            />
                         </div>
                         <div className="relative">
                             <div ref={bellRef}>
-                                <BellButton count={count} onClick={toggleNotif} />
+                                <BellButton
+                                    count={count}
+                                    onClick={toggleNotif}
+                                />
                             </div>
                             {notifOpen && (
                                 <div className="absolute top-full right-0 mt-2 z-50">
-                                    <NotificationPanel ref={panelRef} {...panelProps} />
+                                    <NotificationPanel
+                                        ref={panelRef}
+                                        {...panelProps}
+                                    />
                                 </div>
                             )}
                         </div>
-                        <UserAvatar currentUser={currentUser} />
+                        <Avatar
+                            name={currentUser.name || currentUser.displayName}
+                            uid={currentUser.uid}
+                            size={26}
+                            src={currentUser.photoURL || currentUser.photo}
+                        />
                     </div>
                 </div>
             )}
@@ -117,7 +110,9 @@ export default function Header({ onMenuClick, isMobile }) {
             {/* ── MOBILE ── */}
             {isMobile && (
                 <div className="relative flex items-center w-full h-full px-3 gap-2">
-                    <div className={`absolute inset-0 flex items-center px-3 gap-2 transition-all duration-300 ${searchOpen ? "opacity-0 pointer-events-none translate-y-1" : "opacity-100 translate-y-0"}`}>
+                    <div
+                        className={`absolute inset-0 flex items-center px-3 gap-2 transition-all duration-300 ${searchOpen ? "opacity-0 pointer-events-none translate-y-1" : "opacity-100 translate-y-0"}`}
+                    >
                         <div ref={bellRef}>
                             <BellButton count={count} onClick={toggleNotif} />
                         </div>
@@ -132,8 +127,14 @@ export default function Header({ onMenuClick, isMobile }) {
                         <BurgerButton isOpen={false} onClick={onMenuClick} />
                     </div>
 
-                    <div className={`absolute inset-0 flex items-center px-3 gap-2 transition-all duration-300 ${searchOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-1"}`}>
-                        <GlobalSearch isMobile={true} searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
+                    <div
+                        className={`absolute inset-0 flex items-center px-3 gap-2 transition-all duration-300 ${searchOpen ? "opacity-100 translate-y-0" : "opacity-0 pointer-events-none translate-y-1"}`}
+                    >
+                        <GlobalSearch
+                            isMobile={true}
+                            searchOpen={searchOpen}
+                            setSearchOpen={setSearchOpen}
+                        />
                     </div>
 
                     {notifOpen && !searchOpen && (
