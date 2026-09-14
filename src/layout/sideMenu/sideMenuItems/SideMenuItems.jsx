@@ -1,22 +1,20 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { CiLogout } from "react-icons/ci";
-import RoleBadge from "@/components/auth/RoleBadge";
 import { useAuth } from "@/context/AuthContext";
 import { useRole } from "@/hooks/useRole";
-
 import { BurgerButton } from "./BurgerBtn";
 import { menuItems } from "./MenuItems";
+import LogoutButton from "./LogoutButton";
+import UserInfo from "./UserInfo";
 
 export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
     const [hoverOpen, setHoverOpen] = useState(false);
     // No desktop, o menu abre com hover (ou se isOpen for true, mas isOpen só é usado no mobile)
     const effectiveOpen = isMobile ? isOpen : hoverOpen;
     const { role } = useRole();
-    const { logout, currentUser } = useAuth();
+    const { logout } = useAuth();
     const pathname = usePathname();
 
     const handleMouseEnter = isMobile ? undefined : () => setHoverOpen(true);
@@ -32,16 +30,29 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
         return pathname.startsWith(href);
     };
 
-    const displayName = currentUser?.name || currentUser?.displayName || "";
-    const initial = displayName ? displayName.charAt(0).toUpperCase() : "";
+    const isOpenView = () => {
+        if (isOpen) {
+            return "translate-x-0"
+        } else {
+            return "translate-x-full"
+        }
+    }
+
+    const effectiveOpenView = () => {
+        if (effectiveOpen) {
+            return "w-58 items-start"
+        } else {
+            return "w-20 items-center"
+        }
+    }
 
     const containerClasses = isMobile
         ? `fixed top-0 right-0 h-full w-64 z-50 transform transition-transform duration-300 ease-in-out
        bg-gradient-to-br from-bg-main via-bg-card to-bg-main shadow-xl
-       ${isOpen ? "translate-x-0" : "translate-x-full"}`
+       ${isOpenView()}`
         : `fixed top-0 left-0 h-full z-30 transition-all duration-300 ease-in-out
             bg-gradient-to-br from-bg-main via-bg-card to-bg-main shadow-xl
-            ${effectiveOpen ? "w-58 items-start" : "w-20 items-center"}`;
+            ${effectiveOpenView()}`;
 
 
     return (
@@ -57,34 +68,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         <BurgerButton isOpen={isOpen} onClick={onToggle} />
                     </div>
                 )}
-                <div className="mb-6 flex items-center min-h-10 w-full">
-                    <div className="w-20 flex justify-center shrink-0">
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden border border-border-main shadow-inner bg-bg-surface flex items-center justify-center">
-                            {currentUser?.photoURL ? (
-                                <Image
-                                    src={currentUser.photoURL}
-                                    alt="Foto de perfil"
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <span className="text-text-primary text-base sm:text-lg font-bold">
-                                    {initial}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    <div
-                        className={`ml-2 transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-32" : "opacity-0 w-0"}`}
-                    >
-                        <p className="text-text-primary text-sm font-bold whitespace-nowrap truncate">
-                            {displayName || "sem nome"}
-                        </p>
-                        <div className="mt-1">
-                            <RoleBadge />
-                        </div>
-                    </div>
-                </div>
+                <UserInfo effectiveOpen={effectiveOpen}/>
                 <div
                     className={`h-px rouned-[5px] bg-border-main my-1 mx-auto ${effectiveOpen ? "w-[90%]" : "w-[70%]"}`}
                 />
@@ -121,25 +105,7 @@ export default function SideMenuItems({ isOpen, onToggle, isMobile }) {
                         );
                     })}
                 </div>
-                <div className="mt-auto flex flex-col items-center gap-2 w-full sm:px-4">
-                    <button
-                        type="button"
-                        onClick={logout}
-                        className="h-12 flex items-center text-error sm:hover:bg-error/10 rounded-lg transition-colors duration-200 group cursor-pointer"
-                    >
-                        <div className="w-12 flex justify-center shrink-0">
-                            <CiLogout className="text-[27px] transition-transform duration-200 sm:group-hover:scale-110" />
-                        </div>
-
-                        <div
-                            className={`sm:ml-1 flex justify-start transition-all duration-300 ease-in-out overflow-hidden ${effectiveOpen ? "opacity-100 w-40" : "opacity-0 w-0"}`}
-                        >
-                            <span className="text-sm font-medium whitespace-nowrap tracking-wide">
-                                Sair
-                            </span>
-                        </div>
-                    </button>
-                </div>
+                <LogoutButton logout={logout} effectiveOpen={effectiveOpen}/>
             </div>
         </nav>
     );
