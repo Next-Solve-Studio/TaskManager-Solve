@@ -1,19 +1,13 @@
 import { NextResponse } from "next/server";
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
 
-const PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
-const JWKS = createRemoteJWKSet(
-    new URL("https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com")
-);
 const BUCKET = "project-attachments";
 
-async function verifyToken(token) {
-    const { payload } = await jwtVerify(token, JWKS, {
-        issuer: `https://securetoken.google.com/${PROJECT_ID}`,
-        audience: PROJECT_ID,
-    });
-    return payload;
+async function getCallerCompanyId(uid) {
+    const { db } = getFirebaseAdmin();
+    const callerDoc = await db.collection("users").doc(uid).get();
+    return callerDoc.data()?.companyId || null;
 }
 
 // GET → gera signed URL para download
@@ -21,12 +15,22 @@ export async function GET(request) {
     try {
         const token = request.headers.get("authorization")?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-        try { await verifyToken(token); } catch {
+
+        let caller;
+        try {
+            caller = await verifyFirebaseToken(token);
+        } catch {
             return NextResponse.json({ error: "Token inválido." }, { status: 401 });
         }
 
         const storagePath = request.nextUrl.searchParams.get("path");
-        if (!storagePath) return NextResponse.json({ error: "Path ausente." }, { status: 400 });
+        if (!storagePath || storagePath.includes(".."))
+            return NextResponse.json({ error: "Path inválido." }, { status: 400 });
+
+        const companyId = await getCallerCompanyId(caller.uid);
+        if (!companyId || !storagePath.startsWith(`${companyId}/`)) {
+            return NextResponse.json({ error: "Anexo não encontrado." }, { status: 404 });
+        }
 
         const { data, error } = await supabaseAdmin.storage
             .from(BUCKET)
@@ -45,12 +49,22 @@ export async function DELETE(request) {
     try {
         const token = request.headers.get("authorization")?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
-        try { await verifyToken(token); } catch {
+
+        let caller;
+        try {
+            caller = await verifyFirebaseToken(token);
+        } catch {
             return NextResponse.json({ error: "Token inválido." }, { status: 401 });
         }
 
         const storagePath = request.nextUrl.searchParams.get("path");
-        if (!storagePath) return NextResponse.json({ error: "Path ausente." }, { status: 400 });
+        if (!storagePath || storagePath.includes(".."))
+            return NextResponse.json({ error: "Path inválido." }, { status: 400 });
+
+        const companyId = await getCallerCompanyId(caller.uid);
+        if (!companyId || !storagePath.startsWith(`${companyId}/`)) {
+            return NextResponse.json({ error: "Anexo não encontrado." }, { status: 404 });
+        }
 
         const { error } = await supabaseAdmin.storage.from(BUCKET).remove([storagePath]);
         if (error) return NextResponse.json({ error: "Erro ao remover." }, { status: 500 });
