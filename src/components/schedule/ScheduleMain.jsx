@@ -10,7 +10,7 @@ import { useUsers } from "@/context/UsersContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import EventDetailModal from "./modals/EventDetailModal";
 import NewMeetingModal from "./modals/NewMeetingModal";
-import MonthCalendar from "./sections/MonthCalendar";
+import MonthCalendar from "./sections/monthCalendar/MonthCalendar";
 import UsersFiltersSchedule from "./sections/UsersFilterSchedule";
 import WeekGrid from "./sections/WeekGrid";
 import WeekNavigation from "./sections/WeekNavigation";
