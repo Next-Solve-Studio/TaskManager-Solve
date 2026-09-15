@@ -65,7 +65,7 @@ export const RolePermissionsProvider = ({children}) => {
             },
             { merge:true },
         )
-    }, [currentUser.companyId, currentUser.role, currentUser.uid, permissions])
+    }, [currentUser?.companyId, currentUser.role, currentUser.uid, permissions])
 
     const value = useMemo(
         () => ({

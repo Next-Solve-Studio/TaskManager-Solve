@@ -100,3 +100,11 @@ export const PERMISSIONS = {
     // Campos Personalizados
     canManageCustomFields: [ROLES.MASTER, ROLES.ADMIN],
 };
+
+export const buildDefaultPermissions = () => {
+    const result = {};
+    for (const [key, roles] of Object.entries(PERMISSIONS)) {
+        result[key] = roles.filter((r) => r !== ROLES.MASTER);
+    }
+    return result;
+};

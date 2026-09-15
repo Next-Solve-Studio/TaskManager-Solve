@@ -45,13 +45,13 @@ export default function AnalyticsMain() {
     const [activeTab, setActiveTab] = useState("financeiro");
     const isMobile = useIsMobile();
 
-    const getDateObject = (dateVal) => {
+    const getDateObject = useCallback((dateVal) => {
         if (!dateVal) return null;
         if (typeof dateVal.toDate === "function") return dateVal.toDate();
         if (dateVal instanceof Date) return dateVal;
         const parsed = new Date(dateVal);
         return Number.isNaN(parsed.getTime()) ? null : parsed;
-    };
+    },[]);
 
     const isWithinTimeFilter = useCallback((dateVal) => {
         if (timeFilter === "all" || !dateVal) return true;
@@ -82,7 +82,7 @@ export default function AnalyticsMain() {
         if (timeFilter === "year")
             return date.getFullYear() === now.getFullYear();
         return true;
-    });
+    }, [getDateObject, timeFilter]);
 
     const filteredProjects = useMemo(
         () =>

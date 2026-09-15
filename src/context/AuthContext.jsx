@@ -26,7 +26,7 @@ import {
     useState,
 } from "react";
 import { useAppRouter } from "@/hooks/useAppRouter";
-import {PERMISSIONS, ROLES} from "@/lib/roles"
+import {buildDefaultPermissions} from "@/lib/roles"
 import { auth, db } from "../lib/firebaseConfig";
 
 const ONE_HOUR = 60 * 60 * 1000;
@@ -39,14 +39,7 @@ const AuthContext = createContext(); // Criação do contexto
  */
 export const useAuth = () => useContext(AuthContext);
 
-const buildDefaultPermissions = () => {
 
-    const result = {}
-    for (const [key, roles] of Object.entries(PERMISSIONS)) {
-        result [key] = roles.filter((r) => r !== ROLES.MASTER)
-    }
-    return result
-}
 
 export const AuthProvider = ({ children }) => {
     // Componente Provedor, vai "abraçar" toda a aplicação

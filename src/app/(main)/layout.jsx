@@ -11,6 +11,7 @@ import useIsMobile from "@/hooks/responsive/useIsMobile";
 import Header from "@/layout/header/Header";
 import SideMenu from "@/layout/sideMenu/SideMenu";
 import { ROLES } from "@/lib/roles";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export default function MainLayout({ children }) {
     const { currentUser, loading: authLoading } = useAuth();
@@ -38,7 +39,7 @@ export default function MainLayout({ children }) {
     }
 
     // Lógica de Manutenção: Bloqueia tudo se não for Admin
-    if (systemSettings?.maintenanceMode && currentUser.role !== ROLES.ADMIN) {
+    if (systemSettings?.maintenanceMode && currentUser.role !== ROLES.MASTER) {
         return (
             <div className="min-h-screen bg-bg-main flex flex-col items-center justify-center p-8 text-center">
                 <div className="bg-orange-500/10 border border-orange-500/20 p-8 rounded-[40px] max-w-md space-y-6 shadow-2xl shadow-orange-500/5">
@@ -75,7 +76,11 @@ export default function MainLayout({ children }) {
                             onToggle={toggleSidebar}
                             isMobile={isMobile}
                         />
-                        <main className="w-full px-3 sm:px-10 max-w-450 pt-14">{children}</main>
+                        <main className="w-full px-3 sm:px-10 max-w-450 pt-14">
+                            <ErrorBoundary>
+                                {children}
+                            </ErrorBoundary>
+                        </main>
                     </div>
                 </div>
             </LicenseGuard>

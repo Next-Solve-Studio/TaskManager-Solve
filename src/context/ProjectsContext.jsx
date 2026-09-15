@@ -47,7 +47,7 @@ export const ProjectsProvider = ({ children }) => {
         [projects, visibleProjectsCount],
     );
     const hasMoreProjects = projects.length > visibleProjectsCount;
-    const loadMoreProjects = useCallback(() => setVisibleProjectsCount((prev) => prev + 10));
+    const loadMoreProjects = useCallback(() => setVisibleProjectsCount((prev) => prev + 10), []);
 
     useEffect(() => {
         // só busca dados da empresa que o usuário estiver logado.
