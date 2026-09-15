@@ -1,23 +1,21 @@
 import { NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
-
-const APP_KEY_REGEX = /^ak_[a-f0-9]{32}$/;
+import { getAuthorizedAppKey } from "@/lib/billingAuth";
 
 export async function GET(request) {
     const token = request.headers.get("authorization")?.split("Bearer ")[1];
     if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+
+    let caller;
     try {
-        await verifyFirebaseToken(token);
+        caller = await verifyFirebaseToken(token);
     } catch {
         return NextResponse.json({ error: "Token inválido." }, { status: 401 });
     }
 
-    const { searchParams } = new URL(request.url);
-    const appKey = searchParams.get("appKey");
-
-    if (!appKey || !APP_KEY_REGEX.test(appKey)) {
-        return NextResponse.json({ error: "appKey inválido." }, { status: 400 });
-    }
+    // Deriva o appKey do próprio usuário autenticado — nunca confia no cliente
+    const { appKey, error, status } = await getAuthorizedAppKey(caller.uid);
+    if (error) return NextResponse.json({ error }, { status });
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8_000);
