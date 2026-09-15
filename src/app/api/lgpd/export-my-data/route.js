@@ -25,15 +25,10 @@ export async function GET(request) {
         }
         const userData = userDoc.data();
 
-        const activitySnap = await db
-            .collection("activity_logs")
-            .where("userId", "==", caller.uid)
-            .get();
-
-        const schedulesSnap = await db
-            .collection("schedules")
-            .where("userId", "==", caller.uid)
-            .get();
+        const [activitySnap, schedulesSnap] = await Promise.all([
+            db.collection("activity_logs").where("userId", "==", caller.uid).get(),
+            db.collection("schedules").where("userId", "==", caller.uid).get(),
+        ]);
 
         return NextResponse.json({
             exportedAt: new Date().toISOString(),

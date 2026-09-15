@@ -24,6 +24,8 @@ import { STATUS_MAP } from "@/components/ui/badges/StatusBadge";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
+import { useUsers } from "@/context/UsersContext";
+import { useClients } from "@/context/ClientsContext";
 
 const ProjectsContext = createContext(); // contexto criado
 
@@ -33,12 +35,10 @@ export const useProjects = () => useContext(ProjectsContext);
 export const ProjectsProvider = ({ children }) => {
     const { currentUser } = useAuth(); // Pega o usuário logado atual
 
+    const { users, loadingUsers } = useUsers();
+    const { clients, loading: loadingClients } = useClients();
     const [projects, setProjects] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [clients, setClients] = useState([]);
     const [loadingProjects, setLoadingProjects] = useState(true);
-    const [loadingUsers, setLoadingUsers] = useState(true);
-    const [loadingClients, setLoadingClients] = useState(true);
 
     // Paginação
     const [visibleProjectsCount, setVisibleProjectsCount] = useState(10);
@@ -80,57 +80,6 @@ export const ProjectsProvider = ({ children }) => {
                 setLoadingProjects(false);
             },
         );
-        return unsubscribe;
-    }, [currentUser?.companyId]);
-
-    useEffect(() => {
-        if (!currentUser?.companyId) {
-            setUsers([]);
-            setLoadingUsers(false);
-            return;
-        }
-
-        const q = query(
-            collection(db, "users"),
-            where("companyId", "==", currentUser.companyId),
-            orderBy("createdAt", "desc"),
-        );
-
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                setUsers(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-                setLoadingUsers(false);
-            },
-            (error) => {
-                console.error("Erro ao carregar usuários:", error);
-                setLoadingUsers(false);
-            }
-        );
-
-        return unsubscribe;
-    }, [currentUser?.companyId]);
-
-    useEffect(() => {
-        if (!currentUser?.companyId) {
-            setClients([]);
-            setLoadingClients(false);
-            return;
-        }
-
-        const q = query(collection(db, "clients"), where("companyId", "==", currentUser.companyId));
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                setClients(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
-                setLoadingClients(false);
-            },
-            (error) => {
-                console.error("Erro ao carregar clientes:", error);
-                setLoadingClients(false);
-            }
-        );
-
         return unsubscribe;
     }, [currentUser?.companyId]);
 

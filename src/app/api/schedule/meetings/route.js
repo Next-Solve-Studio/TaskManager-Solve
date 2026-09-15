@@ -71,9 +71,10 @@ export async function POST(request) {
                 );
             }
 
-            const peopleSnaps = await Promise.all(
-                people.filter((pid) => pid !== caller.uid).map((pid) => db.collection("users").doc(pid).get()),
-            );
+            const otherPeopleIds = people.filter((pid) => pid !== caller.uid);
+            const peopleSnaps = otherPeopleIds.length
+                ? await db.getAll(...otherPeopleIds.map((pid) => db.collection("users").doc(pid)))
+                : [];
             const attendees = peopleSnaps.map((s) => s.data()?.email).filter(Boolean).map((email) => ({ email }));
 
             const calendar = google.calendar({ version: "v3", auth: authClient });

@@ -16,8 +16,8 @@ export default function AppProviders({ children }) {
                 <CompanyProvider>
                     <BillingProvider>
                         <UsersProvider>
-                            <ProjectsProvider>
-                                <ClientsProvider>
+                            <ClientsProvider>
+                                <ProjectsProvider>
                                     <TasksProvider>
                                         <ScheduleProvider>
                                             <CustomFieldsProvider>
@@ -25,8 +25,8 @@ export default function AppProviders({ children }) {
                                             </CustomFieldsProvider>
                                         </ScheduleProvider>
                                     </TasksProvider>
-                                </ClientsProvider>
-                            </ProjectsProvider>
+                                </ProjectsProvider>
+                            </ClientsProvider>
                         </UsersProvider>
                     </BillingProvider>
                 </CompanyProvider>

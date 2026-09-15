@@ -2,11 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import { MdSearch, MdClose, MdFolderOpen, MdCheckBox, MdPeople } from "react-icons/md";
 import { useRouter } from "next/navigation";
-import { collection, query, where, limit, getDocs } from "firebase/firestore";
 import { useProjects } from "@/context/ProjectsContext";
 import { useClients } from "@/context/ClientsContext";
-import { useAuth } from "@/context/AuthContext";
-import { db } from "@/lib/firebaseConfig";
+import { useTasks } from "@/context/TasksContext";
 
 function Highlight({ text, term }) {
     if (!term || !text) return <>{text}</>;
@@ -33,13 +31,12 @@ export default function GlobalSearch({ isMobile, searchOpen, setSearchOpen }) {
     const [term, setTerm] = useState("");
     const [results, setResults] = useState({ projects: [], tasks: [], clients: [] });
     const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
     const inputRef = useRef(null);
     const containerRef = useRef(null);
     const router = useRouter();
     const { projects } = useProjects();
     const { clients } = useClients();
-    const { currentUser } = useAuth();
+    const { tasks } = useTasks();
 
     useEffect(() => {
         const handler = (e) => {
@@ -59,7 +56,7 @@ export default function GlobalSearch({ isMobile, searchOpen, setSearchOpen }) {
             setOpen(false);
             return;
         }
-        const t = setTimeout(async () => {
+        const t = setTimeout(() => {
             const q = term.toLowerCase();
             const matchedProjects = (projects || [])
                 .filter(p => (p.title || p.name || "").toLowerCase().includes(q))
@@ -67,32 +64,15 @@ export default function GlobalSearch({ isMobile, searchOpen, setSearchOpen }) {
             const matchedClients = (clients || [])
                 .filter(c => (c.name || "").toLowerCase().includes(q))
                 .slice(0, 3);
+            const matchedTasks = (tasks || [])
+                .filter(t2 => (t2.title || t2.name || "").toLowerCase().includes(q))
+                .slice(0, 4);
 
-            let matchedTasks = [];
-            if (currentUser?.companyId) {
-                try {
-                    setLoading(true);
-                    const q2 = query(
-                        collection(db, "tasks"),
-                        where("companyId", "==", currentUser.companyId),
-                        limit(80)
-                    );
-                    const snap = await getDocs(q2);
-                    matchedTasks = snap.docs
-                        .map(d => ({ id: d.id, ...d.data() }))
-                        .filter(t => (t.title || t.name || "").toLowerCase().includes(q))
-                        .slice(0, 4);
-                } catch {
-                    matchedTasks = [];
-                } finally {
-                    setLoading(false);
-                }
-            }
             setResults({ projects: matchedProjects, tasks: matchedTasks, clients: matchedClients });
             setOpen(true);
         }, 300);
         return () => clearTimeout(t);
-    }, [term, projects, clients, currentUser]);
+    }, [term, projects, clients, tasks]);
 
     const navigate = (path) => {
         router.push(path);
@@ -148,10 +128,7 @@ export default function GlobalSearch({ isMobile, searchOpen, setSearchOpen }) {
                 <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-border-main overflow-hidden z-60"
                     style={{ background: "var(--color-bg-card)", boxShadow: "0 16px 48px rgba(0,0,0,0.4)" }}>
 
-                    {loading && (
-                        <p className="px-4 py-3 text-xs text-text-muted">Buscando tarefas...</p>
-                    )}
-                    {!loading && total === 0 && (
+                    {total === 0 && (
                         <p className="px-4 py-5 text-xs text-text-muted text-center">Nenhum resultado para "{term}"</p>
                     )}
 

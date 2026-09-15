@@ -5,6 +5,8 @@ import { differenceInCalendarDays, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { db } from "@/lib/firebaseConfig";
 import { useAuth } from "@/context/AuthContext";
+import { useTasks } from "@/context/TasksContext";
+import { useProjects } from "@/context/ProjectsContext";
 
 function toDate(val) {
     if (!val) return null;
@@ -19,10 +21,10 @@ const DONE_PROJECT = ["concluido", "cancelado"];
 
 export function useNotifications() {
     const { currentUser } = useAuth();
-    const [tasks, setTasks] = useState([]);
-    const [projects, setProjects] = useState([]);
+    const { tasks: allTasks, loadingTasks } = useTasks();
+    const { projects: allProjects, loadingProjects } = useProjects();
     const [events, setEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loadingEvents, setLoadingEvents] = useState(true);
     const [readIds, setReadIds] = useState(new Set());
 
     // Carrega IDs lidos do localStorage quando o usuário muda
@@ -38,43 +40,32 @@ export function useNotifications() {
 
     useEffect(() => {
         if (!currentUser?.uid || !currentUser?.companyId) {
-            setLoading(false);
+            setEvents([]);
+            setLoadingEvents(false);
             return;
         }
         const { uid, companyId } = currentUser;
-        let loaded = 0;
-        const markLoaded = () => { if (++loaded >= 3) setLoading(false); };
-        const unsubs = [];
-
-        unsubs.push(onSnapshot(
-            query(collection(db, "tasks"),
-                where("companyId", "==", companyId),
-                where("assignedTo", "array-contains", uid),
-                limit(100)),
-            snap => { setTasks(snap.docs.map(d => ({ id: d.id, ...d.data() }))); markLoaded(); },
-            () => markLoaded()
-        ));
-
-        unsubs.push(onSnapshot(
-            query(collection(db, "projects"),
-                where("companyId", "==", companyId),
-                where("developers", "array-contains", uid),
-                limit(50)),
-            snap => { setProjects(snap.docs.map(d => ({ id: d.id, ...d.data() }))); markLoaded(); },
-            () => markLoaded()
-        ));
-
-        unsubs.push(onSnapshot(
+        const unsubscribe = onSnapshot(
             query(collection(db, "scheduleEvents"),
                 where("companyId", "==", companyId),
                 where("people", "array-contains", uid),
                 limit(30)),
-            snap => { setEvents(snap.docs.map(d => ({ id: d.id, ...d.data() }))); markLoaded(); },
-            () => markLoaded()
-        ));
+            snap => { setEvents(snap.docs.map(d => ({ id: d.id, ...d.data() }))); setLoadingEvents(false); },
+            () => setLoadingEvents(false)
+        );
+        return unsubscribe;
+    }, [currentUser?.uid, currentUser]);
 
-        return () => unsubs.forEach(u => u());
-    }, [currentUser?.uid, currentUser?.companyId]);
+    const tasks = useMemo(
+        () => allTasks.filter(t => t.assignedTo?.includes(currentUser?.uid)),
+        [allTasks, currentUser?.uid],
+    );
+    const projects = useMemo(
+        () => allProjects.filter(p => p.developers?.includes(currentUser?.uid)),
+        [allProjects, currentUser?.uid],
+    );
+
+    const loading = loadingTasks || loadingProjects || loadingEvents;
 
     const allNotifications = useMemo(() => {
         const today = new Date();
@@ -144,20 +135,7 @@ export function useNotifications() {
         return result.sort((a, b) => a.priority - b.priority);
     }, [tasks, projects, events]);
 
-    const saveReadIds = useCallback((next) => {
-        setReadIds(next);
-        try {
-            localStorage.setItem(`notif_read_${currentUser?.uid}`, JSON.stringify([...next]));
-        } catch {}
-    }, [currentUser?.uid]);
-
     const markRead = useCallback((id) => {
-        saveReadIds(prev => {
-            const next = new Set(prev);
-            next.add(id);
-            return next;
-        });
-        // saveReadIds recebe o Set atualizado diretamente
         setReadIds(prev => {
             const next = new Set(prev);
             next.add(id);
