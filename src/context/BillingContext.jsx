@@ -1,24 +1,24 @@
 "use client"
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { doc, getDoc } from "firebase/firestore";
-import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 const BillingContext = createContext()
 export const useBilling = () => useContext(BillingContext)
 
 export function BillingProvider({ children }) {
-    const { currentUser } = useAuth()
+    const { companyId } = useCurrentUser();
     const [billingStatus, setBillingStatus] = useState(null)
     const [loading, setLoading] = useState(true)
     const [appKey, setAppKey] = useState(null)
 
     useEffect(() => {
-        if (!currentUser?.companyId) return
-        getDoc(doc(db, "companies", currentUser.companyId)).then(snap => {
+        if (!companyId) return
+        getDoc(doc(db, "companies", companyId)).then(snap => {
             if (snap.exists()) setAppKey(snap.data().appKey ?? null);
         });
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     const getToken = useCallback(async () => {
         const token = await auth.currentUser?.getIdToken();

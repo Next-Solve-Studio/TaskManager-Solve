@@ -22,22 +22,23 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
+
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const ClientsContext = createContext();
 
 export const useClients = () => useContext(ClientsContext);
 
 export const ClientsProvider = ({ children }) => {
-    const { currentUser } = useAuth();
+    const { uid, companyId, userName, userPhoto } = useCurrentUser();
     const [clients, setClients] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // só busca dados da empresa que o usuário estiver logado.
-        if (!currentUser?.companyId) {
+        if (!companyId) {
             setClients([]);
             setLoading(false);
             return;
@@ -45,7 +46,7 @@ export const ClientsProvider = ({ children }) => {
 
         const q = query(
             collection(db, "clients"),
-            where("companyId", "==", currentUser.companyId),
+            where("companyId", "==", companyId),
             orderBy("createdAt", "desc"),
         );
 
@@ -66,11 +67,11 @@ export const ClientsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     const createClient = useCallback(
         async (data) => {
-            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+            if (!companyId) throw new Error("Usuário não vinculado a uma empresa");
 
             try {
                 const payload = {
@@ -81,8 +82,8 @@ export const ClientsProvider = ({ children }) => {
                     endereco: data.endereco?.trim() || "",
                     status: data.status || "active",
                     customData: data.customData || {},
-                    companyId: currentUser.companyId,
-                    createdBy: currentUser?.uid || "system",
+                    companyId: companyId,
+                    createdBy: uid || "system",
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                 };
@@ -90,10 +91,10 @@ export const ClientsProvider = ({ children }) => {
 
                 // Log de Atividade
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    companyId: currentUser.companyId,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    companyId: companyId,
+                    userPhoto: userPhoto,
                     action: "create",
                     resourceType: "client",
                     resourceId: ref.id,
@@ -107,7 +108,7 @@ export const ClientsProvider = ({ children }) => {
                 throw error;
             }
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     const updateClient = useCallback(
@@ -127,10 +128,10 @@ export const ClientsProvider = ({ children }) => {
 
                 // Log de Atividade
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
-                    companyId: currentUser.companyId,
+                    userId: uid,
+                    userName: userName,
+                    userPhoto: userPhoto,
+                    companyId: companyId,
                     action: "update",
                     resourceType: "client",
                     resourceId: clientId,
@@ -144,7 +145,7 @@ export const ClientsProvider = ({ children }) => {
                 throw error;
             }
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
         const deleteClient = useCallback(
@@ -156,7 +157,7 @@ export const ClientsProvider = ({ children }) => {
                 // Remove logs de atividade que referenciam este cliente (LGPD)
                 const logsQuery = query(
                     collection(db, "activity_logs"),
-                    where("companyId", "==", currentUser.companyId),
+                    where("companyId", "==", companyId),
                     where("resourceType", "==", "client"),
                     where("resourceId", "==", clientId),
                 );
@@ -167,10 +168,10 @@ export const ClientsProvider = ({ children }) => {
 
                 // Log de Atividade
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    companyId: currentUser.companyId,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    companyId: companyId,
+                    userPhoto: userPhoto,
                     action: "delete",
                     resourceType: "client",
                     resourceId: clientId,
@@ -184,7 +185,7 @@ export const ClientsProvider = ({ children }) => {
                 throw error;
             }
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     const value = useMemo(()=>({

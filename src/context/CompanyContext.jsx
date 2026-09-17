@@ -7,9 +7,9 @@ import {
     useMemo,
     useState,
 } from "react";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
-import { useAuth } from "./AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const CompanyContext = createContext()
 
@@ -23,19 +23,18 @@ export const useCompany = () => {
 };
 
 export const CompanyProvider = ({children}) => {
-
-    const { currentUser } = useAuth();
+    const {companyId } = useCurrentUser();
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
 
         useEffect(() => {
-            if (!currentUser?.companyId) {
+            if (!companyId) {
                 setCompany(null);
                 setLoading(false);
                 return;
             }
 
-            const companyRef = doc(db, "companies", currentUser.companyId);
+            const companyRef = doc(db, "companies", companyId);
             const unsubscribe = onSnapshot(
                 companyRef,
                 (snap) => {
@@ -48,14 +47,14 @@ export const CompanyProvider = ({children}) => {
                 },
             );
             return unsubscribe;
-        }, [currentUser?.companyId]);
+        }, [companyId]);
 
     const updateCompany = useCallback(
         async (data) => {
-            if (!currentUser?.companyId) return;
+            if (!companyId) return;
 
             try {
-                await updateDoc(doc(db, "companies", currentUser.companyId), {
+                await updateDoc(doc(db, "companies", companyId), {
                     ...data,
                     updatedAt: new Date(),
                 });
@@ -70,7 +69,7 @@ export const CompanyProvider = ({children}) => {
                 throw error;
             }
         },
-        [currentUser?.companyId]
+        [companyId]
     );
 
     const value = useMemo(

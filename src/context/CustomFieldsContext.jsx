@@ -15,16 +15,15 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const CustomFieldsContext = createContext();
-
 export const useCustomFields = () => useContext(CustomFieldsContext);
 
 export const CustomFieldsProvider = ({ children }) => {
-    const { currentUser } = useAuth();
+    const { uid, companyId, userName, userPhoto } = useCurrentUser();
     const [clientFields, setClientFields] = useState([]);
     const [projectFields, setProjectFields] = useState([]);
     const [taskFields, setTaskFields] = useState([]);
@@ -32,7 +31,7 @@ export const CustomFieldsProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
         useEffect(() => {
-            if (!currentUser?.companyId) {
+            if (!companyId) {
                 setClientFields([]);
                 setProjectFields([]);
                 setTaskFields([]);
@@ -53,7 +52,7 @@ export const CustomFieldsProvider = ({ children }) => {
             const total = entities.length;
 
             const unsubscribers = entities.map(({ name, setter }) => {
-                const ref = doc(db, "customFields", currentUser.companyId, name, "customData");
+                const ref = doc(db, "customFields", companyId, name, "customData");
                 return onSnapshot(
                     ref,
                     (snapshot) => {
@@ -70,25 +69,25 @@ export const CustomFieldsProvider = ({ children }) => {
             });
 
             return () => unsubscribers.forEach((unsub) => unsub());
-        }, [currentUser?.companyId]);
+        }, [companyId]);
 
     const saveCustomFields = useCallback(
         async (entity, fields) => {
-            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+            if (!companyId) throw new Error("Usuário não vinculado a uma empresa");
 
             try {
-                const ref = doc(db, "customFields", currentUser.companyId, entity, "customData");
+                const ref = doc(db, "customFields", companyId, entity, "customData");
                 await setDoc(ref, {
                     fields,
                     updatedAt: serverTimestamp(),
-                    updatedBy: currentUser.uid,
+                    updatedBy: uid,
                 }, { merge: true });
 
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    companyId: currentUser.companyId,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    companyId: companyId,
+                    userPhoto: userPhoto,
                     action: "update",
                     resourceType: "customFields",
                     resourceId: entity,
@@ -102,7 +101,7 @@ export const CustomFieldsProvider = ({ children }) => {
                 throw error;
             }
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     const value = useMemo(() => ({

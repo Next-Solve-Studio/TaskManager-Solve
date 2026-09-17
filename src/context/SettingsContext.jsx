@@ -14,24 +14,24 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const SettingsContext = createContext();
 
 export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) => {
-    const { currentUser } = useAuth();
+    const { uid, companyId } = useCurrentUser();
     const [userSettings, setUserSettings] = useState(null);
     const [systemSettings, setSystemSettings] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (!currentUser?.companyId) return;
+        if (!companyId) return;
 
-        const systemDocRef = doc(db, "system_settings", currentUser.companyId);
+        const systemDocRef = doc(db, "system_settings", companyId);
         const unsubscribe = onSnapshot(systemDocRef, (docSnap) => {
             if (docSnap.exists()) {
                 setSystemSettings(docSnap.data());
@@ -39,27 +39,27 @@ export const SettingsProvider = ({ children }) => {
             setLoading(false);
         });
         return unsubscribe;
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     useEffect(() => {
-        if (!currentUser?.uid) {
+        if (!uid) {
             setUserSettings(null);
             return;
         }
-        const userRef = doc(db, "users", currentUser.uid);
+        const userRef = doc(db, "users", uid);
         const unsubscribe = onSnapshot(userRef, (snap) => {
             setUserSettings(snap.exists() ? (snap.data().preferences ?? null) : null);
         });
         return unsubscribe;
-    }, [currentUser?.uid]);
+    }, [uid]);
 
     // Atualizar perfil do usuário (name, preferences, etc)
     const updateProfile = useCallback(
         async (data) => {
-            if (!currentUser?.uid) return;
+            if (!uid) return;
 
             try {
-                const userRef = doc(db, "users", currentUser.uid);
+                const userRef = doc(db, "users", uid);
                 await updateDoc(userRef, {
                     name: data.name,
                     preferences: data.preferences || {},
@@ -72,7 +72,7 @@ export const SettingsProvider = ({ children }) => {
                 throw error;
             }
         },
-        [currentUser],
+        [uid],
     );
 
     // Trocar senha (apenas para authMethod === 'email')
@@ -129,14 +129,14 @@ export const SettingsProvider = ({ children }) => {
 
     // Atualizar configurações globais do sistema
     const updateSystemSettings = useCallback(async (data) => {
-        if (!currentUser?.companyId) return;
+        if (!companyId) return;
         try {
-            const systemDocRef = doc(db, "system_settings", currentUser.companyId);
+            const systemDocRef = doc(db, "system_settings", companyId);
             await setDoc(
                 systemDocRef,
                 {
                     ...data,
-                    companyId: currentUser.companyId,
+                    companyId: companyId,
                     updatedAt: new Date(),
                 },
                 { merge: true },
@@ -147,7 +147,7 @@ export const SettingsProvider = ({ children }) => {
             toast.error(getErrorMessage(error, "Erro ao atualizar configurações"));
             throw error;
         }
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     const value = useMemo(()=>({
         userSettings,

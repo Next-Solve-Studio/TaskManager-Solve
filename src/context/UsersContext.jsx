@@ -18,23 +18,23 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
 import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { logActivity } from "@/utils/ActivityLogger";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const UsersContext = createContext();
 
 export const useUsers = () => useContext(UsersContext);
 
 export const UsersProvider = ({ children }) => {
-    const { currentUser } = useAuth();
+    const { uid, companyId, userName, userPhoto } = useCurrentUser();
     const [users, setUsers] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
 
     useEffect(() => {
-        if (!currentUser?.companyId) {
+        if (!companyId) {
             setUsers([]);
             setLoadingUsers(false);
             return;
@@ -42,7 +42,7 @@ export const UsersProvider = ({ children }) => {
 
         const q = query(
             collection(db, "users"),
-            where("companyId", "==", currentUser.companyId),
+            where("companyId", "==", companyId),
             orderBy("createdAt", "desc")
         );
 
@@ -62,7 +62,7 @@ export const UsersProvider = ({ children }) => {
         );
 
         return unSubscribe;
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     const updateUser = useCallback(async (userId, newRole, details, userName = "") => {
         const payload = { role: newRole, updatedAt: serverTimestamp() };
@@ -75,16 +75,16 @@ export const UsersProvider = ({ children }) => {
         await updateDoc(doc(db, "users", userId), payload);
 
         await logActivity({
-            userId: currentUser.uid,
-            userName: currentUser.name || currentUser.displayName,
-            userPhoto: currentUser.photo || currentUser.photoURL,
-            companyId: currentUser.companyId,
+            userId: uid,
+            userName: userName,
+            userPhoto: userPhoto,
+            companyId: companyId,
             action: "update",
             resourceType: "user",
             resourceId: userId,
             resourceName: userName,
         });
-    }, [currentUser]);
+    }, [uid, companyId, userName, userPhoto]);
 
     const deleteUser = useCallback(async (userId) => {
         const token = await auth.currentUser?.getIdToken();

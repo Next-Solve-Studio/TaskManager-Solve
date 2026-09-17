@@ -1,11 +1,11 @@
 "use client"
 import { doc, onSnapshot, setDoc } from "firebase/firestore";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { toast } from "sonner";
 import { PERMISSIONS, ROLES } from "@/lib/roles";
 import { getErrorMessage } from "@/utils/getErrorMessage";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const RolePermissionsContext = createContext()
 
@@ -20,18 +20,18 @@ const buildDefaultPermissions = () => {
 };
 
 export const RolePermissionsProvider = ({children}) => {
-    const {currentUser} = useAuth()
+    const { uid, companyId, role } = useCurrentUser();
     const [permissions, setPermissions] = useState(null)
     const [loadingPermissions, setLoadingPermissions] = useState(true)
 
     useEffect(()=>{
-        if( !currentUser?.companyId) {
+        if( !companyId) {
             setPermissions(null)
             setLoadingPermissions(false)
             return;
         }
 
-        const q = doc(db, "role_permissions", currentUser.companyId)
+        const q = doc(db, "role_permissions", companyId)
         const unsubscribe = onSnapshot (
             q,
             (snapshot) => {
@@ -46,26 +46,26 @@ export const RolePermissionsProvider = ({children}) => {
             },
         )
         return unsubscribe
-    },[currentUser?.companyId])
+    },[companyId])
 
     const updatePermission = useCallback(async (permissionKey, roles) => {
-        if (!currentUser.companyId) throw new Error("Usuário não vinculado a uma empresa")
-        if (currentUser.role !== ROLES.MASTER) throw new Error ("Apenas o master pode alterar permissões.")
+        if (!companyId) throw new Error("Usuário não vinculado a uma empresa")
+        if (role !== ROLES.MASTER) throw new Error ("Apenas o master pode alterar permissões.")
             
-        const q = doc (db, "role_permissions", currentUser.companyId)
+        const q = doc (db, "role_permissions", companyId)
         const base = permissions ?? buildDefaultPermissions()
 
         await setDoc(
             q,
             {
-                companyId: currentUser.companyId,
+                companyId: companyId,
                 permissions: { ...base, [permissionKey]: roles},
                 updateAt: new Date(),
-                updateBy: currentUser.uid,
+                updateBy: uid,
             },
             { merge:true },
         )
-    }, [currentUser?.companyId, currentUser.role, currentUser.uid, permissions])
+    }, [companyId, role, uid, permissions])
 
     const value = useMemo(
         () => ({

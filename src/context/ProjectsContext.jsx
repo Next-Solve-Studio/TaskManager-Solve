@@ -21,11 +21,11 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { STATUS_MAP } from "@/components/ui/badges/StatusBadge";
-import { useAuth } from "@/context/AuthContext";
 import { db } from "@/lib/firebaseConfig";
 import { logActivity } from "@/utils/ActivityLogger";
 import { useUsers } from "@/context/UsersContext";
 import { useClients } from "@/context/ClientsContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const ProjectsContext = createContext(); // contexto criado
 
@@ -33,11 +33,7 @@ export const useProjects = () => useContext(ProjectsContext);
 //hook personalizado, para usar useProjects, ao inves de escrever sempre o useContext(ProjectsContext)
 
 export const ProjectsProvider = ({ children }) => {
-    const { currentUser } = useAuth(); // Pega o usuário logado atual
-    const uid        = currentUser?.uid;
-    const companyId  = currentUser?.companyId;
-    const userName   = currentUser?.name ?? currentUser?.displayName ?? "";
-    const userPhoto  = currentUser?.photo ?? currentUser?.photoURL ?? null;
+    const { uid, companyId, userName, userPhoto } = useCurrentUser();
 
     const { users, loadingUsers } = useUsers();
     const { clients, loading: loadingClients } = useClients();
@@ -55,7 +51,7 @@ export const ProjectsProvider = ({ children }) => {
 
     useEffect(() => {
         // só busca dados da empresa que o usuário estiver logado.
-         if (!currentUser?.companyId) {
+         if (!companyId) {
             setProjects([]);
             setLoadingProjects(false);
             return;
@@ -85,7 +81,7 @@ export const ProjectsProvider = ({ children }) => {
             },
         );
         return unsubscribe;
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
@@ -245,7 +241,7 @@ export const ProjectsProvider = ({ children }) => {
                 resourceName: project.title,
             });
         },
-        [curreuid, companyId, userName, userPhoto],
+        [uid, companyId, userName, userPhoto],
     );
 
     //isso permite usar usersMap[uid] para obter os dados rapidamente de um usuário sem precisar usar find

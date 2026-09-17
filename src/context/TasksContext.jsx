@@ -21,13 +21,12 @@ import {
     useState,
 } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { useRolePermissions } from "@/context/RolePermissionsContext";
 import { db } from "@/lib/firebaseConfig";
 import { ROLES } from "@/lib/roles";
 import { logActivity } from "@/utils/ActivityLogger";
 import { getErrorMessage } from "@/utils/getErrorMessage";
-
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 //Criando o contexto
 const TasksContext = createContext();
@@ -36,14 +35,10 @@ const TasksContext = createContext();
 export const useTasks = () => useContext(TasksContext);
 
 export const TasksProvider = ({ children, projectId }) => {
-    const { currentUser } = useAuth(); // dados do user atual
     const { permissions, loadingPermissions } = useRolePermissions();
     const [tasks, setTasks] = useState([]);
     const [loadingTasks, setLoadingTasks] = useState(true);
-    const uid       = currentUser?.uid;
-    const companyId = currentUser?.companyId;
-    const userName  = currentUser?.name ?? currentUser?.displayName ?? "";
-    const userPhoto = currentUser?.photo ?? currentUser?.photoURL ?? null;
+    const { uid, companyId, userName, userPhoto, role } = useCurrentUser();
 
     // Paginação
     const [visibleTasksCount, setVisibleTasksCount] = useState(20);
@@ -53,10 +48,10 @@ export const TasksProvider = ({ children, projectId }) => {
         [],
     );
 
-    const canViewAll = currentUser?.role === ROLES.MASTER || (permissions?.canViewAllUsersTasks?.includes(currentUser?.role) ?? false);
+    const canViewAll = role === ROLES.MASTER || (permissions?.canViewAllUsersTasks?.includes(role) ?? false);
 
     useEffect(() => {
-        if (!currentUser?.companyId || loadingPermissions) {
+        if (!companyId || loadingPermissions) {
             setTasks([]);
             setLoadingTasks(false);
             return;
@@ -94,7 +89,7 @@ export const TasksProvider = ({ children, projectId }) => {
         );
 
         return unsubscribe;
-    }, [projectId, currentUser?.companyId, currentUser?.uid, canViewAll, loadingPermissions]);
+    }, [projectId, companyId, uid, canViewAll, loadingPermissions]);
 
     const createTask = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)

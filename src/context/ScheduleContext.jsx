@@ -3,10 +3,10 @@ import { addDays, addMonths, addWeeks, endOfMonth, endOfWeek, format, startOfMon
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 import { auth, db } from "@/lib/firebaseConfig";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { useRole } from "@/hooks/useRole";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const ScheduleContext = createContext();
 export const useSchedule = () => useContext(ScheduleContext);
@@ -46,7 +46,7 @@ async function authedFetch(url, options = {}) {
 }
 
 export const ScheduleProvider = ({ children }) => {
-    const { currentUser } = useAuth();
+    const { uid, companyId } = useCurrentUser();
     const { can } = useRole();
 
     const [weekOffset, setWeekOffset]           = useState(0);
@@ -75,50 +75,50 @@ export const ScheduleProvider = ({ children }) => {
     const isCurrentMonth = monthOffset === 0;
 
     useEffect(() => {
-        if (!currentUser?.companyId) { setEvents([]); setLoadingSchedules(false); return; }
+        if (!companyId) { setEvents([]); setLoadingSchedules(false); return; }
         setLoadingSchedules(true);
         const canViewAll = can("canViewAllUsersSchedule");
         const q = canViewAll
             ? query(collection(db, "scheduleEvents"),
-                where("companyId", "==", currentUser.companyId),
+                where("companyId", "==", companyId),
                 where("weekKey",   "==", weekKey))
             : query(collection(db, "scheduleEvents"),
-                where("companyId", "==", currentUser.companyId),
+                where("companyId", "==", companyId),
                 where("weekKey",   "==", weekKey),
-                where("people",    "array-contains", currentUser.uid));
+                where("people",    "array-contains", uid));
         return onSnapshot(q,
             snap => { setEvents(snap.docs.map(d => ({ id: d.id, ...d.data() }))); setLoadingSchedules(false); },
             err  => { if (err.code !== "permission-denied") toast.error(getErrorMessage(err, "Erro ao carregar agenda")); setLoadingSchedules(false); }
         );
-    }, [currentUser?.companyId, currentUser?.uid, weekKey, can]);
+    }, [companyId, uid, weekKey, can]);
 
     useEffect(() => {
-        if (!currentUser?.companyId) { setMonthEvents([]); setLoadingMonthEvents(false); return; }
+        if (!companyId) { setMonthEvents([]); setLoadingMonthEvents(false); return; }
         setLoadingMonthEvents(true);
         const canViewAll = can("canViewAllUsersSchedule");
         const q = canViewAll
             ? query(collection(db, "scheduleEvents"),
-                where("companyId", "==", currentUser.companyId),
+                where("companyId", "==", companyId),
                 where("date", ">=", calStartStr),
                 where("date", "<=", calEndStr))
             : query(collection(db, "scheduleEvents"),
-                where("companyId", "==", currentUser.companyId),
-                where("people",    "array-contains", currentUser.uid),
+                where("companyId", "==", companyId),
+                where("people",    "array-contains", uid),
                 where("date", ">=", calStartStr),
                 where("date", "<=", calEndStr));
         return onSnapshot(q,
             snap => { setMonthEvents(snap.docs.map(d => ({ id: d.id, ...d.data() }))); setLoadingMonthEvents(false); },
             err  => { if (err.code !== "permission-denied") console.error(err); setLoadingMonthEvents(false); }
         );
-    }, [currentUser?.companyId, currentUser?.uid, calStartStr, calEndStr, can]);
+    }, [companyId, uid, calStartStr, calEndStr, can]);
 
     const refreshGoogleStatus = useCallback(async () => {
-        if (!currentUser?.uid) return;
+        if (!uid) return;
         try {
             const data = await authedFetch("/api/google/status");
             setGoogleStatus({ connected: !!data.connected, email: data.email, checked: true });
         } catch { setGoogleStatus({ connected: false, checked: true }); }
-    }, [currentUser?.uid]);
+    }, [uid]);
 
     useEffect(() => { refreshGoogleStatus(); }, [refreshGoogleStatus]);
 

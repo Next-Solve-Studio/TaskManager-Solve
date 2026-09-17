@@ -12,7 +12,7 @@ import {
 } from "react";
 import { db } from "@/lib/firebaseConfig";
 import { validateLicense } from "@/lib/licenseApi";
-import { useAuth } from "./AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const LicenseContext = createContext();
 export const useLicense = () => useContext(LicenseContext);
@@ -20,7 +20,7 @@ export const useLicense = () => useContext(LicenseContext);
 const REVALIDATE_INTERVAL_MS = 30 * 60 * 1000;
 
 export function LicenseProvider({ children }) {
-    const { currentUser } = useAuth();
+    const {  companyId } = useCurrentUser();
     const [license, setLicense] = useState(null);
     const [companyStatus, setCompanyStatus] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -46,35 +46,35 @@ export function LicenseProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        if (!currentUser?.companyId) {
+        if (!companyId) {
             setCompanyStatus(null);
             return;
         }
 
         const unsubscribe = onSnapshot(
-            doc(db, "companies", currentUser.companyId),
+            doc(db, "companies", companyId),
             (snap) =>
                 setCompanyStatus(snap.exists() ? snap.data().status : null),
             () => setCompanyStatus(null),
         );
 
         return unsubscribe;
-    }, [currentUser?.companyId]);
+    }, [companyId]);
 
     useEffect(() => {
-        if (!currentUser?.companyId) {
+        if (!companyId) {
             setLoading(false);
             return;
         }
 
-        check(currentUser.companyId);
+        check(companyId);
 
         intervalRef.current = setInterval(() => {
-            check(currentUser.companyId);
+            check(companyId);
         }, REVALIDATE_INTERVAL_MS);
 
         return () => clearInterval(intervalRef.current);
-    }, [currentUser?.companyId, check]);
+    }, [companyId, check]);
 
     const effectiveLicense = useMemo(() => {
         if (companyStatus && companyStatus !== "active") {
