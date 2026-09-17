@@ -49,60 +49,67 @@ export function useRegisterForm({ onStepChange }) {
         onStepChange?.(n);
     };
 
-    async function processSubscription(appKey, data, billingType, cardForm){
+    async function processSubscription(appKey, data, billingType, cardForm) {
         const token = await auth.currentUser?.getIdToken();
         if (!token) throw new Error("Erro de autenticação após registro.");
 
         const cpfCnpjRaw = data.cnpj.replace(/\D/g, "");
 
-        // Setup de faturamento
         const setupRes = await fetch("/api/billing/setup", {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             body: JSON.stringify({ appKey, name: data.name, email: data.email, cpfCnpj: cpfCnpjRaw }),
         });
-        
         if (!setupRes.ok) {
             const e = await setupRes.json();
             throw new Error(e.error || "Erro ao configurar pagamento.");
         }
 
-        // Montando o body da assinatura
-        const subscribeBody = { 
-            appKey, 
-            plan: selectedPlan, 
-            billingType, 
-            billingCycle: billingCycle.toUpperCase() 
+        const subscribeBody = {
+            appKey,
+            plan: selectedPlan,
+            billingType,
+            billingCycle: billingCycle.toUpperCase(),
         };
 
         if (billingType === "CREDIT_CARD" && cardForm) {
-            subscribeBody.creditCard = {
-                holderName: cardForm.holderName,
-                number: cardForm.number.replace(/\s/g, ""),
-                expiryMonth: cardForm.expiryMonth,
-                expiryYear: cardForm.expiryYear,
-                ccv: cardForm.ccv,
-            };
-            subscribeBody.creditCardHolderInfo = {
-                name: data.name,
-                email: data.email,
-                cpfCnpj: cpfCnpjRaw,
-                postalCode: cardForm.postalCode.replace(/\D/g, ""),
-                addressNumber: cardForm.addressNumber,
-            };
+            // 1. Tokenizar o cartão — o PAN fica isolado nesta chamada
+            const tokenRes = await fetch("/api/billing/tokenize", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                    creditCard: {
+                        holderName: cardForm.holderName,
+                        number: cardForm.number.replace(/\s/g, ""),
+                        expiryMonth: cardForm.expiryMonth,
+                        expiryYear: cardForm.expiryYear,
+                        ccv: cardForm.ccv,
+                    },
+                    creditCardHolderInfo: {
+                        name: data.name,
+                        email: data.email,
+                        cpfCnpj: cpfCnpjRaw,
+                        postalCode: cardForm.postalCode.replace(/\D/g, ""),
+                        addressNumber: cardForm.addressNumber,
+                    },
+                }),
+            });
+            const tokenData = await tokenRes.json();
+            if (!tokenRes.ok) throw new Error(tokenData.error || "Erro ao processar cartão.");
+
+            // 2. Subscribe só com o token — sem PAN
+            subscribeBody.creditCardToken = tokenData.creditCardToken;
         }
 
-        // Criar assinatura
         const subRes = await fetch("/api/billing/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
             body: JSON.stringify(subscribeBody),
         });
-        
+
         const subData = await subRes.json();
         if (!subRes.ok) throw new Error(subData.error || "Erro ao criar assinatura.");
 
-        // Ações pós-assinatura baseadas no tipo de pagamento
         if (billingType === "PIX") {
             if (!subData.pixInfo) throw new Error("QR Code não disponível. Tente novamente.");
             setPixAppKey(appKey);

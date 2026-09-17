@@ -70,22 +70,37 @@ function PixActivation() {
 
         await setupCustomer({ name: currentUser.name, email: currentUser.email, cpfCnpj });
 
+        const token = await auth.currentUser?.getIdToken();
+
         const payload = { plan, billingType };
+
         if (billingType === "CREDIT_CARD") {
-            payload.creditCard = {
-                holderName: cardForm.holderName,
-                number: cardForm.number.replace(/\s/g, ""),
-                expiryMonth: cardForm.expiryMonth,
-                expiryYear: cardForm.expiryYear,
-                ccv: cardForm.ccv,
-            };
-            payload.creditCardHolderInfo = {
-                name: currentUser.name,
-                email: currentUser.email,
-                cpfCnpj,
-                postalCode: cardForm.postalCode.replace(/\D/g, ""),
-                addressNumber: cardForm.addressNumber,
-            };
+            // 1. Tokenizar o cartão — PAN isolado nesta chamada
+            const tokenRes = await fetch("/api/billing/tokenize", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                body: JSON.stringify({
+                    creditCard: {
+                        holderName: cardForm.holderName,
+                        number: cardForm.number.replace(/\s/g, ""),
+                        expiryMonth: cardForm.expiryMonth,
+                        expiryYear: cardForm.expiryYear,
+                        ccv: cardForm.ccv,
+                    },
+                    creditCardHolderInfo: {
+                        name: currentUser.name,
+                        email: currentUser.email,
+                        cpfCnpj,
+                        postalCode: cardForm.postalCode.replace(/\D/g, ""),
+                        addressNumber: cardForm.addressNumber,
+                    },
+                }),
+            });
+            const tokenData = await tokenRes.json();
+            if (!tokenRes.ok) throw new Error(tokenData.error || "Erro ao processar cartão.");
+
+            // 2. Subscribe só com o token
+            payload.creditCardToken = tokenData.creditCardToken;
         }
 
         const subData = await subscribe(payload);
