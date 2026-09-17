@@ -27,7 +27,7 @@ export async function GET(request) {
 
         const [activitySnap, schedulesSnap] = await Promise.all([
             db.collection("activity_logs").where("userId", "==", caller.uid).get(),
-            db.collection("schedules").where("userId", "==", caller.uid).get(),
+            db.collection("scheduleEvents").where("people", "array-contains", caller.uid).get(),
         ]);
 
         return NextResponse.json({

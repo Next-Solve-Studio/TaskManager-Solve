@@ -4,11 +4,7 @@ import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 function generateCode() {
     const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let code = "";
-    for (let i = 0; i < 6; i++) {
-        code += chars[Math.floor(Math.random() * chars.length)];
-    }
-    return code;
+    return Array.from({ length: 6 }, () => chars[crypto.randomInt(chars.length)]).join("");
 }
 
 const GENERIC_MESSAGE = "Se esse e-mail estiver cadastrado, você vai receber um código em instantes.";
@@ -68,6 +64,7 @@ export async function POST(request) {
         if (!emailRes.ok) {
             const errText = await emailRes.text();
             console.error("[request-password-reset-code] Falha ao enviar e-mail:", errText);
+            await db.collection("password_reset_codes").doc(userRecord.uid).delete().catch(() => {});
         }
 
         return NextResponse.json({ message: GENERIC_MESSAGE });

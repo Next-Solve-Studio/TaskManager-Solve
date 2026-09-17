@@ -31,47 +31,46 @@ export const CustomFieldsProvider = ({ children }) => {
     const [userFields, setUserFields] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        if (!currentUser?.companyId) {
-            setClientFields([]);
-            setProjectFields([]);
-            setTaskFields([]);
-            setUserFields([]);
-            setLoading(false);
-            return;
-        }
+        useEffect(() => {
+            if (!currentUser?.companyId) {
+                setClientFields([]);
+                setProjectFields([]);
+                setTaskFields([]);
+                setUserFields([]);
+                setLoading(false);
+                return;
+            }
 
-        const entities = [
-            { name: "client", setter: setClientFields },
-            { name: "project", setter: setProjectFields },
-            { name: "task", setter: setTaskFields },
-            { name: "user", setter: setUserFields },
-        ];
+            const entities = [
+                { name: "client",  setter: setClientFields },
+                { name: "project", setter: setProjectFields },
+                { name: "task",    setter: setTaskFields },
+                { name: "user",    setter: setUserFields },
+            ];
 
-        const unsubscribers = entities.map(({ name, setter }) => {
-            // customFields/{companyId}/{entity}/customData
-            const ref = doc(db, "customFields", currentUser.companyId, name, "customData");
-            return onSnapshot(
-                ref,
-                (snapshot) => {
-                    if (snapshot.exists()) {
-                        setter(snapshot.data().fields || []);
-                    } else {
-                        setter([]);
-                    }
-                },
-                (error) => {
-                    console.error(`Erro ao ouvir campos de ${name}`, error);
-                }
-            );
-        });
-        
-        setLoading(false);
+            // Conta quantos snapshots já dispararam — loading=false só quando todos chegarem
+            let resolved = 0;
+            const total = entities.length;
 
-        return () => {
-            unsubscribers.forEach((unsub) => unsub());
-        };
-    }, [currentUser?.companyId]);
+            const unsubscribers = entities.map(({ name, setter }) => {
+                const ref = doc(db, "customFields", currentUser.companyId, name, "customData");
+                return onSnapshot(
+                    ref,
+                    (snapshot) => {
+                        setter(snapshot.exists() ? snapshot.data().fields || [] : []);
+                        resolved += 1;
+                        if (resolved >= total) setLoading(false);
+                    },
+                    (error) => {
+                        console.error(`Erro ao ouvir campos de ${name}`, error);
+                        resolved += 1;
+                        if (resolved >= total) setLoading(false);
+                    },
+                );
+            });
+
+            return () => unsubscribers.forEach((unsub) => unsub());
+        }, [currentUser?.companyId]);
 
     const saveCustomFields = useCallback(
         async (entity, fields) => {

@@ -7,7 +7,7 @@ import {
     useMemo,
     useState,
 } from "react";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import { useAuth } from "./AuthContext";
 
@@ -28,29 +28,27 @@ export const CompanyProvider = ({children}) => {
     const [company, setCompany] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        // Agora buscamos a empresa baseada no companyId do usuário logado
-        if (!currentUser?.companyId) {
-            setCompany(null);
-            setLoading(false);
-            return;
-        }
-
-        const loadCompany = async () => {
-            try {
-                const companyDoc = await getDoc(doc(db, "companies", currentUser.companyId));
-                if (companyDoc.exists()) {
-                    setCompany({ id: companyDoc.id, ...companyDoc.data() });
-                }
-            } catch (error) {
-                console.error("Erro ao carregar empresa:", error);
-            } finally {
+        useEffect(() => {
+            if (!currentUser?.companyId) {
+                setCompany(null);
                 setLoading(false);
+                return;
             }
-        };
 
-        loadCompany();
-    }, [currentUser?.companyId]);
+            const companyRef = doc(db, "companies", currentUser.companyId);
+            const unsubscribe = onSnapshot(
+                companyRef,
+                (snap) => {
+                    setCompany(snap.exists() ? { id: snap.id, ...snap.data() } : null);
+                    setLoading(false);
+                },
+                (error) => {
+                    console.error("Erro ao carregar empresa:", error);
+                    setLoading(false);
+                },
+            );
+            return unsubscribe;
+        }, [currentUser?.companyId]);
 
     const updateCompany = useCallback(
         async (data) => {

@@ -34,6 +34,10 @@ export const useProjects = () => useContext(ProjectsContext);
 
 export const ProjectsProvider = ({ children }) => {
     const { currentUser } = useAuth(); // Pega o usuário logado atual
+    const uid        = currentUser?.uid;
+    const companyId  = currentUser?.companyId;
+    const userName   = currentUser?.name ?? currentUser?.displayName ?? "";
+    const userPhoto  = currentUser?.photo ?? currentUser?.photoURL ?? null;
 
     const { users, loadingUsers } = useUsers();
     const { clients, loading: loadingClients } = useClients();
@@ -59,7 +63,7 @@ export const ProjectsProvider = ({ children }) => {
         
         const q = query(
             collection(db, "projects"),
-            where("companyId", "==", currentUser.companyId),
+            where("companyId", "==", companyId),
             orderBy("createdAt", "desc"),
         );
 
@@ -86,7 +90,7 @@ export const ProjectsProvider = ({ children }) => {
     const createProject = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
         async (data) => {
-            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+            if (!companyId) throw new Error("Usuário não vinculado a uma empresa");
 
             const payload = {
                 title: data.title,
@@ -105,24 +109,23 @@ export const ProjectsProvider = ({ children }) => {
                 hosting: data.hosting || "",
                 totalValue: data.totalValue || 0,
                 paidValue: data.paidValue || 0,
-                companyId: currentUser.companyId,
-                createdBy: currentUser.uid,
+                companyId: companyId,
+                createdBy: uid,
                 createdByName:
-                    currentUser.name || currentUser.displayName || "",
+                    userName,
                 createdAt: serverTimestamp(),
                 lastModified: serverTimestamp(),
-                lastModifiedBy: currentUser.uid,
-                lastModifiedByName:
-                    currentUser.name || currentUser.displayName || "",
+                lastModifiedBy: uid,
+                lastModifiedByName: userName,
                 customData: data.customData || {},
             };
             const ref = await addDoc(collection(db, "projects"), payload); // adiciona o payload como um novo documento na coleção projects
 
             // Log de Atividade
             await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name,
-                companyId: currentUser.companyId,
+                userId: uid,
+                userName: userName,
+                companyId: companyId,
                 action: "create",
                 resourceType: "project",
                 resourceId: ref.id,
@@ -131,7 +134,7 @@ export const ProjectsProvider = ({ children }) => {
 
             return { id: ref.id, ...payload }; // A função retorna o projeto recém-criado com seu ID.
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     const updateProject = useCallback(
@@ -183,9 +186,9 @@ export const ProjectsProvider = ({ children }) => {
                 totalValue: data.totalValue || 0,
                 paidValue: data.paidValue || 0,
                 lastModified: serverTimestamp(),
-                lastModifiedBy: currentUser.uid,
+                lastModifiedBy: uid,
                 lastModifiedByName:
-                    currentUser.name || currentUser.displayName || "",
+                    userName,
                 customData: data.customData || {},
             };
             await updateDoc(doc(db, "projects", projectId), payload); // localiza o documento pelo caminho projects/projectId e aplica as alterações
@@ -193,10 +196,10 @@ export const ProjectsProvider = ({ children }) => {
             // Log de Atividade (Verifica se houve mudança de status)
             if (prevStatus === nextStatus) {
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    companyId: currentUser.companyId,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    companyId: companyId,
+                    userPhoto: userPhoto,
                     action: "update",
                     resourceType: "project",
                     resourceId: projectId,
@@ -204,10 +207,10 @@ export const ProjectsProvider = ({ children }) => {
                 });
             } else {
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    companyId: currentUser.companyId,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    companyId: companyId,
+                    userPhoto: userPhoto,
                     action: "status_change",
                     resourceType: "project",
                     resourceId: projectId,
@@ -222,7 +225,7 @@ export const ProjectsProvider = ({ children }) => {
 
             return { id: projectId, ...payload };
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     const deleteProject = useCallback(
@@ -232,17 +235,17 @@ export const ProjectsProvider = ({ children }) => {
 
             // Log de Atividade
             await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                companyId: currentUser.companyId,
-                userPhoto: currentUser.photo || currentUser.photoURL,
+                userId: uid,
+                userName: userName,
+                companyId: companyId,
+                userPhoto: userPhoto,
                 action: "delete",
                 resourceType: "project",
                 resourceId: projectId,
                 resourceName: project.title,
             });
         },
-        [currentUser],
+        [curreuid, companyId, userName, userPhoto],
     );
 
     //isso permite usar usersMap[uid] para obter os dados rapidamente de um usuário sem precisar usar find

@@ -41,6 +41,18 @@ export const SettingsProvider = ({ children }) => {
         return unsubscribe;
     }, [currentUser?.companyId]);
 
+    useEffect(() => {
+        if (!currentUser?.uid) {
+            setUserSettings(null);
+            return;
+        }
+        const userRef = doc(db, "users", currentUser.uid);
+        const unsubscribe = onSnapshot(userRef, (snap) => {
+            setUserSettings(snap.exists() ? (snap.data().preferences ?? null) : null);
+        });
+        return unsubscribe;
+    }, [currentUser?.uid]);
+
     // Atualizar perfil do usuário (name, preferences, etc)
     const updateProfile = useCallback(
         async (data) => {

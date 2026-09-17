@@ -40,6 +40,10 @@ export const TasksProvider = ({ children, projectId }) => {
     const { permissions, loadingPermissions } = useRolePermissions();
     const [tasks, setTasks] = useState([]);
     const [loadingTasks, setLoadingTasks] = useState(true);
+    const uid       = currentUser?.uid;
+    const companyId = currentUser?.companyId;
+    const userName  = currentUser?.name ?? currentUser?.displayName ?? "";
+    const userPhoto = currentUser?.photo ?? currentUser?.photoURL ?? null;
 
     // Paginação
     const [visibleTasksCount, setVisibleTasksCount] = useState(20);
@@ -59,11 +63,11 @@ export const TasksProvider = ({ children, projectId }) => {
         }
 
         const constraints = [
-            where("companyId", "==", currentUser.companyId),
+            where("companyId", "==", companyId),
         ];
 
         if (!canViewAll) {
-            constraints.push(where("assignedTo", "array-contains", currentUser.uid));
+            constraints.push(where("assignedTo", "array-contains", uid));
         }
 
         if (projectId) {
@@ -95,7 +99,7 @@ export const TasksProvider = ({ children, projectId }) => {
     const createTask = useCallback(
         // memoriza a função para que ela não mude entre renderizações (a menos que currentUser mude)
         async (data) => {
-            if (!currentUser?.companyId) throw new Error("Usuário não vinculado a uma empresa");
+            if (!companyId) throw new Error("Usuário não vinculado a uma empresa");
 
             const payload = {
                 title: data.title,
@@ -108,15 +112,13 @@ export const TasksProvider = ({ children, projectId }) => {
                 status: data.status || "em_andamento",
                 solution: data.solution || "",
                 checklist: data.checklist || [],
-                companyId: currentUser.companyId,
-                createdBy: currentUser.uid,
-                createdByName:
-                    currentUser.name || currentUser.displayname || "",
+                companyId: companyId,
+                createdBy: uid,
+                createdByName: userName,
                 createdAt: serverTimestamp(),
                 lastModified: serverTimestamp(),
-                lastModifiedBy: currentUser.uid,
-                lastModifiedByName:
-                    currentUser.name || currentUser.displayname || "",
+                lastModifiedBy: uid,
+                lastModifiedByName: userName,
                 customData: data.customData || {},
             };
 
@@ -124,11 +126,11 @@ export const TasksProvider = ({ children, projectId }) => {
             const ref = await addDoc(collection(db, "tasks"), payload);
 
             await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                userPhoto: currentUser.photo || currentUser.photoURL,
+                userId: uid,
+                userName: userName,
+                userPhoto: userPhoto,
                 action: "create",
-                companyId: currentUser.companyId,
+                companyId: companyId,
                 resourceType: "task",
                 resourceId: ref.id,
                 resourceName: payload.title,
@@ -138,7 +140,7 @@ export const TasksProvider = ({ children, projectId }) => {
             // A função retorna o projeto recém-criado com seu ID.
             return { id: ref.id, ...payload };
         },
-        [currentUser, projectId],
+        [uid, companyId, userName, userPhoto, projectId],
     );
 
     const updateTask = useCallback(
@@ -158,9 +160,8 @@ export const TasksProvider = ({ children, projectId }) => {
                 solution: data.solution || "",
                 checklist: data.checklist || [],
                 lastModified: serverTimestamp(),
-                lastModifiedBy: currentUser.uid,
-                lastModifiedByName:
-                    currentUser.name || currentUser.displayname || "",
+                lastModifiedBy: uid,
+                lastModifiedByName: userName,
                 customData: data.customData || {},
             };
 
@@ -170,11 +171,11 @@ export const TasksProvider = ({ children, projectId }) => {
             // caso o status recebido seja diferente do que estava antes, faz um log de mudança de status
             if (prevStatus === nextStatus) {
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    userPhoto: userPhoto,
                     action: "update",
-                    companyId: currentUser.companyId,
+                    companyId: companyId,
                     resourceType: "task",
                     resourceId: taskId,
                     resourceName: payload.title,
@@ -182,11 +183,11 @@ export const TasksProvider = ({ children, projectId }) => {
                 });
             } else {
                 await logActivity({
-                    userId: currentUser.uid,
-                    userName: currentUser.name || currentUser.displayName,
-                    userPhoto: currentUser.photo || currentUser.photoURL,
+                    userId: uid,
+                    userName: userName,
+                    userPhoto: userPhoto,
                     action: "status_change",
-                    companyId: currentUser.companyId,
+                    companyId: companyId,
                     resourceType: "task",
                     resourceId: taskId,
                     resourceName: payload.title,
@@ -201,7 +202,7 @@ export const TasksProvider = ({ children, projectId }) => {
 
             return { id: taskId, ...payload };
         },
-        [currentUser, projectId],
+        [uid, companyId, userName, userPhoto, projectId],
     );
 
     const deleteTask = useCallback(
@@ -210,18 +211,18 @@ export const TasksProvider = ({ children, projectId }) => {
             await deleteDoc(doc(db, "tasks", task.id));
 
             await logActivity({
-                userId: currentUser.uid,
-                userName: currentUser.name || currentUser.displayName,
-                userPhoto: currentUser.photo || currentUser.photoURL,
+                userId: uid,
+                userName: userName,
+                userPhoto: userPhoto,
                 action: "delete",
-                companyId: currentUser.companyId,
+                companyId: companyId,
                 resourceType: "task",
                 resourceId: task.id,
                 resourceName: task.title,
                 details: { projectId: task.projectId || null },
             });
         },
-        [currentUser],
+        [uid, companyId, userName, userPhoto],
     );
 
     // Atualiza apenas o checklist de uma tarefa (sem reabrir modal)
@@ -231,12 +232,11 @@ export const TasksProvider = ({ children, projectId }) => {
             await updateDoc(doc(db, "tasks", taskId), {
                 checklist,
                 lastModified: serverTimestamp(),
-                lastModifiedBy: currentUser.uid,
-                lastModifiedByName:
-                    currentUser.name || currentUser.displayName || "",
+                lastModifiedBy: uid,
+                lastModifiedByName: userName,
             });
         },
-        [currentUser],
+        [uid, userName],
     );
 
     // Estados e funções disponíveis para os componentes filhos

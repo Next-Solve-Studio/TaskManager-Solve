@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { encryptToken, decryptToken } from "@/lib/tokenEncryption";
 
 const SCOPES = [
     "https://www.googleapis.com/auth/calendar.events",
@@ -43,7 +44,7 @@ export async function saveGoogleTokens(uid, companyId, tokens, email) {
     const { db } = getFirebaseAdmin();
     await db.collection("google_tokens").doc(uid).set(
         {
-            refreshToken: tokens.refresh_token,
+            refreshToken: encryptToken(tokens.refresh_token), 
             googleEmail: email || null,
             companyId,
             connectedAt: new Date(),
@@ -54,15 +55,21 @@ export async function saveGoogleTokens(uid, companyId, tokens, email) {
 
 export async function getAuthorizedClientForUser(uid) {
     const { db } = getFirebaseAdmin();
-    const doc = await db.collection("google_tokens").doc(uid).get();
-    if (!doc.exists) return null;
+    const snap = await db.collection("google_tokens").doc(uid).get();
+    if (!snap.exists) return null;
+
+    const raw = snap.data().refreshToken;
+    const refreshToken = raw?.includes(":") ? decryptToken(raw) : raw;
 
     const client = createOAuthClient();
-    client.setCredentials({ refresh_token: doc.data().refreshToken });
+    client.setCredentials({ refresh_token: refreshToken });
     return client;
 }
-
 export async function disconnectGoogle(uid) {
     const { db } = getFirebaseAdmin();
+    try {
+        const client = await getAuthorizedClientForUser(uid);
+        if (client) await client.revokeCredentials();
+    } catch {}
     await db.collection("google_tokens").doc(uid).delete();
 }
