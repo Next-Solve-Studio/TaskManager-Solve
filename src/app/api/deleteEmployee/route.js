@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { ROLES } from "@/lib/roles";
 
 export async function POST(request) {
     try {
@@ -37,7 +38,7 @@ export async function POST(request) {
         const callerDoc = await db.collection("users").doc(caller.uid).get();
         const callerData = callerDoc.data();
 
-        if (!callerData || !["master", "administrador"].includes(callerData.role)) {
+        if (!callerData || ![ROLES.MASTER, ROLES.ADMIN].includes(callerData.role)) {
             return NextResponse.json({ message: "Sem permissão para excluir usuários." }, { status: 403 });
         }
 

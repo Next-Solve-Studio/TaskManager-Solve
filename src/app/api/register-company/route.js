@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request) {
+    const ip = getClientIp(request);
+    const { allowed } = await checkRateLimit({ key: `reg-company:${ip}`, windowSeconds: 3600, max: 5 });
+    if (!allowed) return NextResponse.json({ error: "Muitas tentativas. Tente novamente mais tarde." }, { status: 429 });
+    
     try {
         const body = await request.json();
         const { companyId, companyName, responsibleName, email, cpfCnpj } = body;
