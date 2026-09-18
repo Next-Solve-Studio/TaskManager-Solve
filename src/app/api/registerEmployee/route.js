@@ -1,6 +1,7 @@
 import { userDetailsSchema } from "@/utils/userDetailsSchema";
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request) {
     try {
@@ -10,6 +11,11 @@ export async function POST(request) {
         if (!token) {
             return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
         }
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `reg-emp:${ip}`, windowSeconds: 300, max: 3 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
+
 
         let caller;
         try {

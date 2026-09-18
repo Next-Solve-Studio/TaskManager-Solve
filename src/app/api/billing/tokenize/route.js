@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { getAuthorizedAppKey } from "@/lib/billingAuth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request) {
     const token = request.headers.get("authorization")?.split("Bearer ")[1];
     if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+
+    const ip = getClientIp(request);
+    const { allowed } = await checkRateLimit({ key: `billing-tok:${ip}`, windowSeconds: 300, max: 3 });
+    if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
+
 
     let caller;
     try {

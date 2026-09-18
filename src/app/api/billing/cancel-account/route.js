@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function DELETE(request) {
     try {
@@ -9,6 +10,10 @@ export async function DELETE(request) {
         if (!token) {
             return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
         }
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `billing-cancel:${ip}`, windowSeconds: 300, max: 3 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
 
         let caller;
         try {
@@ -24,6 +29,10 @@ export async function DELETE(request) {
 
         if (!callerData?.companyId) {
             return NextResponse.json({ message: "Empresa não encontrada." }, { status: 404 });
+        }
+
+        if (callerData.role !== "master") {
+            return NextResponse.json({ message: "Sem permissão." }, { status: 403 });
         }
 
         const companyRef = db.collection("companies").doc(callerData.companyId);

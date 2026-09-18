@@ -16,15 +16,17 @@ import { MdHistory, MdNotificationsNone } from "react-icons/md";
 import { Avatar } from "@/components/ui/AvatarBadge";
 import { db } from "@/lib/firebaseConfig";
 import { cleanOldLogs, getActivityMessage } from "@/utils/ActivityLogger";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useCompany } from "@/context/CompanyContext";
 
 export default function ActivityFeed() {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { currentUser } = useAuth();
+    const { companyId, role } = useCurrentUser();
+    const { company } = useCompany();
 
     useEffect(() => {
-        if (!currentUser?.companyId) {
+        if (!companyId) {
             setActivities([]);
             setLoading(false);
             return;
@@ -32,7 +34,7 @@ export default function ActivityFeed() {
 
         const q = query(
             collection(db, "activity_logs"),
-            where("companyId", "==", currentUser.companyId),
+            where("companyId", "==", companyId),
             orderBy("timestamp", "desc"),
             limit(10),
         );
@@ -48,14 +50,15 @@ export default function ActivityFeed() {
         });
 
         // Limpa logs com mais de 2 dias ao carregar o feed
-        if ([ROLES.MASTER, ROLES.ADMIN].includes(currentUser?.role)) {
+        if ([ROLES.MASTER, ROLES.ADMIN].includes(role)) {
             const LOG_RETENTION = { FREE: 7, BASIC: 15, PRO: 30, ADMIN: 3 };
-            const days = LOG_RETENTION[currentUser?.plan] ?? 7;
-            cleanOldLogs(currentUser?.companyId, days);
+            const plan = company?.plan ?? "FREE";
+            const days = LOG_RETENTION[plan] ?? 7;
+            cleanOldLogs(companyId, days);
         }
 
         return () => unsubscribe();
-    }, [currentUser]);
+    }, [companyId, role, company?.plan]);
 
     // Lógica de renderização condicionaal
     const renderActivityContent = () => {

@@ -1,12 +1,17 @@
 import { NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { getAuthorizedAppKey } from "@/lib/billingAuth";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request) {
     try {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `billing-sub:${ip}`, windowSeconds: 300, max: 3 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
 
         let caller;
         try {
@@ -39,6 +44,10 @@ export async function DELETE(request) {
         const token = authHeader?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
 
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `billing-unsub:${ip}`, windowSeconds: 300, max: 5 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
+        
         let caller;
         try {
             caller = await verifyFirebaseToken(token);

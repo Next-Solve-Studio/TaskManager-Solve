@@ -29,9 +29,7 @@ export default function HomeMain() {
     const { users, loadingUsers } = useUsers(); // lista de usuários
     const { can } = useRole();
     
-
-    // csem dependências, today será criado apenas na primeira renderização, evitando cálculos desnecessários.
-    const today = useMemo(() => new Date());
+    const today = useMemo(() => { const d = new Date(); d.setHours(0,0,0,0); return d; }, []);
 
     // Recalcula o objeto counts somente quando projects mudar
     const counts = useMemo(
