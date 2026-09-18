@@ -21,7 +21,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
         clientFields?.length > 0
             ? clientFields.map(() => "minmax(120px, 1fr)").join(" ")
             : "";
-    const gridCols = `minmax(250px, 3fr) minmax(150px, 2fr) 100px ${customCols ? customCols + " " : ""}72px`;
+    const gridCols = `minmax(250px, 3fr) minmax(240px, 2fr) 100px ${customCols ? customCols + " " : ""}72px`;
 
     if (loading) {
         return (
@@ -72,9 +72,9 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                     {/* CONTATOS */}
                     <div className="flex flex-col items-start justify-center gap-1.5 min-w-0">
                         {client.email && (
-                            <div className="flex items-center gap-2 text-text-secondary text-xs font-medium">
-                                <MdEmail className="text-brand-500" />{" "}
-                                {client.email}
+                            <div className="flex items-center gap-2 text-text-secondary text-xs font-medium min-w-0 max-w-full">
+                                <MdEmail className="text-brand-500 shrink-0" />
+                                <span className="break-all">{client.email}</span>
                             </div>
                         )}
                         {client.endereco && (
@@ -85,7 +85,7 @@ export default function ClientsTable({ clients, loading, onOpenMenu }) {
                         )}
                         {client.contato && (
                             <div className="flex items-center gap-2 text-text-secondary text-xs font-medium">
-                                <MdPhone className="text-cyan-400" />{" "}
+                                <MdPhone className="text-cyan-400 shrink-0" />{" "}
                                 {FormatPhone(client.contato)}
                             </div>
                         )}
