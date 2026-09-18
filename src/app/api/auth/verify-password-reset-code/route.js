@@ -41,8 +41,11 @@ export async function POST(request) {
             return NextResponse.json({ message: "Código expirado. Solicite um novo." }, { status: 410 });
         }
 
+        const storedBuf = Buffer.from(data.code.toUpperCase());
+        const inputBuf  = Buffer.from(code.toUpperCase().padEnd(storedBuf.length, "\0").slice(0, storedBuf.length));
+        const mismatch  = !crypto.timingSafeEqual(storedBuf, inputBuf) || storedBuf.length !== Buffer.from(code.toUpperCase()).length;
 
-        if (data.code.toUpperCase() !== code.toUpperCase()) {
+        if (mismatch) {
             const attempts = (data.attempts || 0) + 1;
 
             if (attempts >= MAX_ATTEMPTS) {

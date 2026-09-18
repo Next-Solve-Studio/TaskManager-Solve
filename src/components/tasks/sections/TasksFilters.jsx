@@ -17,10 +17,10 @@ import { useEffect, useState } from "react";
 import { AiOutlineClear } from "react-icons/ai";
 import { MdOutlineFilterList, MdSearch } from "react-icons/md";
 import { PRIORITY_MAP, STATUS_MAP } from "@/components/ui/badges/StatusBadge";
-import { useAuth } from "@/context/AuthContext";
 import { useRolePermissions } from "@/context/RolePermissionsContext";
 import { ROLES } from "@/lib/roles";
 import { menuPaper, muiDark } from "@/styles/StyleInputs";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 export default function TasksFilters({
     projects,
     users,
@@ -38,18 +38,18 @@ export default function TasksFilters({
     setFilterMonth,
 }) {
     const [showFilters, setShowFilters] = useState(true);
-    const { currentUser } = useAuth();
+    const { uid, role } = useCurrentUser()
     const { permissions } = useRolePermissions()
     const canViewAll =
-        currentUser?.role === ROLES.MASTER ||
-        (permissions?.canViewAllUsersTasks?.includes(currentUser?.role) ?? false)
+        role === ROLES.MASTER ||
+        (permissions?.canViewAllUsersTasks?.includes(role) ?? false)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: <>
     useEffect(() => {
-        if (currentUser && (filterAssignee === "all" || !canViewAll)) {
+        if (uid && (filterAssignee === "all" || !canViewAll)) {
             setFilterAssignee("mine");
         }
-    }, [canViewAll]);
+    }, [canViewAll, uid]);
 
     const clearFilters = () => {
         setFilterStatus("all");

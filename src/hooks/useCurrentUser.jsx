@@ -11,6 +11,7 @@ export function useCurrentUser() {
         userPhoto: currentUser?.photo     ?? currentUser?.photoURL    ?? null,
         role:      currentUser?.role      ?? null,
         email:     currentUser?.email     ?? null,
+        authMethod:currentUser?.authMethod ?? null
     }), [
         currentUser?.uid,
         currentUser?.companyId,
@@ -20,5 +21,6 @@ export function useCurrentUser() {
         currentUser?.photoURL,
         currentUser?.role,
         currentUser?.email,
+        currentUser?.authMethod
     ]);
 }

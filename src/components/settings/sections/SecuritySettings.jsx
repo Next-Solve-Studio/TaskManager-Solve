@@ -8,12 +8,12 @@ import { useForm } from "react-hook-form";
 import { MdInfoOutline, MdLock, MdMailOutline } from "react-icons/md";
 import { toast } from "sonner";
 import * as yup from "yup";
-import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { auth } from "@/lib/firebaseConfig";
 import { muiDark } from "@/styles/StyleInputs";
 import ShowPassword from "@/components/ui/Buttons/ShowPassword";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const schema = yup.object().shape({
     currentPassword: yup.string().required("Senha atual é obrigatória"),
@@ -33,7 +33,7 @@ export default function SecuritySettings() {
     const [seePassword, setSeePassword] = useState(false);
     const [seePassword2, setSeePassword2] = useState(false);
     const [seePassword3, setSeePassword3] = useState(false);
-    const { currentUser } = useAuth();
+    const { email, authMethod } = useCurrentUser();
     const { requestPasswordChangeCode, verifyPasswordChangeCode } = useSettings();
     const isMobile = useIsMobile();
 
@@ -68,7 +68,7 @@ export default function SecuritySettings() {
     const onSubmit = async (data) => {
         try {
             const credential = EmailAuthProvider.credential(
-                currentUser.email,
+                email,
                 data.currentPassword,
             );
             await reauthenticateWithCredential(auth.currentUser, credential);
@@ -133,7 +133,7 @@ export default function SecuritySettings() {
         setPendingPassword(null);
     };
 
-    if (currentUser?.authMethod === "google") {
+    if (authMethod === "google") {
         return (
             <div
                 className={`bg-cyan-500/5 border border-cyan-500/20 rounded-2xl ${isMobile ? "p-4 flex-col text-center" : "p-6"} flex items-center gap-4`}
@@ -167,7 +167,7 @@ export default function SecuritySettings() {
                     <MdMailOutline className="text-brand-500 text-2xl shrink-0" />
                     <p className="text-sm text-text-secondary">
                         Enviamos um código de 6 caracteres para{" "}
-                        <strong className="text-text-primary">{currentUser?.email}</strong>.
+                        <strong className="text-text-primary">{email}</strong>.
                     </p>
                 </div>
 

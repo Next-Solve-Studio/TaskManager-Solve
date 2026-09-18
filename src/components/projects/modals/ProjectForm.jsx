@@ -32,7 +32,6 @@ import {
     MdDescription, MdTextSnippet, MdUpload
 } from "react-icons/md"; 
 import { useProjectAttachments } from "@/hooks/useProjectAttachments";
-import { useAuth } from "@/context/AuthContext";
 import { ROLES } from "@/lib/roles";
 import { RiGitBranchLine } from "react-icons/ri";
 import CanDo from "@/components/auth/CanDo";
@@ -43,6 +42,7 @@ import { menuPaper, muiDark } from "@/styles/StyleInputs";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { useSettings } from "@/context/SettingsContext";
 import { useCustomFields } from "@/context/CustomFieldsContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export function ProjectForm({
     open,
@@ -58,7 +58,7 @@ export function ProjectForm({
     const { systemSettings } = useSettings();
     const settings = systemSettings?.projectCardSettings || {};
     const { projectFields } = useCustomFields();
-    const { currentUser } = useAuth();
+    const { uid, role } = useCurrentUser()
     const fileInputRef = useRef(null);
     const { attachments, uploading, error: attError, upload, download, remove, setError: setAttError } =
     
@@ -72,7 +72,7 @@ export function ProjectForm({
     }
 
     const formatSize = (b) => b < 1024 * 1024 ? `${(b / 1024).toFixed(1)} KB` : `${(b / (1024 * 1024)).toFixed(1)} MB`;
-    const canDeleteAtt = (att) => att.uploadedBy === currentUser?.uid || currentUser?.role === ROLES.ADMIN;
+    const canDeleteAtt = (att) => att.uploadedBy === uid || role === ROLES.ADMIN;
 
     const defaultValues = {
         title: "",

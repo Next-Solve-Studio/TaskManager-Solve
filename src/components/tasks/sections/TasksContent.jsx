@@ -2,11 +2,11 @@
 
 import { useMemo } from "react";
 import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
-import CanDo from "@/components/auth/CanDo";
-import { useAuth } from "@/context/AuthContext";
+import CanDo from "@/components/auth/CanDo";;
 import { useDebounce } from "@/hooks/useDebounce";
 import TaskCard from "../card/TaskCard";
 import { formatDateInput } from "@/utils/FormatDateProjects";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function TasksContent({
     loadingTasks,
@@ -26,7 +26,7 @@ export default function TasksContent({
     loadMoreTasks,
     settings,
 }) {
-    const { currentUser } = useAuth();
+    const { uid } = useCurrentUser()
 
     // atraso de 300ms para cada pesquisa após parar de digitar, melhora a performance
     const debouncedSearch = useDebounce(searchInput, 300);
@@ -42,7 +42,7 @@ export default function TasksContent({
                 return false;
             if (
                 filterAssignee === "mine" &&
-                !(t.assignedTo || []).includes(currentUser.uid)
+                !(t.assignedTo || []).includes(uid)
             )
                 return false;
             if (
@@ -87,7 +87,7 @@ export default function TasksContent({
         debouncedSearch,
         usersMap,
         projectMap,
-        currentUser,
+        uid,
     ]);
 
     // Paginação aplicada após o filtro

@@ -11,8 +11,8 @@ import {
     MdTextSnippet, MdInsertDriveFile,
 } from "react-icons/md";
 import { useProjectAttachments } from "@/hooks/useProjectAttachments";
-import { useAuth } from "@/context/AuthContext";
 import { ROLES } from "@/lib/roles";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 function formatSize(bytes) {
     if (bytes < 1024) return `${bytes} B`;
@@ -39,7 +39,7 @@ function FileIcon({ type }) {
 }
 
 export default function AttachmentsModal({ project, open, onClose }) {
-    const { currentUser } = useAuth();
+    const { role, uid } = useCurrentUser()
     const { attachments, uploading, error, upload, download, remove, setError } =
         useProjectAttachments(project.id, project.companyId);
     const [dragging, setDragging] = useState(false);
@@ -56,7 +56,7 @@ export default function AttachmentsModal({ project, open, onClose }) {
     };
 
     const canDelete = (att) =>
-        att.uploadedBy === currentUser?.uid || currentUser?.role === ROLES.ADMIN;
+        att.uploadedBy === uid || role === ROLES.ADMIN;
 
     return (
          <Dialog

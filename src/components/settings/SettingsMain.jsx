@@ -8,7 +8,6 @@ import useIsMobile from "@/hooks/responsive/useIsMobile";
 import { RiShieldKeyholeLine } from "react-icons/ri";
 import AccessControlSettings from "./sections/AcessControlSettings";
 import { useRole } from "@/hooks/useRole";
-import { useAuth } from "@/context/AuthContext";
 import ProfileSettings from "./sections/ProfileSettings";
 import SecuritySettings from "./sections/SecuritySettings";
 import SettingsHeader from "./sections/SettingsHeader";
@@ -16,11 +15,12 @@ import SystemSettings from "./sections/SystemSettings";
 import CompanySettings from "./sections/CompanySettings";
 import BillingSettings from "./sections/BillingSettings";
 import LicenseSettings   from "./sections/LicenseSettings";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function SettingsMain() {
     const [activeTab, setActiveTab] = useState(0);
     const { can } = useRole();
-    const { currentUser } = useAuth();
+    const { role } = useCurrentUser()
     const isMobile = useIsMobile();
 
     // Cria as abas de forma dinâmica baseada no cargo do usuário
@@ -30,7 +30,7 @@ export default function SettingsMain() {
     ];
 
     // Se o usuário for o dono (master), adiciona a aba Empresa
-    if (currentUser?.role === "master") {
+    if (role === "master") {
         tabs.push(
             { label: "Empresa", icon: MdBusiness, component: <CompanySettings /> }, 
             { label: "Licença",  icon: RiShieldKeyholeLine, component: <LicenseSettings /> }, 

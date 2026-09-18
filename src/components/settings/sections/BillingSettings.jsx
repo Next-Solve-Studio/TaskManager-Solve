@@ -8,7 +8,7 @@ import { FaPix } from "react-icons/fa6";
 import { MdCheck, MdContentCopy, MdCreditCard } from "react-icons/md";
 import { toast } from "sonner";
 import { useBilling } from "@/context/BillingContext";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const PLANS = {
     BASIC: { label: "Basic", price: "R$ 29,90/mês" },
@@ -116,7 +116,7 @@ function PixDisplay({ pixData, appKey, onRefresh }) {
 
 export default function BillingSettings() {
     const { billingStatus, loading, setupCustomer, subscribe, cancelSubscription } = useBilling();
-    const { currentUser } = useAuth();
+    const { userName, email } = useCurrentUser()
 
     const [view, setView] = useState("loading"); // loading | info | form | pixqr
     const [paymentMethod, setPaymentMethod] = useState("PIX");
@@ -147,8 +147,8 @@ export default function BillingSettings() {
         try {
             if (!billingStatus?.hasCustomer) {
                 await setupCustomer({
-                    name: currentUser.name,
-                    email: currentUser.email,
+                    name: userName,
+                    email: email,
                     cpfCnpj: rawDoc,
                     phone: phone.replace(/\D/g, "") || undefined,
                 });
@@ -175,8 +175,8 @@ export default function BillingSettings() {
                     ccv: card.ccv,
                 };
                 payload.creditCardHolderInfo = {
-                    name: currentUser.name,
-                    email: currentUser.email,
+                    name: userName,
+                    email: email,
                     cpfCnpj: rawDoc,
                     postalCode: cardHolder.postalCode.replace(/\D/g, ""),
                     addressNumber: cardHolder.addressNumber,

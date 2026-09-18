@@ -5,7 +5,6 @@ import {
     collection, addDoc, deleteDoc, doc,
     query, orderBy, onSnapshot, serverTimestamp,
 } from "firebase/firestore";
-import { useAuth } from "@/context/AuthContext";
 
 const ALLOWED_TYPES = [
     "application/pdf",
@@ -24,7 +23,6 @@ const ALLOWED_TYPES = [
 const MAX_SIZE = 10 * 1024 * 1024;
 
 export function useProjectAttachments(projectId, companyId) {
-    const { currentUser } = useAuth();
     const [attachments, setAttachments] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState(null);

@@ -5,16 +5,16 @@ import { useEffect, useState } from "react";
 import { MdDarkMode, MdDownload, MdEdit, MdLightMode } from "react-icons/md";
 import { toast } from "sonner";
 import RoleBadge from "@/components/auth/RoleBadge";
-import { useAuth } from "@/context/AuthContext";
 import { useSettings } from "@/context/SettingsContext";
 import { useTheme } from "@/context/ThemeContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import useIsTablet from "@/hooks/responsive/useIsTablet";
 import { auth } from "@/lib/firebaseConfig";
 import { switchStyles } from "@/styles/StyleSwitch";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function ProfileSettings() {
-    const { currentUser } = useAuth();
+    const { role, userName, email, authMethod } = useCurrentUser()
     const { updateProfile } = useSettings();
     const { theme, toggleTheme } = useTheme();
     const isMobile = useIsMobile();
@@ -29,11 +29,11 @@ export default function ProfileSettings() {
 
     // Inicializa os estados quando o usuário for carregado
     useEffect(() => {
-        if (currentUser?.name) {
-            setName(currentUser.name);
-            setBaseName(currentUser.name);
+        if (userName) {
+            setName(userName);
+            setBaseName(userName);
         }
-    }, [currentUser?.name]);
+    }, [userName]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -155,7 +155,7 @@ export default function ProfileSettings() {
                         Cargo Atual
                     </label>
                     <div className="pt-1">
-                        <RoleBadge role={currentUser?.role} />
+                        <RoleBadge role={role} />
                     </div>
                 </div>
 
@@ -168,9 +168,9 @@ export default function ProfileSettings() {
                     </label>
                     <div className="flex flex-col pt-1">
                         <span className="text-text-primary font-medium">
-                            {currentUser?.email}
+                            {email}
                         </span>
-                        {currentUser?.authMethod === "google" && (
+                        {authMethod === "google" && (
                             <span className="text-[10px] text-brand-500 font-bold uppercase mt-1">
                                 Autenticado via Google
                             </span>

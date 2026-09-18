@@ -7,12 +7,12 @@ import { RiShieldKeyholeLine } from "react-icons/ri";
 import { toast } from "sonner";
 import { db } from "@/lib/firebaseConfig";
 import { validateLicense } from "@/lib/licenseApi";
-import { useAuth } from "@/context/AuthContext";
 import { useBilling } from "@/context/BillingContext";
 import StatusPlanBadge from "@/components/ui/badges/StatusPlanBadge";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function LicenseSettings() {
-    const { currentUser } = useAuth();
+    const { role, companyId } = useCurrentUser()
     const { billingStatus, cancelSubscription } = useBilling();
     const [loading, setLoading]   = useState(false);
     const [result, setResult]     = useState(null);
@@ -22,7 +22,7 @@ export default function LicenseSettings() {
     const handleCheck = useCallback(async () => {
         setLoading(true)
         try {
-            const companySnap = await getDoc(doc(db,"companies", currentUser.companyId))
+            const companySnap = await getDoc(doc(db,"companies", companyId))
             const appKey = companySnap.data()?.appKey
 
             if (!appKey) {
@@ -38,13 +38,13 @@ export default function LicenseSettings() {
             setLoading(false)
             setChecked(true)
         }
-    },[currentUser.companyId])
+    },[companyId])
 
     useEffect(()=>{
-        if (currentUser?.companyId){
+        if (companyId){
             handleCheck()
         }
-    }, [currentUser?.companyId, handleCheck])
+    }, [companyId, handleCheck])
 
     async function handleCancelSubscription() {
         if (!window.confirm("Tem certeza que deseja cancelar sua assinatura? Você continuará com acesso até o fim do período já pago, mas não haverá renovação automática.")) return;
@@ -108,7 +108,7 @@ export default function LicenseSettings() {
                     {checked ? "Verificar Novamente" : "Verificar Licença"}
                 </button>
 
-                {currentUser?.role === "master" && billingStatus?.hasSubscription && (
+                {role === "master" && billingStatus?.hasSubscription && (
                     <div className="flex flex-col gap-3 p-5 rounded-2xl bg-bg-card border border-border-main">
                         <div className="flex flex-col gap-1">
                             <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">

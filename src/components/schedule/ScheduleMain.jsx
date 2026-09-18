@@ -4,10 +4,10 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useMemo, useState } from "react";
 import { MdAdd, MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { useAuth } from "@/context/AuthContext";
 import { useSchedule, WEEK_DAYS } from "@/context/ScheduleContext";
 import { useUsers } from "@/context/UsersContext";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 import EventDetailModal from "./modals/EventDetailModal";
 import NewMeetingModal from "./modals/NewMeetingModal";
 import MonthCalendar from "./sections/monthCalendar/MonthCalendar";
@@ -16,48 +16,70 @@ import WeekGrid from "./sections/WeekGrid";
 import WeekNavigation from "./sections/WeekNavigation";
 
 export default function ScheduleMain() {
-    const { currentUser } = useAuth();
+    const { uid } = useCurrentUser();
     const { users, loadingUsers } = useUsers();
     const isMobile = useIsMobile();
 
     const {
-        weekStart, weekEnd, isCurrentWeek,
-        goToPreviousWeek, goToNextWeek, goToCurrentWeek,
-        filterUserId, setFilterUserId,
-        events, loadingSchedules,
-        view, setView,
-        monthBase, calGridStart, calGridEnd, isCurrentMonth,
-        goToPrevMonth, goToNextMonth, goToCurrentMonth,
-        monthEvents, loadingMonthEvents,
-        selectedDate, setSelectedDate,
-        saveMeeting, deleteMeeting,
-        googleStatus, connectGoogle,
+        weekStart,
+        weekEnd,
+        isCurrentWeek,
+        goToPreviousWeek,
+        goToNextWeek,
+        goToCurrentWeek,
+        filterUserId,
+        setFilterUserId,
+        events,
+        loadingSchedules,
+        view,
+        setView,
+        monthBase,
+        calGridStart,
+        calGridEnd,
+        isCurrentMonth,
+        goToPrevMonth,
+        goToNextMonth,
+        goToCurrentMonth,
+        monthEvents,
+        loadingMonthEvents,
+        selectedDate,
+        setSelectedDate,
+        saveMeeting,
+        deleteMeeting,
+        googleStatus,
+        connectGoogle,
     } = useSchedule();
 
     const [selectedEvent, setSelectedEvent] = useState(null);
-    const [modalState, setModalState]       = useState(null);
+    const [modalState, setModalState] = useState(null);
 
-    const isViewingAll   = filterUserId === "all";
-    const isViewingMe    = filterUserId === "me";
+    const isViewingAll = filterUserId === "all";
+    const isViewingMe = filterUserId === "me";
 
     const viewingAll = () => {
-        const value =isViewingAll ? null : filterUserId
-        return value
-    }  
-    const activePersonId = isViewingMe ? currentUser?.uid : viewingAll();
+        const value = isViewingAll ? null : filterUserId;
+        return value;
+    };
+    const activePersonId = isViewingMe ? uid : viewingAll();
 
     const visibleWeekEvents = useMemo(
-        () => activePersonId ? events.filter(e => e.people?.includes(activePersonId)) : events,
-        [events, activePersonId]
+        () =>
+            activePersonId
+                ? events.filter((e) => e.people?.includes(activePersonId))
+                : events,
+        [events, activePersonId],
     );
     const visibleMonthEvents = useMemo(
-        () => activePersonId ? monthEvents.filter(e => e.people?.includes(activePersonId)) : monthEvents,
-        [monthEvents, activePersonId]
+        () =>
+            activePersonId
+                ? monthEvents.filter((e) => e.people?.includes(activePersonId))
+                : monthEvents,
+        [monthEvents, activePersonId],
     );
 
     const weekLabel = useMemo(() => {
         const s = format(weekStart, "d 'de' MMM", { locale: ptBR });
-        const e = format(weekEnd,   "d 'de' MMM", { locale: ptBR });
+        const e = format(weekEnd, "d 'de' MMM", { locale: ptBR });
         return `${s} – ${e}`;
     }, [weekStart, weekEnd]);
 
@@ -71,8 +93,8 @@ export default function ScheduleMain() {
 
     // Abre modal de criação com a data do dia clicado
     const handleDayCreate = (dateStr) => {
-        const d      = new Date(dateStr + "T12:00:00");
-        const dow    = d.getDay();
+        const d = new Date(dateStr + "T12:00:00");
+        const dow = d.getDay();
         const dayKey = WEEK_DAYS[dow === 0 ? 6 : dow - 1]?.key;
         setModalState({ create: true, date: dateStr, dayKey });
     };
@@ -83,8 +105,8 @@ export default function ScheduleMain() {
                 <div className="flex items-center justify-center py-20 gap-3">
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
                 </div>
-            )
-        }else {
+            );
+        } else {
             return (
                 <MonthCalendar
                     monthBase={monthBase}
@@ -97,18 +119,20 @@ export default function ScheduleMain() {
                     onDayCreate={handleDayCreate}
                     isMobile={isMobile}
                 />
-            )
+            );
         }
-    }
+    };
 
-    const loadingSchedulesView = () =>{
+    const loadingSchedulesView = () => {
         if (loadingSchedules) {
             return (
                 <div className="flex items-center justify-center py-20 gap-3">
                     <CircularProgress size={24} style={{ color: "#19CA68" }} />
-                    <span className="text-text-secondary text-sm">Carregando agenda...</span>
+                    <span className="text-text-secondary text-sm">
+                        Carregando agenda...
+                    </span>
                 </div>
-            )
+            );
         } else {
             return (
                 <WeekGrid
@@ -116,19 +140,22 @@ export default function ScheduleMain() {
                     events={visibleWeekEvents}
                     users={users}
                     onSelectEvent={setSelectedEvent}
-                    onCreateAt={(dayKey, start) => setModalState({ create: true, dayKey, start })}
+                    onCreateAt={(dayKey, start) =>
+                        setModalState({ create: true, dayKey, start })
+                    }
                 />
-            )
+            );
         }
-    }
+    };
 
     return (
         <div className="min-h-screen bg-bg-main text-text-primary py-6 space-y-4 font-sans">
-
             {/* ── Título ── */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-text-primary">Minha Agenda</h1>
+                    <h1 className="text-2xl font-bold text-text-primary">
+                        Minha Agenda
+                    </h1>
                     <p className="text-sm text-text-secondary mt-0.5">
                         Gerencie seus eventos e compromissos
                     </p>
@@ -145,24 +172,32 @@ export default function ScheduleMain() {
 
             {/* ── Barra de navegação + filtros ── */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-
                 {/* Navegação */}
                 {effectiveView === "month" ? (
                     <div className="flex items-center gap-1.5">
-                        <button type="button" onClick={goToPrevMonth}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors">
+                        <button
+                            type="button"
+                            onClick={goToPrevMonth}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
+                        >
                             <MdChevronLeft size={20} />
                         </button>
                         <span className="text-text-primary font-bold text-base min-w-42.5 text-center select-none">
                             {monthLabel}
                         </span>
-                        <button type="button" onClick={goToNextMonth}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors">
+                        <button
+                            type="button"
+                            onClick={goToNextMonth}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-white/5 transition-colors"
+                        >
                             <MdChevronRight size={20} />
                         </button>
                         {!isCurrentMonth && (
-                            <button type="button" onClick={goToCurrentMonth}
-                                className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border-main text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors">
+                            <button
+                                type="button"
+                                onClick={goToCurrentMonth}
+                                className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border-main text-text-secondary hover:text-text-primary hover:bg-white/5 transition-colors"
+                            >
                                 Atual
                             </button>
                         )}
@@ -204,27 +239,28 @@ export default function ScheduleMain() {
                         setFilterUserId={setFilterUserId}
                         filterUserId={filterUserId}
                         loadingUsers={loadingUsers}
-                        currentUser={currentUser}
+                        currentUser={{ uid }}
                     />
                 </div>
             </div>
 
             {/* ── Conteúdo principal ── */}
-            {effectiveView === "month" ? (
-                loadingMonthEventsView()
-            ) : (
-                loadingSchedulesView()
-            )}
+            {effectiveView === "month"
+                ? loadingMonthEventsView()
+                : loadingSchedulesView()}
 
             {/* ── Modais ── */}
             <EventDetailModal
                 event={selectedEvent}
                 users={users}
-                currentUserId={currentUser?.uid}
+                currentUserId={uid}
                 deleteMeeting={deleteMeeting}
                 onClose={() => setSelectedEvent(null)}
                 onDeleted={() => setSelectedEvent(null)}
-                onEdit={(ev) => { setSelectedEvent(null); setModalState({ editingEvent: ev }); }}
+                onEdit={(ev) => {
+                    setSelectedEvent(null);
+                    setModalState({ editingEvent: ev });
+                }}
             />
 
             <NewMeetingModal
@@ -232,7 +268,7 @@ export default function ScheduleMain() {
                 onClose={() => setModalState(null)}
                 onSaved={() => setModalState(null)}
                 users={users}
-                currentUserId={currentUser?.uid}
+                currentUserId={uid}
                 saveMeeting={saveMeeting}
                 googleStatus={googleStatus}
                 connectGoogle={connectGoogle}

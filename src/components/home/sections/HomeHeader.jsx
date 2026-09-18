@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useMemo } from "react";
 import { RiRocketLine } from "react-icons/ri";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function HomeHeader({
     completionRate,
@@ -11,16 +11,16 @@ export default function HomeHeader({
     nearDeadline,
     today,
 }) {
-    const { currentUser } = useAuth();
+    const {userName} = useCurrentUser()
 
     const hour = today.getHours();
     const greeting =
         hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
 
     const firstName = useMemo(() => {
-        const name = currentUser?.name || currentUser?.displayName || "Dev";
+        const name = userName || "Dev";
         return name.split(" ")[0];
-    }, [currentUser]);
+    }, [userName]);
 
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
