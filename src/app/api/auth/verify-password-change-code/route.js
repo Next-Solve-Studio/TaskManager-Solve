@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { checkRateLimit } from "@/lib/rateLimit";
+import crypto from "node:crypto";
 
 const MAX_ATTEMPTS = 5;
 
@@ -45,8 +46,13 @@ export async function POST(request) {
             await codeRef.delete();
             return NextResponse.json({ message: "Código expirado. Solicite um novo." }, { status: 410 });
         }
+        
+        const a = Buffer.from(data.code.toUpperCase());
+        const b = Buffer.from(code.toUpperCase());
+        const isValid = a.length === b.length && crypto.timingSafeEqual(a, b);
 
-        if (data.code.toUpperCase() !== code.toUpperCase()) {
+        if (!isValid) {
+
             const attempts = (data.attempts || 0) + 1;
 
             if (attempts >= MAX_ATTEMPTS) {

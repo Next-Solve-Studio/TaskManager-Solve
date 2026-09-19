@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function GET(request) {
+    const ip = getClientIp(request);
+    const { allowed } = await checkRateLimit({ key: `check-cpf:${ip}`, windowSeconds: 60, max: 10 });
+    if (!allowed) {
+        return NextResponse.json({ message: "Muitas tentativas. Tente novamente em instantes." }, { status: 429 });
+    }
+    
     try {
         const { searchParams } = new URL(request.url);
         const cpfCnpj = searchParams.get("cpfCnpj");

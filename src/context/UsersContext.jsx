@@ -1,12 +1,9 @@
 "use client";
 import {
     collection,
-    doc,
     onSnapshot,
     orderBy,
     query,
-    serverTimestamp,
-    updateDoc,
     where
 } from "firebase/firestore";
 import {
@@ -19,7 +16,7 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { auth, db } from "@/lib/firebaseConfig";
-import { userDetailsSchema } from "@/utils/userDetailsSchema";
+
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { logActivity } from "@/utils/ActivityLogger";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -29,7 +26,7 @@ const UsersContext = createContext();
 export const useUsers = () => useContext(UsersContext);
 
 export const UsersProvider = ({ children }) => {
-    const { uid, companyId, userName, userPhoto } = useCurrentUser();
+    const { uid, userName: currentUserName, userPhoto, companyId } = useCurrentUser();
     const [users, setUsers] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
 
@@ -65,18 +62,23 @@ export const UsersProvider = ({ children }) => {
     }, [companyId]);
 
     const updateUser = useCallback(async (userId, newRole, details, userName = "") => {
-        const payload = { role: newRole, updatedAt: serverTimestamp() };
-        if (details) {
-            Object.assign(
-                payload,
-                await userDetailsSchema.validate(details, { stripUnknown: true }),
-            );
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Usuário não autenticado.");
+
+        const response = await fetch("/api/updateEmployee", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ userId, role: newRole, ...details }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Erro ao atualizar usuário");
         }
-        await updateDoc(doc(db, "users", userId), payload);
 
         await logActivity({
             userId: uid,
-            userName: userName,
+            userName: currentUserName,
             userPhoto: userPhoto,
             companyId: companyId,
             action: "update",
@@ -84,7 +86,7 @@ export const UsersProvider = ({ children }) => {
             resourceId: userId,
             resourceName: userName,
         });
-    }, [uid, companyId, userName, userPhoto]);
+    }, [uid, companyId, userPhoto, currentUserName]);
 
     const deleteUser = useCallback(async (userId) => {
         const token = await auth.currentUser?.getIdToken();

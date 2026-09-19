@@ -60,7 +60,15 @@ export async function POST(request) {
             }
         }
 
-        const people = Array.from(new Set([...(peopleIds || []), caller.uid]));
+        const requestedPeople = Array.from(new Set([...(peopleIds || []), caller.uid]));
+        const otherRequestedIds = requestedPeople.filter((pid) => pid !== caller.uid);
+        const peopleDocsForScope = otherRequestedIds.length
+            ? await db.getAll(...otherRequestedIds.map((pid) => db.collection("users").doc(pid)))
+            : [];
+        const sameCompanyIds = peopleDocsForScope
+            .filter((snap) => snap.exists && snap.data()?.companyId === companyId)
+            .map((snap) => snap.id);
+        const people = Array.from(new Set([...sameCompanyIds, caller.uid]));
 
         let meetLink = null;
         let googleEventId = null;
@@ -77,11 +85,11 @@ export async function POST(request) {
                 );
             }
 
-            const otherPeopleIds = people.filter((pid) => pid !== caller.uid);
-            const peopleSnaps = otherPeopleIds.length
-                ? await db.getAll(...otherPeopleIds.map((pid) => db.collection("users").doc(pid)))
-                : [];
-            const attendees = peopleSnaps.map((s) => s.data()?.email).filter(Boolean).map((email) => ({ email }));
+            const attendees = peopleDocsForScope
+                .filter((snap) => sameCompanyIds.includes(snap.id))
+                .map((s) => s.data()?.email)
+                .filter(Boolean)
+                .map((email) => ({ email }));
 
             const calendar = google.calendar({ version: "v3", auth: authClient });
             const eventBody = {

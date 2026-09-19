@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function POST(request) {
+    const COMPANY_ID_REGEX = /^[A-Za-z0-9_-]+$/;
     const ip = getClientIp(request);
     const { allowed } = await checkRateLimit({ key: `reg-company:${ip}`, windowSeconds: 3600, max: 5 });
     if (!allowed) return NextResponse.json({ error: "Muitas tentativas. Tente novamente mais tarde." }, { status: 429 });
@@ -9,6 +10,10 @@ export async function POST(request) {
     try {
         const body = await request.json();
         const { companyId, companyName, responsibleName, email, cpfCnpj } = body;
+        
+        if (!companyId || !COMPANY_ID_REGEX.test(companyId)) {
+            return NextResponse.json({ error: "companyId inválido." }, { status: 400 });
+        }
 
         if (!companyId || !companyName || !responsibleName || !email || !cpfCnpj) {
             return NextResponse.json(
@@ -16,6 +21,7 @@ export async function POST(request) {
                 { status: 400 }
             );
         }
+
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {

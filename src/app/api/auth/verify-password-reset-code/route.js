@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import crypto from "node:crypto";
 
 const MAX_ATTEMPTS = 5;
 

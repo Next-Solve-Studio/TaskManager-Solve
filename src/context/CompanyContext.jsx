@@ -8,7 +8,7 @@ import {
     useState,
 } from "react";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
+import { auth, db } from "@/lib/firebaseConfig";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const CompanyContext = createContext()
@@ -54,10 +54,19 @@ export const CompanyProvider = ({children}) => {
             if (!companyId) return;
 
             try {
-                await updateDoc(doc(db, "companies", companyId), {
-                    ...data,
-                    updatedAt: new Date(),
+                const token = await auth.currentUser?.getIdToken();
+                if (!token) throw new Error("Usuário não autenticado.");
+
+                const response = await fetch("/api/updateCompany", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify(data),
                 });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || "Erro ao atualizar empresa");
+                }
 
                 setCompany((prev) => ({
                     ...prev,
