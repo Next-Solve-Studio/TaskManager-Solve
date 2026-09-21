@@ -10,7 +10,7 @@ import ClientCard from "./sections/ClientCard";
 import ClientsHeader from "./sections/ClientsHeader";
 import ClientsStats from "./sections/ClientsStats";
 import ClientsTable from "./sections/ClientsTable";
-import SearchInput from "./sections/SearchInput";
+import ClientFilters from "./sections/ClientFilters";
 import { MdDelete, MdEdit } from "react-icons/md";
 import useIsMobile from "@/hooks/responsive/useIsMobile";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
@@ -19,6 +19,7 @@ import { useEffect } from "react";
 export default function ClientsMain() {
     const { clients, loading } = useClients();
     const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("all");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedClient, setSelectedClient] = useState(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -42,11 +43,18 @@ export default function ClientsMain() {
             setMenuClient(client);
         }, [])
 
-    const filteredClients = clients.filter(
-        (client) =>
-            client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            client.email?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+    const filteredClients = clients.filter((client) => {
+        if (filterStatus !== "all" && client.status !== filterStatus) return false;
+        
+        if (searchTerm) {
+            const q = searchTerm.toLowerCase();
+            return (
+                client.name.toLowerCase().includes(q) ||
+                client.email?.toLowerCase().includes(q)
+            );
+        }
+        return true;
+    });
 
     const handleOpenModal = (client = null) => {
         setSelectedClient(client);
@@ -120,9 +128,11 @@ export default function ClientsMain() {
                 setViewMode={setViewMode}
             />
 
-            <SearchInput
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
+            <ClientFilters
+                search={searchTerm}
+                setSearch={setSearchTerm}
+                filterStatus={filterStatus}
+                setFilterStatus={setFilterStatus}
             />
 
             {handleClientList()}
