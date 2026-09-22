@@ -115,7 +115,7 @@ function PixDisplay({ pixData, appKey, onRefresh }) {
 }
 
 export default function BillingSettings() {
-    const { billingStatus, loading, setupCustomer, subscribe, cancelSubscription } = useBilling();
+    const { billingStatus, loading, fetchStatus, setupCustomer, tokenize, subscribe, cancelSubscription } = useBilling();
     const { userName, email } = useCurrentUser()
 
     const [view, setView] = useState("loading"); // loading | info | form | pixqr
@@ -139,7 +139,7 @@ export default function BillingSettings() {
         }
     }, [billingStatus, loading]);
 
-    const handleSubscribe = async () => {
+        const handleSubscribe = async () => {
         const rawDoc = cpfCnpj.replace(/\D/g, "");
         if (!rawDoc) { toast.error("Informe o CPF ou CNPJ"); return; }
 
@@ -148,7 +148,7 @@ export default function BillingSettings() {
             if (!billingStatus?.hasCustomer) {
                 await setupCustomer({
                     name: userName,
-                    email: email,
+                    email,
                     cpfCnpj: rawDoc,
                     phone: phone.replace(/\D/g, "") || undefined,
                 });
@@ -167,21 +167,25 @@ export default function BillingSettings() {
                     setSubmitting(false);
                     return;
                 }
-                payload.creditCard = {
-                    holderName: card.holderName,
-                    number: card.number.replace(/\s/g, ""),
-                    expiryMonth: card.expiryMonth,
-                    expiryYear: card.expiryYear,
-                    ccv: card.ccv,
-                };
-                payload.creditCardHolderInfo = {
-                    name: userName,
-                    email: email,
-                    cpfCnpj: rawDoc,
-                    postalCode: cardHolder.postalCode.replace(/\D/g, ""),
-                    addressNumber: cardHolder.addressNumber,
-                    phone: phone.replace(/\D/g, "") || undefined,
-                };
+
+                const { creditCardToken } = await tokenize({
+                    creditCard: {
+                        holderName: card.holderName,
+                        number: card.number.replace(/\s/g, ""),
+                        expiryMonth: card.expiryMonth,
+                        expiryYear: card.expiryYear,
+                        ccv: card.ccv,
+                    },
+                    creditCardHolderInfo: {
+                        name: userName,
+                        email,
+                        cpfCnpj: rawDoc,
+                        postalCode: cardHolder.postalCode.replace(/\D/g, ""),
+                        addressNumber: cardHolder.addressNumber,
+                        phone: phone.replace(/\D/g, "") || undefined,
+                    },
+                });
+                payload.creditCardToken = creditCardToken;
             }
 
             const result = await subscribe(payload);

@@ -49,6 +49,10 @@ export async function POST(request) {
             return NextResponse.json({ message: "Usuário não encontrado nesta empresa." }, { status: 404 });
         }
 
+        if (targetData.role === ROLES.MASTER) {
+            return NextResponse.json({ message: "Não é possível excluir o usuário master." }, { status: 403 });
+        }
+
         await db.collection("users").doc(userId).delete();
 
         try {

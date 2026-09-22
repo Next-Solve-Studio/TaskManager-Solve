@@ -15,5 +15,5 @@ export async function GET(request) {
         return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    return NextResponse.redirect(getGoogleAuthUrl(caller.uid));
+    return NextResponse.redirect(await getGoogleAuthUrl(caller.uid));
 }

@@ -47,6 +47,18 @@ export function BillingProvider({ children }) {
         return json;
     }, [getToken]);
 
+    const tokenize = useCallback(async (data) => {
+        const token = await getToken();
+        const res = await fetch("/api/billing/tokenize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify(data),
+        });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || "Erro ao tokenizar cartão");
+        return json;
+    }, [getToken]);
+
     const subscribe = useCallback(async (data) => {
         const token = await getToken();
         const res = await fetch("/api/billing/subscribe", {
@@ -74,8 +86,8 @@ export function BillingProvider({ children }) {
 
     const value = useMemo(() => ({
         billingStatus, loading,
-        fetchStatus, setupCustomer, subscribe, cancelSubscription,
-    }), [billingStatus, loading, fetchStatus, setupCustomer, subscribe, cancelSubscription]);
+        fetchStatus, setupCustomer, tokenize, subscribe, cancelSubscription,
+    }), [billingStatus, loading, fetchStatus, setupCustomer, tokenize, subscribe, cancelSubscription]);
 
     return (
         <BillingContext.Provider value={value}>

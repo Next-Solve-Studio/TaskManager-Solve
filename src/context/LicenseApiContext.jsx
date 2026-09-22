@@ -1,6 +1,6 @@
 "use client";
 
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot } from "firebase/firestore";
 import {
     createContext,
     useCallback,
@@ -20,24 +20,16 @@ export const useLicense = () => useContext(LicenseContext);
 const REVALIDATE_INTERVAL_MS = 30 * 60 * 1000;
 
 export function LicenseProvider({ children }) {
-    const {  companyId } = useCurrentUser();
+    const { companyId } = useCurrentUser();
     const [license, setLicense] = useState(null);
     const [companyStatus, setCompanyStatus] = useState(null);
     const [loading, setLoading] = useState(true);
     const intervalRef = useRef(null);
 
-    const check = useCallback(async (companyId) => {
+    const check = useCallback(async () => {
         try {
-            const companySnap = await getDoc(doc(db, "companies", companyId));
-            const appKey = companySnap.data()?.appKey;
-
-            if (!appKey) {
-                setLicense({ valid: false, status: "NO_KEY" });
-                return;
-            }
-
-            const result = await validateLicense(appKey);
-            setLicense(result);
+            const result = await validateLicense();
+            setLicense(result ?? { valid: false, status: "ERROR" });
         } catch {
             setLicense((prev) => prev ?? { valid: false, status: "ERROR" });
         } finally {
@@ -53,8 +45,7 @@ export function LicenseProvider({ children }) {
 
         const unsubscribe = onSnapshot(
             doc(db, "companies", companyId),
-            (snap) =>
-                setCompanyStatus(snap.exists() ? snap.data().status : null),
+            (snap) => setCompanyStatus(snap.exists() ? snap.data().status : null),
             () => setCompanyStatus(null),
         );
 
@@ -67,11 +58,8 @@ export function LicenseProvider({ children }) {
             return;
         }
 
-        check(companyId);
-
-        intervalRef.current = setInterval(() => {
-            check(companyId);
-        }, REVALIDATE_INTERVAL_MS);
+        check();
+        intervalRef.current = setInterval(check, REVALIDATE_INTERVAL_MS);
 
         return () => clearInterval(intervalRef.current);
     }, [companyId, check]);

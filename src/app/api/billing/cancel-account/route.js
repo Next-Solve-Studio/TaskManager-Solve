@@ -53,16 +53,50 @@ export async function DELETE(request) {
             return NextResponse.json({ message: data.error || "Erro ao cancelar cadastro." }, { status: response.status });
         }
 
-        const usersSnap = await db.collection("users").where("companyId", "==", callerData.companyId).get();
+        const companyId = callerData.companyId;
+
+        const usersSnap = await db.collection("users").where("companyId", "==", companyId).get();
+        const userIds = usersSnap.docs.map((d) => d.id);
+
+        await Promise.all(userIds.map((uid) => auth.deleteUser(uid).catch(() => {})));
 
         await Promise.all(
-            usersSnap.docs.map((doc) => auth.deleteUser(doc.id).catch(() => {}))
+            userIds.flatMap((uid) => [
+                db.collection("google_tokens").doc(uid).delete().catch(() => {}),
+                db.collection("password_reset_codes").doc(uid).delete().catch(() => {}),
+                db.collection("password_change_codes").doc(uid).delete().catch(() => {}),
+                db.collection("oauth_states").where("uid", "==", uid).get()
+                    .then((s) => Promise.all(s.docs.map((d) => d.ref.delete())))
+                    .catch(() => {}),
+            ])
         );
 
-        await Promise.all(usersSnap.docs.map((doc) => doc.ref.delete()));
+        const [scheduleSnap, activitySnap, invitesSnap, projectsSnap, tasksSnap, clientsSnap] =
+            await Promise.all([
+                db.collection("scheduleEvents").where("companyId", "==", companyId).get(),
+                db.collection("activity_logs").where("companyId", "==", companyId).get(),
+                db.collection("invites").where("companyId", "==", companyId).get(),
+                db.collection("projects").where("companyId", "==", companyId).get(),
+                db.collection("tasks").where("companyId", "==", companyId).get(),
+                db.collection("clients").where("companyId", "==", companyId).get(),
+            ]);
 
-        await db.collection("role_permissions").doc(callerData.companyId).delete().catch(() => {});
-        await companyRef.delete();
+        await Promise.all(projectsSnap.docs.map((d) => db.recursiveDelete(d.ref)));
+
+        await Promise.all([
+            ...usersSnap.docs.map((d) => d.ref.delete()),
+            ...scheduleSnap.docs.map((d) => d.ref.delete()),
+            ...activitySnap.docs.map((d) => d.ref.delete()),
+            ...invitesSnap.docs.map((d) => d.ref.delete()),
+            ...tasksSnap.docs.map((d) => d.ref.delete()),
+            ...clientsSnap.docs.map((d) => d.ref.delete()),
+        ]);
+
+        await Promise.all([
+            db.collection("role_permissions").doc(companyId).delete().catch(() => {}),
+            db.collection("customFields").doc(companyId).delete().catch(() => {}),
+            companyRef.delete(),
+        ]);
 
         return NextResponse.json({ message: "Cadastro cancelado com sucesso." }, { status: 200 });
     } catch (error) {

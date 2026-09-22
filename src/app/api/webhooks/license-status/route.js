@@ -1,28 +1,10 @@
 import { timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const ALLOWED_STATUSES = ["active", "inactive"];
 const COMPANY_ID_REGEX = /^[A-Za-z0-9_-]+$/;
-
-// Limite simples em memória — não é distribuído entre instâncias serverless,
-// mas já corta tentativas repetidas dentro da mesma instância "morna".
-const rateLimitMap = new Map();
-const RATE_LIMIT_WINDOW_MS = 60_000;
-const RATE_LIMIT_MAX = 20;
-
-function isRateLimited(key) {
-    const now = Date.now();
-    const entry = rateLimitMap.get(key);
-
-    if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-        rateLimitMap.set(key, { windowStart: now, count: 1 });
-        return false;
-    }
-
-    entry.count += 1;
-    return entry.count > RATE_LIMIT_MAX;
-}
 
 function isValidSecret(received, expected) {
     if (!received || !expected) return false;
@@ -33,10 +15,9 @@ function isValidSecret(received, expected) {
 
 export async function POST(request) {
     try {
-        const ip = request.headers.get("x-forwarded-for") ?? "unknown";
-        if (isRateLimited(ip)) {
-            return NextResponse.json({ message: "Muitas requisições." }, { status: 429 });
-        }
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `webhook-license:${ip}`, windowSeconds: 60, max: 20 });
+        if (!allowed) return NextResponse.json({ message: "Muitas requisições." }, { status: 429 });
 
         const secret = request.headers.get("x-webhook-secret");
         if (!isValidSecret(secret, process.env.LICENSE_WEBHOOK_SECRET)) {

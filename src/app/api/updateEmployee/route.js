@@ -57,6 +57,10 @@ export async function POST(request) {
             return NextResponse.json({ message: "Usuário não encontrado nesta empresa." }, { status: 404 });
         }
 
+        if (targetData.role === ROLES.MASTER) {
+            return NextResponse.json({ message: "Não é possível alterar o cargo do usuário master." }, { status: 403 });
+        }
+
         let details;
         try {
             details = await userDetailsSchema.validate({ cpf, endereco, customData }, { stripUnknown: true });
