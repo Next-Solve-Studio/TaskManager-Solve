@@ -6,7 +6,7 @@ import { createOAuthClient, exchangeCodeForTokens, saveGoogleTokens } from "@/li
 export async function GET(request) {
     const { searchParams, origin } = new URL(request.url);
     const code = searchParams.get("code");
-    const uidFromState = searchParams.get("state");
+    const state = searchParams.get("state");
     const oauthError = searchParams.get("error");
     const redirectBase = `${origin}/schedule`;
 
@@ -15,7 +15,7 @@ export async function GET(request) {
     }
 
     const sessionToken = request.cookies.get("__session")?.value;
-    if (!sessionToken || !code || !uidFromState) {
+    if (!sessionToken || !code || !state) {
         return NextResponse.redirect(`${redirectBase}?google=error`);
     }
 
@@ -26,7 +26,19 @@ export async function GET(request) {
         return NextResponse.redirect(`${redirectBase}?google=error`);
     }
 
-    if (caller.uid !== uidFromState) {
+    // Valida CSRF state contra Firestore
+    const { db } = getFirebaseAdmin();
+    const stateRef = db.collection("oauth_states").doc(state);
+    const stateDoc = await stateRef.get();
+
+    if (!stateDoc.exists) {
+        return NextResponse.redirect(`${redirectBase}?google=error`);
+    }
+
+    const stateData = stateDoc.data();
+    await stateRef.delete().catch(() => {});
+
+    if (stateData.uid !== caller.uid || Date.now() > stateData.expiresAt) {
         return NextResponse.redirect(`${redirectBase}?google=error`);
     }
 
@@ -38,7 +50,6 @@ export async function GET(request) {
         const oauth2 = google.oauth2({ version: "v2", auth: client });
         const { data } = await oauth2.userinfo.get();
 
-        const { db } = getFirebaseAdmin();
         const userDoc = await db.collection("users").doc(caller.uid).get();
         const companyId = userDoc.data()?.companyId;
 

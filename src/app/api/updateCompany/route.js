@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { PERMISSIONS, ROLES } from "@/lib/roles";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const DEFAULT_SETTINGS_ROLES = PERMISSIONS.canManageSystemSettings.filter((r) => r !== ROLES.MASTER);
 const ALLOWED_FIELDS = ["name", "cnpj", "endereco"];
@@ -10,6 +11,10 @@ export async function POST(request) {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `update-company:${ip}`, windowSeconds: 300, max: 10 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
 
         let caller;
         try {

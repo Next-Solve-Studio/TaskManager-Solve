@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { google } from "googleapis";
 import { getFirebaseAdmin } from "@/lib/firebaseAdmin";
 import { encryptToken, decryptToken } from "@/lib/tokenEncryption";
@@ -19,13 +20,18 @@ export function createOAuthClient() {
     );
 }
 
-export function getGoogleAuthUrl(uid) {
+export async function getGoogleAuthUrl(uid) {
+    const { db } = getFirebaseAdmin();
+    const state = crypto.randomBytes(16).toString("hex");
+    const expiresAt = Date.now() + 10 * 60 * 1000; // 10 min
+    await db.collection("oauth_states").doc(state).set({ uid, expiresAt });
+
     const client = createOAuthClient();
     return client.generateAuthUrl({
         access_type: "offline",
         prompt: "consent",
         scope: SCOPES,
-        state: uid,
+        state,
     });
 }
 
@@ -44,7 +50,7 @@ export async function saveGoogleTokens(uid, companyId, tokens, email) {
     const { db } = getFirebaseAdmin();
     await db.collection("google_tokens").doc(uid).set(
         {
-            refreshToken: encryptToken(tokens.refresh_token), 
+            refreshToken: encryptToken(tokens.refresh_token),
             googleEmail: email || null,
             companyId,
             connectedAt: new Date(),
@@ -65,6 +71,7 @@ export async function getAuthorizedClientForUser(uid) {
     client.setCredentials({ refresh_token: refreshToken });
     return client;
 }
+
 export async function disconnectGoogle(uid) {
     const { db } = getFirebaseAdmin();
     try {

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const BUCKET = "project-attachments";
 const MAX_SIZE = 10 * 1024 * 1024;
@@ -25,6 +26,10 @@ export async function POST(request, { params }) {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `attachments:${ip}`, windowSeconds: 300, max: 20 });
+        if (!allowed) return NextResponse.json({ error: "Muitas tentativas." }, { status: 429 });
 
         let caller;
         try {

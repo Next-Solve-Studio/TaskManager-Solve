@@ -2,6 +2,7 @@ import { google } from "googleapis";
 import { NextResponse } from "next/server";
 import { getFirebaseAdmin, verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { getAuthorizedClientForUser } from "@/lib/googleCalendar";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 export async function DELETE(request, { params }) {
     try {
@@ -9,6 +10,10 @@ export async function DELETE(request, { params }) {
         const authHeader = request.headers.get("authorization");
         const token = authHeader?.split("Bearer ")[1];
         if (!token) return NextResponse.json({ message: "Não autorizado." }, { status: 401 });
+
+        const ip = getClientIp(request);
+        const { allowed } = await checkRateLimit({ key: `meeting-del:${ip}`, windowSeconds: 300, max: 10 });
+        if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
 
         let caller;
         try {

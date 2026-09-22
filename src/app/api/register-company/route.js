@@ -45,7 +45,7 @@ export async function POST(request) {
                         "Content-Type": "application/json",
                         "x-registration-secret": process.env.REGISTRATION_SECRET,
                     },
-                    body: JSON.stringify(body),
+                     body: JSON.stringify({ companyId, companyName, responsibleName, email, cpfCnpj }),
                     signal: controller.signal,
                 }
             );

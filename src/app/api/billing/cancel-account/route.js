@@ -53,14 +53,16 @@ export async function DELETE(request) {
             return NextResponse.json({ message: data.error || "Erro ao cancelar cadastro." }, { status: response.status });
         }
 
-        // Remove tudo do lado do TaskManagerSolve
         const usersSnap = await db.collection("users").where("companyId", "==", callerData.companyId).get();
+
+        await Promise.all(
+            usersSnap.docs.map((doc) => auth.deleteUser(doc.id).catch(() => {}))
+        );
+
         await Promise.all(usersSnap.docs.map((doc) => doc.ref.delete()));
 
         await db.collection("role_permissions").doc(callerData.companyId).delete().catch(() => {});
         await companyRef.delete();
-
-        await auth.deleteUser(caller.uid).catch(() => {});
 
         return NextResponse.json({ message: "Cadastro cancelado com sucesso." }, { status: 200 });
     } catch (error) {
