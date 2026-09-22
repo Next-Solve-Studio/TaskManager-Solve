@@ -1,11 +1,12 @@
 "use client"
-import { doc, onSnapshot, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, } from "firebase/firestore";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { db } from "@/lib/firebaseConfig";
+import { db, auth } from "@/lib/firebaseConfig";
 import { toast } from "sonner";
 import { PERMISSIONS, ROLES } from "@/lib/roles";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+
 
 const RolePermissionsContext = createContext()
 
@@ -20,7 +21,7 @@ const buildDefaultPermissions = () => {
 };
 
 export const RolePermissionsProvider = ({children}) => {
-    const { uid, companyId, role } = useCurrentUser();
+    const { companyId, role } = useCurrentUser();
     const [permissions, setPermissions] = useState(null)
     const [loadingPermissions, setLoadingPermissions] = useState(true)
 
@@ -49,23 +50,23 @@ export const RolePermissionsProvider = ({children}) => {
     },[companyId])
 
     const updatePermission = useCallback(async (permissionKey, roles) => {
-        if (!companyId) throw new Error("Usuário não vinculado a uma empresa")
-        if (role !== ROLES.MASTER) throw new Error ("Apenas o master pode alterar permissões.")
-            
-        const q = doc (db, "role_permissions", companyId)
-        const base = permissions ?? buildDefaultPermissions()
+        if (!companyId) throw new Error("Usuário não vinculado a uma empresa");
+        if (role !== ROLES.MASTER) throw new Error("Apenas o master pode alterar permissões.");
 
-        await setDoc(
-            q,
-            {
-                companyId: companyId,
-                permissions: { ...base, [permissionKey]: roles},
-                updateAt: new Date(),
-                updateBy: uid,
-            },
-            { merge:true },
-        )
-    }, [companyId, role, uid, permissions])
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) throw new Error("Não autenticado.");
+
+        const res = await fetch("/api/role-permissions", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ permissionKey, roles }),
+        });
+
+        if (!res.ok) {
+            const data = await res.json();
+            throw new Error(data.error || "Erro ao atualizar permissão.");
+        }
+    }, [companyId, role]);
 
     const value = useMemo(
         () => ({

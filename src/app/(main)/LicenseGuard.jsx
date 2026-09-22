@@ -41,12 +41,12 @@ function PixActivation() {
     }, [pixData]);
 
     useEffect(() => {
-        if (state !== "qr" || !appKey) return;
+        if (state !== "qr") return;
         const poll = async () => {
             try {
                 const token = await auth.currentUser?.getIdToken();
                 if (!token) return;
-                const res = await fetch(`/api/billing/status?appKey=${appKey}`, {
+                const res = await fetch("/api/billing/status", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 const data = await res.json();
@@ -58,7 +58,7 @@ function PixActivation() {
         };
         const id = setInterval(poll, 5000);
         return () => clearInterval(id);
-    }, [state, appKey]);
+    }, [state]);
 
     const doSubscribe = async (billingType, cardForm) => {
         const companySnap = await getDoc(doc(db, "companies", currentUser.companyId));
@@ -174,13 +174,13 @@ function PixActivation() {
     if (state === "choose" || state === "loading") return (
         <div className="flex flex-col items-center gap-3 w-full">
             <div className="flex gap-2 w-full">
-                <button type="button" onClick={handleChoosePix} disabled={state === "loading" || !appKey}
+                <button type="button" onClick={handleChoosePix} disabled={state === "loading" }
                     className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-white bg-linear-to-r from-brand-600 to-brand-500 shadow-[0_4px_24px_rgba(26,215,111,0.35)] disabled:opacity-50 cursor-pointer"
                 >
                     {state === "loading" ? <CircularProgress size={18} color="inherit" /> : <FaPix size={16} />}
                     PIX
                 </button>
-                <button type="button" onClick={() => setState("card-form")} disabled={state === "loading" || !appKey}
+                <button type="button" onClick={() => setState("card-form")} disabled={state === "loading" }
                     className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-white bg-white/10 border border-white/15 hover:bg-white/15 disabled:opacity-50 cursor-pointer"
                 >
                     <MdCreditCard size={18} /> Cartão
