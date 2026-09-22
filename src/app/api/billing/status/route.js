@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getAuthorizedAppKey } from "@/lib/billingAuth";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 
 export async function GET(request) {
     try {
@@ -30,11 +31,9 @@ export async function GET(request) {
         const { appKey, error, status } = await getAuthorizedAppKey(caller.uid);
         if (error) return NextResponse.json({ error }, { status });
 
-        const response = await fetch(
+        const response = await fetchWithTimeout(
             `${process.env.LICENSE_API_URL}/api/billing/status`,
-            {
-                headers: { "x-app-key": appKey },
-            },
+            { headers: { "x-app-key": appKey } },
         );
 
         const data = await response.json();

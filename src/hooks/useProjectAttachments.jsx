@@ -50,7 +50,9 @@ export function useProjectAttachments(projectId, companyId) {
         setError(null);
         setUploading(true);
         try {
-            const token = await auth.currentUser.getIdToken();
+            const currentUser = auth.currentUser;
+            if (!currentUser) throw new Error("Sessão expirada. Faça login novamente.");
+            const token = await currentUser.getIdToken();
             const formData = new FormData();
             formData.append("file", file);
             formData.append("companyId", companyId);
@@ -84,7 +86,9 @@ export function useProjectAttachments(projectId, companyId) {
 
     const download = useCallback(async (attachment) => {
         try {
-            const token = await auth.currentUser.getIdToken();
+            const currentUser = auth.currentUser;
+            if (!currentUser) throw new Error("Sessão expirada. Faça login novamente.");
+            const token = await currentUser.getIdToken();
             const res = await fetch(
                 `/api/attachments/${projectId}/${attachment.id}?path=${encodeURIComponent(attachment.storagePath)}`,
                 { headers: { Authorization: `Bearer ${token}` } }
@@ -99,7 +103,9 @@ export function useProjectAttachments(projectId, companyId) {
 
     const remove = useCallback(async (attachment) => {
         try {
-            const token = await auth.currentUser.getIdToken();
+            const currentUser = auth.currentUser;
+            if (!currentUser) throw new Error("Sessão expirada. Faça login novamente.");
+            const token = await currentUser.getIdToken();
             const res = await fetch(
                 `/api/attachments/${projectId}/${attachment.id}?path=${encodeURIComponent(attachment.storagePath)}`,
                 { method: "DELETE", headers: { Authorization: `Bearer ${token}` } }

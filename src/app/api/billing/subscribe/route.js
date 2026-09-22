@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { getAuthorizedAppKey } from "@/lib/billingAuth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 
 export async function POST(request) {
     try {
@@ -25,11 +26,10 @@ export async function POST(request) {
 
         const { appKey: _clientAppKey, ...subscribeData } = await request.json();
 
-        const response = await fetch(`${process.env.LICENSE_API_URL}/api/billing/subscribe`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", "x-app-key": appKey },
-            body: JSON.stringify(subscribeData),
-        });
+        const response = await fetchWithTimeout(
+            `${process.env.LICENSE_API_URL}/api/billing/subscribe`,
+            { method: "POST", headers: { "Content-Type": "application/json", "x-app-key": appKey }, body: JSON.stringify(subscribeData) },
+        );
 
         const data = await response.json();
         return NextResponse.json(data, { status: response.status });
@@ -58,10 +58,10 @@ export async function DELETE(request) {
         const { appKey, error, status } = await getAuthorizedAppKey(caller.uid);
         if (error) return NextResponse.json({ error }, { status });
 
-        const response = await fetch(`${process.env.LICENSE_API_URL}/api/billing/subscribe`, {
-            method: "DELETE",
-            headers: { "x-app-key": appKey },
-        });
+        const response = await fetchWithTimeout(
+            `${process.env.LICENSE_API_URL}/api/billing/subscribe`,
+            { method: "DELETE", headers: { "x-app-key": appKey } },
+        );
 
         const data = await response.json();
         return NextResponse.json(data, { status: response.status });

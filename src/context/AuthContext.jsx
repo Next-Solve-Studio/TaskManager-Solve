@@ -59,15 +59,12 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
-    // indica que o login acabou de acontecer nesta sessão, Usamos ref para não causar re-render e evitar loop
     const justLoggedIn = useRef(false);
 
     const setJustLoggedIn = useCallback((val) => {
         justLoggedIn.current = val;
     }, []);
 
-    // Guarda dados do novo usuário
-    
     const pendingUserData = useRef(null);
 
     const shouldUpdateLastSeen = useCallback((lastSeenAt) => {
@@ -77,46 +74,46 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        // Esse bloco será executado apenas uma vez, quando o AuthProvider for renderizado pela 1° vez
         const unsubscribe = onIdTokenChanged(auth, async (user) => {
-        try {
-            if (user) {
-                const token = await user.getIdToken();
-                await setSessionCookie(token);
+            try {
+                if (user) {
+                    const token = await user.getIdToken();
+                    await setSessionCookie(token);
 
-                let userData;
-                if (pendingUserData.current) {
-                    userData = await pendingUserData.current;
-                    pendingUserData.current = null;
-                } else {
-                    const userRef = doc(db, "users", user.uid);
-                    const userDoc = await getDoc(userRef);
-                    userData = userDoc.exists() ? userDoc.data() : {};
+                    let userData;
+                    if (pendingUserData.current) {
+                        userData = await pendingUserData.current;
+                        pendingUserData.current = null;
+                    } else {
+                        const userRef = doc(db, "users", user.uid);
+                        const userDoc = await getDoc(userRef);
+                        userData = userDoc.exists() ? userDoc.data() : {};
 
-                    if (shouldUpdateLastSeen(userData.lastSeenAt)) {
-                        const now = new Date();
-                        updateDoc(userRef, { lastSeenAt: now }).catch(() => {});
-                        userData.lastSeenAt = now;
+                        if (shouldUpdateLastSeen(userData.lastSeenAt)) {
+                            const now = new Date();
+                            updateDoc(userRef, { lastSeenAt: now }).catch(() => {});
+                            userData.lastSeenAt = now;
+                        }
                     }
-                }
 
-                setCurrentUser({ ...user, ...userData });
+                    setCurrentUser({ ...user, ...userData });
 
-                if (justLoggedIn.current) {
-                    justLoggedIn.current = false;
-                    router.goHome();
+                    if (justLoggedIn.current) {
+                        justLoggedIn.current = false;
+                        router.goHome();
+                    }
+                } else {
+                    await setSessionCookie(null);
+                    setCurrentUser(null);
                 }
-            } else {
-                await setSessionCookie(null);
+            } catch (err) {
+                console.error("Erro ao carregar dados do usuário:", err);
                 setCurrentUser(null);
+                if (user) await setSessionCookie(null).catch(() => {});
+            } finally {
+                setLoading(false);
             }
-        } catch (err) {
-            console.error("Erro ao carregar dados do usuário:", err);
-            if (user) setCurrentUser(user);
-        } finally {
-            setLoading(false);
-        }
-    });
+        });
         return unsubscribe;
     }, [setSessionCookie, router, shouldUpdateLastSeen]);
 
@@ -139,9 +136,7 @@ export const AuthProvider = ({ children }) => {
     }
     }, []);
 
-    //Login Google
     const loginWithGoogle = useCallback(async () => {
-        // Sinaliza que o próximo disparo do onAuthStateChanged deve redirecionar
         justLoggedIn.current = true;
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
@@ -158,15 +153,12 @@ export const AuthProvider = ({ children }) => {
             });
             pendingUserData.current = Promise.resolve({ ...data });
         } else {
-            // Se não existir, por padrão não vinculamos a empresa no Google Login direto
-            // a menos que seja um convite, mas para SaaS simplificado, vamos exigir cadastro
             throw new Error(
                 "Usuário não encontrado. Por favor, realize o cadastro da sua empresa.",
             );
         }
     }, []);
 
-    // Função para registrar uma NOVA EMPRESA e seu primeiro Administrador
     const registerCompany = useCallback(
         async (
             companyName,
@@ -182,7 +174,6 @@ export const AuthProvider = ({ children }) => {
             const companyRef = doc(collection(db, "companies"));
             const companyId = companyRef.id;
 
-            // 1. Registrar tenant na License API
             let appKey, expiresAt, confirmedPlan;
             try {
                 const response = await fetch("/api/register-company", {
@@ -200,9 +191,7 @@ export const AuthProvider = ({ children }) => {
 
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({}));
-                    throw new Error(
-                        errorData.error || errorData.message || `Erro na API: ${response.status}`
-                    );
+                    throw new Error(errorData.error || errorData.message || `Erro na API: ${response.status}`);
                 }
                 const data = await response.json();
                 appKey = data.appKey;
@@ -213,8 +202,6 @@ export const AuthProvider = ({ children }) => {
                 throw err;
             }
 
-            // 2. Criar usuário Firebase ANTES de escrever no Firestore
-            //    (regras de segurança exigem autenticação)
             const userData = {
                 name: adminName.trim(),
                 email,
@@ -226,41 +213,44 @@ export const AuthProvider = ({ children }) => {
                 authMethod: "email",
             };
 
-            let resolvePendingUserData;
-            pendingUserData.current = new Promise((resolve) => {
+            let resolvePendingUserData, rejectPendingUserData;
+            pendingUserData.current = new Promise((resolve, reject) => {
                 resolvePendingUserData = resolve;
+                rejectPendingUserData = reject;
             });
 
             if (plan !== "FREE") {
                 justLoggedIn.current = false;
             }
 
-            const userCredential = await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password,
-            );
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-            // 3. Agora autenticado — escreve no Firestore sem erro de permissão
-            await setDoc(companyRef, {
-                name: companyName,
-                cnpj: cnpj,
-                endereco: endereco,
-                createdAt: new Date(),
-                plan: confirmedPlan,
-                status: "active",
-                appKey,
-                licenseExpiresAt: expiresAt,
-                ownerId: userCredential.user.uid,
-            });
-
-            await setDoc(doc(db, "users", userCredential.user.uid), userData);
-            await setDoc(doc(db, "role_permissions", companyId), {
-                companyId,
-                permissions: buildDefaultPermissions(),
-                updatedAt: new Date(),
-                updatedBy: userCredential.user.uid,
-            });
+            try {
+                await setDoc(companyRef, {
+                    name: companyName,
+                    cnpj,
+                    endereco,
+                    createdAt: new Date(),
+                    plan: confirmedPlan,
+                    status: "active",
+                    appKey,
+                    licenseExpiresAt: expiresAt,
+                    ownerId: userCredential.user.uid,
+                });
+                await setDoc(doc(db, "users", userCredential.user.uid), userData);
+                await setDoc(doc(db, "role_permissions", companyId), {
+                    companyId,
+                    permissions: buildDefaultPermissions(),
+                    updatedAt: new Date(),
+                    updatedBy: userCredential.user.uid,
+                });
+            } catch (firestoreErr) {
+                pendingUserData.current = null;
+                rejectPendingUserData(firestoreErr);
+                justLoggedIn.current = false;
+                await userCredential.user.delete().catch(() => {});
+                throw firestoreErr;
+            }
 
             resolvePendingUserData(userData);
 
@@ -328,7 +318,7 @@ export const AuthProvider = ({ children }) => {
     const logout = useCallback(async () => {
         try {
             await signOut(auth);
-            setSessionCookie(null);
+            await setSessionCookie(null);
             router.goLogin();
         } catch (error) {
             console.error("Erro ao fazer logout: ", error);

@@ -6,6 +6,10 @@ import { getAuthorizedClientForUser } from "@/lib/googleCalendar";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
 
 const TIMEZONE = "America/Sao_Paulo";
+const VALID_CATS = ["reuniao", "foco", "pessoal", "ausencia"];
+const TIME_RE = /^\d{2}:\d{2}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const MAX_PEOPLE = 50;
 
 function buildDateTime(dateStr, timeStr) {
     return `${dateStr}T${timeStr}:00`;
@@ -21,7 +25,6 @@ export async function POST(request) {
         const { allowed } = await checkRateLimit({ key: `schedule:${ip}`, windowSeconds: 300, max: 3 });
         if (!allowed) return NextResponse.json({ message: "Muitas tentativas." }, { status: 429 });
 
-
         let caller;
         try {
             caller = await verifyFirebaseToken(token);
@@ -35,8 +38,23 @@ export async function POST(request) {
         if (!weekKey || !dayKey || !date || !title || !start || !end || !cat) {
             return NextResponse.json({ message: "Dados incompletos." }, { status: 400 });
         }
+        if (!VALID_CATS.includes(cat)) {
+            return NextResponse.json({ message: "Categoria inválida." }, { status: 400 });
+        }
+        if (!DATE_RE.test(date)) {
+            return NextResponse.json({ message: "Data inválida." }, { status: 400 });
+        }
+        if (!TIME_RE.test(start) || !TIME_RE.test(end)) {
+            return NextResponse.json({ message: "Horário inválido." }, { status: 400 });
+        }
         if (start >= end) {
             return NextResponse.json({ message: "O horário final precisa ser depois do início." }, { status: 400 });
+        }
+        if (typeof title !== "string" || title.length > 200) {
+            return NextResponse.json({ message: "Título inválido." }, { status: 400 });
+        }
+        if (!Array.isArray(peopleIds) || peopleIds.length > MAX_PEOPLE) {
+            return NextResponse.json({ message: "Lista de participantes inválida." }, { status: 400 });
         }
 
         const { db } = getFirebaseAdmin();
@@ -55,6 +73,10 @@ export async function POST(request) {
                 return NextResponse.json({ message: "Evento não encontrado." }, { status: 404 });
             }
             existingData = existingSnap.data();
+            // Verifica companyId E createdBy antes de permitir edição
+            if (existingData.companyId !== companyId) {
+                return NextResponse.json({ message: "Evento não encontrado." }, { status: 404 });
+            }
             if (existingData.createdBy !== caller.uid) {
                 return NextResponse.json({ message: "Só quem criou pode editar este evento." }, { status: 403 });
             }

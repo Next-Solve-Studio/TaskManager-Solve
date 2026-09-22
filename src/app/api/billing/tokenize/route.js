@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { verifyFirebaseToken } from "@/lib/firebaseAdmin";
 import { getAuthorizedAppKey } from "@/lib/billingAuth";
 import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { fetchWithTimeout } from "@/lib/fetchWithTimeout";
 
 export async function POST(request) {
     const token = request.headers.get("authorization")?.split("Bearer ")[1];
@@ -23,13 +24,29 @@ export async function POST(request) {
     if (error) return NextResponse.json({ error }, { status });
 
     // Recebe os dados do cartão — NUNCA loga o body
-    const body = await request.json();
+    const raw = await request.json();
+    const safeBody = {
+        creditCard: {
+            holderName:  raw?.creditCard?.holderName,
+            number:      raw?.creditCard?.number,
+            expiryMonth: raw?.creditCard?.expiryMonth,
+            expiryYear:  raw?.creditCard?.expiryYear,
+            ccv:         raw?.creditCard?.ccv,
+        },
+        creditCardHolderInfo: {
+            name:          raw?.creditCardHolderInfo?.name,
+            email:         raw?.creditCardHolderInfo?.email,
+            cpfCnpj:       raw?.creditCardHolderInfo?.cpfCnpj,
+            postalCode:    raw?.creditCardHolderInfo?.postalCode,
+            addressNumber: raw?.creditCardHolderInfo?.addressNumber,
+            phone:         raw?.creditCardHolderInfo?.phone,
+        },
+    };
 
-    const response = await fetch(`${process.env.LICENSE_API_URL}/api/billing/tokenize`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-app-key": appKey },
-        body: JSON.stringify(body),
-    });
+    const response = await fetchWithTimeout(
+        `${process.env.LICENSE_API_URL}/api/billing/tokenize`,
+        { method: "POST", headers: { "Content-Type": "application/json", "x-app-key": appKey }, body: JSON.stringify(safeBody) },
+    );
 
     const data = await response.json();
     // Retorna APENAS o token — nunca retorna os dados originais do cartão
