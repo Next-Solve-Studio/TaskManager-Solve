@@ -17,7 +17,7 @@ import CreditCardForm from "@/components/billing/CreditCardForm";
 const SUPPORT_EMAIL = "equipe.nextsolvesolution@gmail.com";
 
 function PixActivation() {
-    const { setupCustomer, subscribe, cancelSubscription, appKey } = useBilling();
+    const { setupCustomer, subscribe, cancelSubscription } = useBilling();
     const { currentUser } = useAuth();
     const [state, setState] = useState("choose"); // choose | card-form | loading | qr | success
     const [pixData, setPixData] = useState(null);
