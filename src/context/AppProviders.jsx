@@ -7,6 +7,7 @@ import { TasksProvider } from "./TasksContext";
 import { UsersProvider } from "./UsersContext";
 import { BillingProvider } from "./BillingContext";
 import { CustomFieldsProvider } from "./CustomFieldsContext";
+import { ScheduleProvider } from "./ScheduleContext";
 
 export default function AppProviders({ children }) {
     return (
@@ -18,9 +19,11 @@ export default function AppProviders({ children }) {
                             <ClientsProvider>
                                 <ProjectsProvider>
                                     <TasksProvider>
-                                        <CustomFieldsProvider>
-                                            {children}
-                                        </CustomFieldsProvider>
+                                        <ScheduleProvider>
+                                            <CustomFieldsProvider>
+                                                {children}
+                                            </CustomFieldsProvider>
+                                        </ScheduleProvider>
                                     </TasksProvider>
                                 </ProjectsProvider>
                             </ClientsProvider>
