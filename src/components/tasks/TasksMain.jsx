@@ -6,6 +6,7 @@ import { useTasks } from "@/context/TasksContext";
 import TaskDeleteModal from "./modals/TaskDeleteModal";
 import TaskForm from "./modals/TaskForm";
 import TaskCardSettingsModal from "./modals/TaskCardSettingsModal";
+import TasksImportModal from "./modals/TasksImportModal";
 import TasksContent from "./sections/TasksContent";
 import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
@@ -13,6 +14,9 @@ import TasksStats from "./sections/TasksStats";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { useSettings } from "@/context/SettingsContext";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
+import { downloadTasksTemplate, parseTasksSpreadsheet } from "@/utils/TasksSpreadsheet";
+
+const IMPORT_CHUNK_SIZE = 10;
 
 export default function TasksMain() {
     const {
@@ -38,7 +42,10 @@ export default function TasksMain() {
     const [filterProject, setFilterProject] = useState("all");
     const [filterAssignee, setFilterAssignee] = useState("all");
     const [filterMonth, setFilterMonth] = useState("all");
-    
+    const [importResult, setImportResult] = useState(null);
+    const [importing, setImporting] = useState(false);
+    const [importProgress, setImportProgress] = useState(0);
+
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
     const { systemSettings, updateSystemSettings } = useSettings();
@@ -96,13 +103,63 @@ export default function TasksMain() {
         }
     };
 
+    const handleDownloadTemplate = async () => {
+        try {
+            await downloadTasksTemplate({ projects });
+        } catch (err) {
+            console.error(err);
+            toast.error("Erro ao gerar o modelo de planilha");
+        }
+    };
+
+    const handleImportFile = async (file) => {
+        try {
+            const result = await parseTasksSpreadsheet(file, { projects, users });
+            if (result.tasks.length === 0 && result.errors.length === 0) {
+                toast.error("A planilha não tem nenhuma tarefa preenchida.");
+                return;
+            }
+            setImportProgress(0);
+            setImportResult(result);
+        } catch (err) {
+            toast.error(err.message || "Não foi possível ler a planilha");
+        }
+    };
+
+    const handleConfirmImport = async () => {
+        setImporting(true);
+        let created = 0;
+        let failed = 0;
+
+        for (let i = 0; i < importResult.tasks.length; i += IMPORT_CHUNK_SIZE) {
+            const chunk = importResult.tasks.slice(i, i + IMPORT_CHUNK_SIZE);
+            const results = await Promise.allSettled(chunk.map(({ data }) => createTask(data)));
+            for (const r of results) {
+                if (r.status === "fulfilled") created++;
+                else failed++;
+            }
+            setImportProgress(created + failed);
+        }
+
+        setImporting(false);
+        setImportResult(null);
+
+        if (failed > 0) {
+            toast.error(`${created} tarefa(s) importada(s), ${failed} falharam`);
+        } else {
+            toast.success(`${created} tarefa${created === 1 ? "" : "s"} importada${created === 1 ? "" : "s"}!`);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-background-page text-white py-6 space-y-6 font-sans">
             <TasksHeader 
                 handleOpenCreate={handleOpenCreate} 
                 handleOpenSettings={() => setSettingsOpen(true)} 
                 handleOpenCustomFields={() => setCustomFieldsModalOpen(true)}
-                tasks={tasks} 
+                handleDownloadTemplate={handleDownloadTemplate}
+                handleImportFile={handleImportFile}
+                tasks={tasks}
             />
 
             {/* Stats */}
@@ -186,6 +243,14 @@ export default function TasksMain() {
                 task={deletingTask}
                 onConfirm={handleConfirmDelete}
                 loading={deleting}
+            />
+
+            <TasksImportModal
+                result={importResult}
+                importing={importing}
+                progress={importProgress}
+                onClose={() => setImportResult(null)}
+                onConfirm={handleConfirmImport}
             />
         </div>
     );
