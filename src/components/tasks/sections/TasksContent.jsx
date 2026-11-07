@@ -45,9 +45,12 @@ export default function TasksContent({
                 !(t.assignedTo || []).includes(uid)
             )
                 return false;
+            if (filterAssignee === "none" && (t.assignedTo || []).length > 0)
+                return false;
             if (
                 filterAssignee !== "all" &&
                 filterAssignee !== "mine" &&
+                filterAssignee !== "none" &&
                 !(t.assignedTo || []).includes(filterAssignee)
             )
                 return false;

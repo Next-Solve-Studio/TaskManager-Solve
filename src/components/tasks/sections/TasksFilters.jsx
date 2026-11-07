@@ -225,6 +225,7 @@ export default function TasksFilters({
                         >
                             {canViewAll && <MenuItem value="all">Todos</MenuItem>}
                             <MenuItem value="mine">Minhas tarefas</MenuItem>
+                            {canViewAll && <MenuItem value="none">Sem responsável</MenuItem>}
                             {canViewAll && users.map((u) => (
                                 <MenuItem key={u.id} value={u.id}>
                                     {u.name}
