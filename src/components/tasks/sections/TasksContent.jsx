@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";;
 import { useDebounce } from "@/hooks/useDebounce";
@@ -25,6 +25,11 @@ export default function TasksContent({
     visibleTasksCount,
     loadMoreTasks,
     settings,
+    selectable,
+    selectedIds,
+    setSelectedIds,
+    onToggleSelect,
+    onToggleSelectMany,
 }) {
     const { uid } = useCurrentUser()
 
@@ -100,6 +105,17 @@ export default function TasksContent({
     );
     const hasMore = filtered.length > visibleTasksCount;
 
+    // tarefa que sai da tela (filtro, exclusão) não pode continuar selecionada,
+    // senão a ação em lote atingiria cards que o usuário não está vendo
+    useEffect(() => {
+        if (!selectable) return;
+        const visible = new Set(paginated.map((t) => t.id));
+        setSelectedIds((prev) => {
+            const next = new Set([...prev].filter((id) => visible.has(id)));
+            return next.size === prev.size ? prev : next;
+        });
+    }, [paginated, selectable, setSelectedIds]);
+
     // agrupa as tarefas por projeto
     const groupedByProject = useMemo(() => {
         const map = {};
@@ -149,10 +165,31 @@ export default function TasksContent({
                 <div className="space-y-8">
                     {groupedByProject.map(([pid, ptasks]) => {
                         const project = projectMap[pid];
+                        const groupIds = ptasks.map((t) => t.id);
+                        const groupSelectedCount = groupIds.filter((id) =>
+                            selectedIds.has(id),
+                        ).length;
+                        const allSelected = groupSelectedCount === groupIds.length;
                         return (
                             <div key={pid} className="flex flex-col gap-3">
                                 <div className="flex items-center gap-2">
                                     <div className="h-px flex-1 bg-border-main2" />
+                                    {selectable && (
+                                        <input
+                                            type="checkbox"
+                                            checked={allSelected}
+                                            ref={(el) => {
+                                                if (el)
+                                                    el.indeterminate =
+                                                        groupSelectedCount > 0 && !allSelected;
+                                            }}
+                                            onChange={() =>
+                                                onToggleSelectMany(groupIds, !allSelected)
+                                            }
+                                            aria-label={`Selecionar todas as tarefas de ${project?.title || "Sem projeto"}`}
+                                            className="w-4 h-4 accent-brand-500 cursor-pointer"
+                                        />
+                                    )}
                                     <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-muted px-2">
                                         {project?.title || "Sem projeto"}
                                     </span>
@@ -170,6 +207,9 @@ export default function TasksContent({
                                             onEdit={onEdit}
                                             onDelete={onDelete}
                                             settings={settings}
+                                            selectable={selectable}
+                                            selected={selectedIds.has(task.id)}
+                                            onToggleSelect={onToggleSelect}
                                         />
                                     ))}
                                 </div>

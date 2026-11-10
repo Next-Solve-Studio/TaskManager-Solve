@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { useProjects } from "@/context/ProjectsContext";
 import { useTasks } from "@/context/TasksContext";
@@ -7,12 +7,14 @@ import TaskDeleteModal from "./modals/TaskDeleteModal";
 import TaskForm from "./modals/TaskForm";
 import TaskCardSettingsModal from "./modals/TaskCardSettingsModal";
 import TasksImportModal from "./modals/TasksImportModal";
+import TasksBulkBar from "./sections/TasksBulkBar";
 import TasksContent from "./sections/TasksContent";
 import TasksFilters from "./sections/TasksFilters";
 import TasksHeader from "./sections/TasksHeader";
 import TasksStats from "./sections/TasksStats";
 import { getErrorMessage } from "@/utils/getErrorMessage";
 import { useSettings } from "@/context/SettingsContext";
+import { useRole } from "@/hooks/useRole";
 import CustomFieldFormModal from "@/components/ui/modals/CustomFieldFormModal";
 import { downloadTasksTemplate, parseTasksSpreadsheet } from "@/utils/TasksSpreadsheet";
 
@@ -27,8 +29,11 @@ export default function TasksMain() {
         deleteTask,
         visibleTasksCount,
         loadMoreTasks,
+        bulkUpdateTasks,
     } = useTasks();
     const { projects, projectMap, users, usersMap } = useProjects();
+    const { can } = useRole();
+    const canEditTasks = can("canEditTasks");
 
     const [formOpen, setFormOpen] = useState(false);
     const [editingTask, setEditingTask] = useState(null);
@@ -45,6 +50,8 @@ export default function TasksMain() {
     const [importResult, setImportResult] = useState(null);
     const [importing, setImporting] = useState(false);
     const [importProgress, setImportProgress] = useState(0);
+    const [selectedIds, setSelectedIds] = useState(() => new Set());
+    const [bulkApplying, setBulkApplying] = useState(false);
 
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [customFieldsModalOpen, setCustomFieldsModalOpen] = useState(false);
@@ -99,7 +106,47 @@ export default function TasksMain() {
             console.error(err);
             toast.error(getErrorMessage(err, "Erro ao excluir tarefa"));
         } finally {
-            setSubmitting(false);
+            setDeleting(false);
+        }
+    };
+
+    const handleToggleSelect = useCallback((id) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id);
+            else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const handleToggleSelectMany = useCallback((ids, select) => {
+        setSelectedIds((prev) => {
+            const next = new Set(prev);
+            for (const id of ids) {
+                if (select) next.add(id);
+                else next.delete(id);
+            }
+            return next;
+        });
+    }, []);
+
+    const handleBulkApply = async (changes) => {
+        setBulkApplying(true);
+        try {
+            const updated = await bulkUpdateTasks([...selectedIds], changes);
+            if (updated > 0) {
+                toast.success(
+                    `${updated} tarefa${updated === 1 ? "" : "s"} atualizada${updated === 1 ? "" : "s"}!`,
+                );
+            } else {
+                toast.info("As tarefas selecionadas já estavam assim.");
+            }
+            setSelectedIds(new Set());
+        } catch (err) {
+            console.error(err);
+            toast.error(getErrorMessage(err, "Erro ao atualizar tarefas"));
+        } finally {
+            setBulkApplying(false);
         }
     };
 
@@ -207,6 +254,11 @@ export default function TasksMain() {
                 visibleTasksCount={visibleTasksCount}
                 loadMoreTasks={loadMoreTasks}
                 settings={settings}
+                selectable={canEditTasks}
+                selectedIds={selectedIds}
+                setSelectedIds={setSelectedIds}
+                onToggleSelect={handleToggleSelect}
+                onToggleSelectMany={handleToggleSelectMany}
             />
 
             <TaskCardSettingsModal
@@ -244,6 +296,16 @@ export default function TasksMain() {
                 onConfirm={handleConfirmDelete}
                 loading={deleting}
             />
+
+            {canEditTasks && selectedIds.size > 0 && (
+                <TasksBulkBar
+                    count={selectedIds.size}
+                    users={users}
+                    applying={bulkApplying}
+                    onApply={handleBulkApply}
+                    onClear={() => setSelectedIds(new Set())}
+                />
+            )}
 
             <TasksImportModal
                 result={importResult}

@@ -21,7 +21,10 @@ export default function CardChecklist({ task }) {
             item.id === id ? { ...item, done: !item.done } : item,
         );
         try {
-            await updateChecklist(task.id, updated);
+            const autoCompleted = await updateChecklist(task.id, updated, task);
+            if (autoCompleted) {
+                toast.success("Checklist completo — tarefa marcada como concluída!");
+            }
         } catch (err) {
             console.error("Erro ao atualizar checklist: ", err);
             toast.error("Erro ao atualizar checklist");

@@ -2,6 +2,7 @@
 
 import {
     addDoc,
+    arrayUnion,
     collection,
     deleteDoc,
     doc,
@@ -11,6 +12,7 @@ import {
     serverTimestamp,
     updateDoc,
     where,
+    writeBatch,
 } from "firebase/firestore";
 import {
     createContext,
@@ -33,6 +35,9 @@ const TasksContext = createContext();
 
 // hook personalizado, para usar useTasks
 export const useTasks = () => useContext(TasksContext);
+
+// o Firestore aceita no máximo 500 operações por batch
+const BATCH_LIMIT = 400;
 
 export const TasksProvider = ({ children, projectId }) => {
     const { permissions, loadingPermissions } = useRolePermissions();
@@ -221,17 +226,110 @@ export const TasksProvider = ({ children, projectId }) => {
     );
 
     // Atualiza apenas o checklist de uma tarefa (sem reabrir modal)
+    // Se `currentTask` for informada e todos os itens ficarem marcados, a tarefa
+    // também vira "concluido". Retorna true quando a conclusão automática ocorreu.
     const updateChecklist = useCallback(
-        async (taskId, checklist) => {
+        async (taskId, checklist, currentTask) => {
+            const autoComplete = Boolean(
+                currentTask &&
+                    currentTask.status !== "concluido" &&
+                    checklist.length > 0 &&
+                    checklist.every((item) => item.done),
+            );
+
             // atualiza a task do taskId fornecido
             await updateDoc(doc(db, "tasks", taskId), {
                 checklist,
+                ...(autoComplete && { status: "concluido" }),
                 lastModified: serverTimestamp(),
                 lastModifiedBy: uid,
                 lastModifiedByName: userName,
             });
+
+            if (autoComplete) {
+                await logActivity({
+                    userId: uid,
+                    userName: userName,
+                    userPhoto: userPhoto,
+                    action: "status_change",
+                    companyId: companyId,
+                    resourceType: "task",
+                    resourceId: taskId,
+                    resourceName: currentTask.title,
+                    details: {
+                        field: "status",
+                        oldValue: currentTask.status,
+                        newValue: "concluido",
+                        projectId: currentTask.projectId || null,
+                    },
+                });
+            }
+
+            return autoComplete;
         },
-        [uid, userName],
+        [uid, companyId, userName, userPhoto],
+    );
+
+    // Altera várias tarefas de uma vez: status e/ou responsável (adiciona ou limpa).
+    // Retorna quantas tarefas realmente mudaram.
+    const bulkUpdateTasks = useCallback(
+        async (taskIds, { status, addAssignee, clearAssignees }) => {
+            const byId = new Map(tasks.map((t) => [t.id, t]));
+            const affected = taskIds
+                .map((id) => byId.get(id))
+                .filter((t) => {
+                    if (!t) return false;
+                    const assigned = t.assignedTo || [];
+                    if (status && t.status !== status) return true;
+                    if (addAssignee && !assigned.includes(addAssignee)) return true;
+                    if (clearAssignees && assigned.length > 0) return true;
+                    return false;
+                });
+
+            if (affected.length === 0) return 0;
+
+            for (let i = 0; i < affected.length; i += BATCH_LIMIT) {
+                const batch = writeBatch(db);
+                for (const t of affected.slice(i, i + BATCH_LIMIT)) {
+                    batch.update(doc(db, "tasks", t.id), {
+                        ...(status && { status }),
+                        ...(addAssignee && { assignedTo: arrayUnion(addAssignee) }),
+                        ...(clearAssignees && { assignedTo: [] }),
+                        lastModified: serverTimestamp(),
+                        lastModifiedBy: uid,
+                        lastModifiedByName: userName,
+                    });
+                }
+                await batch.commit();
+            }
+
+            await Promise.all(
+                affected.map((t) => {
+                    const statusChanged = Boolean(status) && t.status !== status;
+                    return logActivity({
+                        userId: uid,
+                        userName: userName,
+                        userPhoto: userPhoto,
+                        action: statusChanged ? "status_change" : "update",
+                        companyId: companyId,
+                        resourceType: "task",
+                        resourceId: t.id,
+                        resourceName: t.title,
+                        details: statusChanged
+                            ? {
+                                  field: "status",
+                                  oldValue: t.status,
+                                  newValue: status,
+                                  projectId: t.projectId || null,
+                              }
+                            : { projectId: t.projectId || null },
+                    });
+                }),
+            );
+
+            return affected.length;
+        },
+        [tasks, uid, companyId, userName, userPhoto],
     );
 
     // Estados e funções disponíveis para os componentes filhos
@@ -244,7 +342,8 @@ export const TasksProvider = ({ children, projectId }) => {
         updateTask,
         deleteTask,
         updateChecklist,
-    }), 
+        bulkUpdateTasks,
+    }),
     [
         tasks,
         loadingTasks,
@@ -254,6 +353,7 @@ export const TasksProvider = ({ children, projectId }) => {
         updateTask,
         deleteTask,
         updateChecklist,
+        bulkUpdateTasks,
     ]);
 
     return (

@@ -5,10 +5,19 @@ import { MdDelete, MdEdit, MdMoreVert } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";
 import { PriorityBadge, StatusBadge } from "@/components/ui/badges/StatusBadge";
 
-export default function CardHeader({ task, onEdit, onDelete }) {
+export default function CardHeader({ task, onEdit, onDelete, selectable, selected, onToggleSelect }) {
     const [anchorEl, setAnchorEl] = useState(false);
     return (
         <div className="flex items-start gap-2">
+            {selectable && (
+                <input
+                    type="checkbox"
+                    checked={selected}
+                    onChange={() => onToggleSelect(task.id)}
+                    aria-label={`Selecionar tarefa ${task.title}`}
+                    className="mt-1 w-4 h-4 shrink-0 accent-brand-500 cursor-pointer"
+                />
+            )}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                     <StatusBadge status={task.status} />
