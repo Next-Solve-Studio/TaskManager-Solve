@@ -1,6 +1,7 @@
 import {
     MdArchive,
     MdCheckCircle,
+    MdOutlineEventNote,
     MdOutlineLoop,
     MdOutlineRateReview,
     MdOutlineSupportAgent,
@@ -8,6 +9,13 @@ import {
 } from "react-icons/md";
 
 export const STATUS_MAP = {
+    planejado: {
+        label: "Planejado",
+        color: "#f472b6",
+        bg: "rgba(244,114,182,0.12)",
+        border: "rgba(244,114,182,0.25)",
+        icon: MdOutlineEventNote,
+    },
     em_andamento: {
         label: "Em Andamento",
         color: "var(--color-cyan-400)",

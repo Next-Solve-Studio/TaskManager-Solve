@@ -197,6 +197,7 @@ export const exportProjectsToExcel = async (projects, fileName = "Relatório de 
  */
 const formatStatus = (status) => {
     const statusMap = {
+        "planejado": "Planejado",
         "concluido": "Concluído",
         "em_andamento": "Em Andamento",
         "suporte": "Em Suporte",
