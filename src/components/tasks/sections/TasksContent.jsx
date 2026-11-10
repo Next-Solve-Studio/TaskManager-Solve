@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { MdAdd, MdOutlineTaskAlt } from "react-icons/md";
 import CanDo from "@/components/auth/CanDo";;
 import { useDebounce } from "@/hooks/useDebounce";
+import SelectCheckbox from "@/components/ui/SelectCheckbox";
 import TaskCard from "../card/TaskCard";
 import { formatDateInput } from "@/utils/FormatDateProjects";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -175,19 +176,13 @@ export default function TasksContent({
                                 <div className="flex items-center gap-2">
                                     <div className="h-px flex-1 bg-border-main2" />
                                     {selectable && (
-                                        <input
-                                            type="checkbox"
+                                        <SelectCheckbox
                                             checked={allSelected}
-                                            ref={(el) => {
-                                                if (el)
-                                                    el.indeterminate =
-                                                        groupSelectedCount > 0 && !allSelected;
-                                            }}
+                                            indeterminate={groupSelectedCount > 0 && !allSelected}
                                             onChange={() =>
                                                 onToggleSelectMany(groupIds, !allSelected)
                                             }
-                                            aria-label={`Selecionar todas as tarefas de ${project?.title || "Sem projeto"}`}
-                                            className="w-4 h-4 accent-brand-500 cursor-pointer"
+                                            label={`Selecionar todas as tarefas de ${project?.title || "Sem projeto"}`}
                                         />
                                     )}
                                     <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-muted px-2">
